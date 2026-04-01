@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen text-slate-700;
+    background-image:
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.28), transparent 26%),
+      radial-gradient(circle at left center, rgba(125, 211, 252, 0.38), transparent 22%),
+      radial-gradient(circle at top right, rgba(191, 219, 254, 0.72), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.22), transparent 28%),
+      linear-gradient(180deg, #d8efff 0%, #cfe7fb 24%, #d9eefc 54%, #eaf5ff 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgba(96, 165, 250, 0.25);
+    color: #0f172a;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply border-white/40 bg-white/35 text-slate-700 placeholder:text-slate-400 shadow-sm;
+    backdrop-filter: blur(20px);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-sky-300/70 ring-sky-200/60;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply border border-white/40 bg-white/40 shadow-[0_14px_40px_rgba(125,166,214,0.18)];
+    backdrop-filter: blur(26px) saturate(1.15);
+  }
+
+  .glass-panel-strong {
+    @apply border border-white/50 bg-white/60 shadow-[0_18px_50px_rgba(125,166,214,0.22)];
+    backdrop-filter: blur(32px) saturate(1.2);
+  }
+
+  .glass-link {
+    @apply text-sky-700 transition hover:text-sky-900;
+  }
+
+  .glass-muted {
+    @apply text-slate-500/90;
+  }
+
+  .glass-surface {
+    @apply rounded-[2rem] border border-white/30 bg-white/30 shadow-[0_20px_60px_rgba(120,158,210,0.18)];
+    backdrop-filter: blur(30px);
+  }
+}
