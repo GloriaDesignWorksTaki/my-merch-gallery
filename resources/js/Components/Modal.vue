@@ -27,6 +27,14 @@ let closeTimer: ReturnType<typeof setTimeout> | null = null;
 const dialogRef = ref<HTMLElement | null>(null);
 const lastActiveElement = ref<HTMLElement | null>(null);
 const previousBodyOverflow = ref<string>('');
+const previousHtmlOverflow = ref<string>('');
+const previousBodyPosition = ref<string>('');
+const previousBodyTop = ref<string>('');
+const previousBodyLeft = ref<string>('');
+const previousBodyWidth = ref<string>('');
+const previousScrollY = ref<number>(0);
+const previousHtmlOverscrollBehavior = ref<string>('');
+const previousBodyOverscrollBehavior = ref<string>('');
 
 const getFocusableElements = () => {
   if (!dialogRef.value) {
@@ -86,8 +94,28 @@ watch(
     }
 
     if (props.show) {
+      // スクロール漏れ（オーバースクロール/スクロール・チェイニング）対策:
+      // overflow hidden だけだと「スクロールバーを強制ドラッグ」等で漏れる場合があるので、
+      // body を position: fixed で完全に固定する。
       previousBodyOverflow.value = document.body.style.overflow;
+      previousHtmlOverflow.value = document.documentElement.style.overflow;
+      previousBodyPosition.value = document.body.style.position;
+      previousBodyTop.value = document.body.style.top;
+      previousBodyLeft.value = document.body.style.left;
+      previousBodyWidth.value = document.body.style.width;
+
+      previousScrollY.value = window.scrollY || document.documentElement.scrollTop || 0;
+
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      previousHtmlOverscrollBehavior.value = document.documentElement.style.overscrollBehavior;
+      previousBodyOverscrollBehavior.value = document.body.style.overscrollBehavior;
+      document.documentElement.style.overscrollBehavior = 'none';
+      document.body.style.overscrollBehavior = 'none';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${previousScrollY.value}px`;
+      document.body.style.left = '0';
+      document.body.style.width = '100%';
       showSlot.value = true;
 
       lastActiveElement.value = document.activeElement as HTMLElement | null;
@@ -105,12 +133,33 @@ watch(
         (focusable[0] ?? dialogRef.value)?.focus?.();
       });
     } else {
-      document.body.style.overflow = previousBodyOverflow.value;
-      previousBodyOverflow.value = '';
-
       closeTimer = setTimeout(() => {
         showSlot.value = false;
         closeTimer = null;
+
+        // スクロールロック復元
+        document.body.style.overflow = previousBodyOverflow.value;
+        document.documentElement.style.overflow = previousHtmlOverflow.value;
+        document.documentElement.style.overscrollBehavior = previousHtmlOverscrollBehavior.value;
+        document.body.style.overscrollBehavior = previousBodyOverscrollBehavior.value;
+        document.body.style.position = previousBodyPosition.value;
+        document.body.style.top = previousBodyTop.value;
+        document.body.style.left = previousBodyLeft.value;
+        document.body.style.width = previousBodyWidth.value;
+
+        previousBodyOverflow.value = '';
+        previousHtmlOverflow.value = '';
+        previousHtmlOverscrollBehavior.value = '';
+        previousBodyOverscrollBehavior.value = '';
+        previousBodyPosition.value = '';
+        previousBodyTop.value = '';
+        previousBodyLeft.value = '';
+        previousBodyWidth.value = '';
+
+        // 元のスクロール位置へ戻す
+        window.scrollTo(0, previousScrollY.value);
+
+        previousScrollY.value = 0;
 
         // 閉じた後に元のフォーカスへ戻す（UX）
         lastActiveElement.value?.focus?.();
@@ -146,7 +195,27 @@ onUnmounted(() => {
   document.removeEventListener('keydown', closeOnEscape);
   document.removeEventListener('keydown', trapFocus);
 
-  document.body.style.overflow = '';
+  // 念のため、未クローズ時のロックも復元する
+  document.body.style.overflow = previousBodyOverflow.value;
+  document.documentElement.style.overflow = previousHtmlOverflow.value;
+  document.documentElement.style.overscrollBehavior = previousHtmlOverscrollBehavior.value;
+  document.body.style.overscrollBehavior = previousBodyOverscrollBehavior.value;
+  document.body.style.position = previousBodyPosition.value;
+  document.body.style.top = previousBodyTop.value;
+  document.body.style.left = previousBodyLeft.value;
+  document.body.style.width = previousBodyWidth.value;
+  previousBodyOverflow.value = '';
+  previousHtmlOverflow.value = '';
+  previousHtmlOverscrollBehavior.value = '';
+  previousBodyOverscrollBehavior.value = '';
+  previousBodyPosition.value = '';
+  previousBodyTop.value = '';
+  previousBodyLeft.value = '';
+  previousBodyWidth.value = '';
+  if (previousScrollY.value) {
+    window.scrollTo(0, previousScrollY.value);
+    previousScrollY.value = 0;
+  }
   if (closeTimer) {
     clearTimeout(closeTimer);
   }
@@ -167,7 +236,7 @@ const maxWidthClass = computed(() => {
   <Teleport to="body">
     <div
       v-if="show || showSlot"
-      class="fixed inset-0 z-50 overflow-y-auto px-4 py-8 sm:px-4 sm:py-10"
+      class="fixed inset-0 z-50 overflow-y-hidden overscroll-contain px-4 py-8 sm:px-4 sm:py-10"
       scroll-region
     >
       <Transition
