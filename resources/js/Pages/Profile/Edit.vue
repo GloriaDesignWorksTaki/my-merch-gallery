@@ -8,6 +8,8 @@ import { Head } from '@inertiajs/vue3';
 defineProps<{
   mustVerifyEmail?: boolean;
   status?: string;
+  email: string;
+  emailVerifiedAt: string | null;
 }>();
 </script>
 
@@ -24,11 +26,13 @@ defineProps<{
 
     <div class="mx-auto max-w-3xl space-y-6">
       <div class="glass-surface p-6 sm:p-8">
-          <UpdateProfileInformationForm
-            :must-verify-email="mustVerifyEmail"
-            :status="status"
-            class="max-w-xl"
-          />
+        <UpdateProfileInformationForm
+          :must-verify-email="mustVerifyEmail"
+          :status="status"
+          :email="email"
+          :email-verified-at="emailVerifiedAt"
+          class="max-w-xl"
+        />
       </div>
 
       <div class="glass-surface p-6 sm:p-8">

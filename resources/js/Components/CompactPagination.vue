@@ -1,12 +1,7 @@
 <script setup lang="ts">
+import type { PaginationLink } from '@/types/inertia';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
-type PaginationLink = {
-  url: string | null;
-  label: string;
-  active: boolean;
-};
 
 type CompactPaginationItem =
   | { type: 'link'; key: string; label: string; url: string | null; active: boolean; disabled: boolean }

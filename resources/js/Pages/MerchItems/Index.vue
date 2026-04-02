@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import CompactPagination from '@/Components/CompactPagination.vue';
+import FormSelect from '@/Components/FormSelect.vue';
+import TextInput from '@/Components/TextInput.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { PaginatedList } from '@/types/inertia';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 
@@ -15,18 +18,8 @@ type MerchRow = {
   cover_image?: { image_path: string; alt_text?: string | null } | null;
 };
 
-type PaginationLink = {
-  url: string | null;
-  label: string;
-  active: boolean;
-};
-
 const props = defineProps<{
-  merchItems: {
-    data: MerchRow[];
-    links: PaginationLink[];
-    current_page: number;
-  };
+  merchItems: PaginatedList<MerchRow> & { current_page: number };
   filters: {
     search?: string | null;
     band?: number | null;
@@ -71,26 +64,26 @@ const applyFilters = () => {
 
     <section class="glass-surface mt-7 p-5">
       <div class="grid gap-4 md:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
-        <input
+        <TextInput
           v-model="filterForm.search"
           type="text"
-          class="rounded-2xl"
+          class="block w-full"
           placeholder="アイテム名で検索"
           @keyup.enter="applyFilters"
         />
-        <select v-model="filterForm.band" class="rounded-2xl" @change="applyFilters">
+        <FormSelect v-model="filterForm.band" class="block w-full" @change="applyFilters">
           <option value="">全バンド</option>
           <option v-for="band in bands" :key="band.id" :value="band.id">{{ band.name }}</option>
-        </select>
-        <select v-model="filterForm.category" class="rounded-2xl" @change="applyFilters">
+        </FormSelect>
+        <FormSelect v-model="filterForm.category" class="block w-full" @change="applyFilters">
           <option value="">全カテゴリ</option>
           <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
-        </select>
-        <select v-model="filterForm.sort" class="rounded-2xl" @change="applyFilters">
+        </FormSelect>
+        <FormSelect v-model="filterForm.sort" class="block w-full" @change="applyFilters">
           <option value="newest">新着順</option>
           <option value="oldest">古い順</option>
           <option value="name">名前順</option>
-        </select>
+        </FormSelect>
       </div>
     </section>
 

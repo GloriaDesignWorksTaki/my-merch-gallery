@@ -56,9 +56,10 @@ const closeModal = () => {
 
     <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
 
-    <Modal :show="confirmingUserDeletion" @close="closeModal">
+    <Modal :show="confirmingUserDeletion" :title-id="'delete-account-confirm-title'" @close="closeModal">
       <div class="p-6">
         <h2
+          id="delete-account-confirm-title"
           class="text-lg font-medium text-gray-900"
         >
           Are you sure you want to delete your account?
@@ -82,6 +83,7 @@ const closeModal = () => {
             ref="passwordInput"
             v-model="form.password"
             type="password"
+            autofocus
             class="mt-1 block w-3/4"
             placeholder="Password"
             @keyup.enter="deleteUser"

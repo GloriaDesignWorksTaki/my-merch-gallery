@@ -2,18 +2,13 @@
 import CompactPagination from '@/Components/CompactPagination.vue';
 import PageContextBar from '@/Components/PageContextBar.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { PaginatedList } from '@/types/inertia';
 import { Head, Link } from '@inertiajs/vue3';
 
 type CommentRow = {
   id: number;
   body: string;
   user: { name: string; username: string };
-};
-
-type PaginationLink = {
-  url: string | null;
-  label: string;
-  active: boolean;
 };
 
 type PostShow = {
@@ -29,10 +24,7 @@ type PostShow = {
 
 defineProps<{
   post: PostShow;
-  comments: {
-    data: CommentRow[];
-    links: PaginationLink[];
-  };
+  comments: PaginatedList<CommentRow>;
   canEdit: boolean;
   returnTo: string;
   relatedPosts: {

@@ -3,9 +3,9 @@ import { computed } from 'vue';
 import AppSidebar from '@/Components/AppSidebar.vue';
 import StatusBanner from '@/Components/StatusBanner.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import type { User } from '@/types';
+import type { AuthUser } from '@/types';
 
-const page = usePage<{ auth: { user: User | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
+const page = usePage<{ auth: { user: AuthUser | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
 const user = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
 const stats = computed(() => page.props.ui?.stats ?? {});
@@ -17,21 +17,70 @@ const primaryNavItems = computed(() => [
   { label: '投稿', href: route('posts.index'), active: route().current('posts.*') },
 ]);
 
-const secondaryNavItems = computed(() =>
-  user
-    ? [{ label: 'マイページ', href: route('dashboard'), active: route().current('dashboard') }]
-    : [
-        { label: 'ログイン', href: route('login'), active: route().current('login') },
-        { label: '登録', href: route('register'), active: route().current('register') },
-      ],
-);
+const browseNavItems = computed(() => [
+  { label: 'ホーム', href: route('home'), active: route().current('home') },
+  { label: 'マイページ', href: route('dashboard'), active: route().current('dashboard') },
+  { label: 'バンド一覧', href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
+  { label: 'マーチ一覧', href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
+  { label: '投稿一覧', href: route('posts.index'), active: route().current('posts.index') || route().current('posts.show') },
+]);
 
-const sidebarSections = computed(() => [
+const manageNavItems = computed(() => [
+  { label: 'バンド登録', href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
+  { label: 'マーチ登録', href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
+  { label: '投稿作成', href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
+]);
+
+const accountNavItems = computed(() => [
+  { label: 'プロフィール設定', href: route('profile.edit'), active: route().current('profile.edit') },
+  { label: 'ログアウト', href: route('logout'), active: false, method: 'post' as const, as: 'button' as const },
+]);
+
+const guestSidebarSections = computed(() => [
   {
     title: 'Navigation',
-    items: [...primaryNavItems.value, ...secondaryNavItems.value],
+    items: primaryNavItems.value,
   },
 ]);
+
+const userSidebarSections = computed(() => [
+  {
+    title: 'Browse',
+    items: browseNavItems.value,
+    scrollable: true,
+  },
+  {
+    title: 'Manage',
+    items: manageNavItems.value,
+    compact: true,
+  },
+  {
+    title: 'Account',
+    items: accountNavItems.value,
+    compact: true,
+  },
+]);
+
+const sidebarSections = computed(() => (user ? userSidebarSections.value : guestSidebarSections.value));
+
+/** モバイル／デスクトップで二重に書かないよう AppSidebar へ渡す共通プロップ */
+const sidebarProps = computed(() => ({
+  homeHref: route('home'),
+  mobileTitle: user ? 'MY PAGE' : 'GLORIA',
+  mobileActionLabel: user ? 'Manage' : '登録',
+  mobileActionHref: user ? route('posts.create') : route('register'),
+  primarySections: sidebarSections.value,
+  ctaLabel: user ? '投稿する' : 'ログイン',
+  ctaHref: user ? route('posts.create') : route('login'),
+  ctaActions: user ? [] : [{ label: 'サインアップ', href: route('register'), tone: 'secondary' as const }],
+  footerTitle: user?.name ?? 'Gloria Design Works',
+  footerSubtitle: user ? `@${user.username}` : '@GloriaDesignWKS',
+  footerAvatarUrl: user?.avatar_path ? `/storage/${user.avatar_path}` : null,
+  footerAvatarFocusX: user?.avatar_focus_x ?? 50,
+  footerAvatarFocusY: user?.avatar_focus_y ?? 50,
+  footerAvatarZoom: user?.avatar_zoom ?? 1,
+  showFooter: Boolean(user),
+}));
 </script>
 
 <template>
@@ -41,34 +90,12 @@ const sidebarSections = computed(() => [
       <div class="absolute bottom-[-8rem] right-[-10rem] h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
     </div>
 
-    <AppSidebar
-      :home-href="route('home')"
-      mobile-title="GLORIA"
-      :mobile-action-label="user ? '管理' : '登録'"
-      :mobile-action-href="user ? route('dashboard') : route('register')"
-      :primary-sections="sidebarSections"
-      :cta-label="user ? '投稿する' : 'ログイン'"
-      :cta-href="user ? route('posts.create') : route('login')"
-      :footer-title="user?.name ?? 'Gloria Design Works'"
-      :footer-subtitle="user ? `@${user.username}` : '@GloriaDesignWKS'"
-      :show-desktop="false"
-    />
+    <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
-      <AppSidebar
-        :home-href="route('home')"
-        mobile-title="GLORIA"
-        :mobile-action-label="user ? '管理' : '登録'"
-        :mobile-action-href="user ? route('dashboard') : route('register')"
-        :primary-sections="sidebarSections"
-        :cta-label="user ? '投稿する' : 'ログイン'"
-        :cta-href="user ? route('posts.create') : route('login')"
-        :footer-title="user?.name ?? 'Gloria Design Works'"
-        :footer-subtitle="user ? `@${user.username}` : '@GloriaDesignWKS'"
-        :show-mobile="false"
-      />
+      <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
-      <main class="min-h-screen w-full max-w-[680px] border-x border-white/30 pb-24 md:pb-10">
+      <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
         <div class="px-4 py-5 sm:px-6 sm:py-7">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />

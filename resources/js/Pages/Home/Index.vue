@@ -18,7 +18,10 @@ defineProps<{
     <section class="glass-surface px-8 py-12">
       <p class="text-sm uppercase tracking-[0.35em] text-sky-600/70">Show Your Merch!</p>
       <h1 class="mt-4 text-4xl font-semibold tracking-tight text-slate-800">My Merch Gallery</h1>
-      <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">バンド、マーチ、投稿を1つの流れで記録できるコレクションアーカイブです。最近の追加を追いながら、気になるアイテムや投稿へそのまま回遊できます。</p>
+      <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">バンドマーチ、それはレコードやCDと並びアーカイブとして保存されるべきもの...<br>あなたの自慢のバンドマーチを皆さんにシェアしてください。</p>
+      <div class="mt-6 overflow-hidden rounded-[2rem] border border-white/40 bg-white/35 shadow-[0_20px_60px_rgba(148,163,184,0.12)]">
+        <img src="/images/main-visual.jpg" alt="My Merch Gallery main visual" class="h-[280px] w-full object-cover md:h-[360px]" />
+      </div>
       <ul class="mt-8 flex flex-wrap gap-4 text-sm">
         <li><Link :href="route('bands.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">バンド一覧へ</Link></li>
         <li><Link :href="route('posts.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">投稿一覧へ</Link></li>

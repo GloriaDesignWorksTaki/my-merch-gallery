@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import ExternalLinkConfirm from '@/Components/ExternalLinkConfirm.vue';
 
 defineProps<{
   canLogin?: boolean;
@@ -74,10 +75,10 @@ function handleImageError() {
 
         <main class="mt-6">
           <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
-            <a
+            <ExternalLinkConfirm
               href="https://laravel.com/docs"
               id="docs-card"
-              class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+              link-class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
             >
               <div
                 id="screenshot-container"
@@ -159,11 +160,11 @@ function handleImageError() {
                   />
                 </svg>
               </div>
-            </a>
+            </ExternalLinkConfirm>
 
-            <a
+            <ExternalLinkConfirm
               href="https://laracasts.com"
-              class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+              link-class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
             >
               <div
                 class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16"
@@ -211,11 +212,11 @@ function handleImageError() {
                   d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
                 />
               </svg>
-            </a>
+            </ExternalLinkConfirm>
 
-            <a
+            <ExternalLinkConfirm
               href="https://laravel-news.com"
-              class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+              link-class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
             >
               <div
                 class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16"
@@ -269,7 +270,7 @@ function handleImageError() {
                   d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
                 />
               </svg>
-            </a>
+            </ExternalLinkConfirm>
 
             <div
               class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800"
@@ -301,64 +302,53 @@ function handleImageError() {
                 <p class="mt-4 text-sm/relaxed">
                   Laravel's robust library of first-party
                   tools and libraries, such as
-                  <a
+                  <ExternalLinkConfirm
                     href="https://forge.laravel.com"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white dark:focus-visible:ring-[#FF2D20]"
-                    >Forge</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white dark:focus-visible:ring-[#FF2D20]"
+                  >Forge</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://vapor.laravel.com"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Vapor</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Vapor</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://nova.laravel.com"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Nova</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Nova</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://envoyer.io"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Envoyer</a
-                  >, and
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Envoyer</ExternalLinkConfirm>, and
+                  <ExternalLinkConfirm
                     href="https://herd.laravel.com"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Herd</a
-                  >
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Herd</ExternalLinkConfirm>
                   help you take your projects to the next
                   level. Pair them with powerful open source
                   libraries like
-                  <a
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/billing"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Cashier</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Cashier</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/dusk"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Dusk</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Dusk</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/broadcasting"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Echo</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Echo</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/horizon"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Horizon</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Horizon</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/sanctum"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Sanctum</a
-                  >,
-                  <a
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Sanctum</ExternalLinkConfirm>,
+                  <ExternalLinkConfirm
                     href="https://laravel.com/docs/telescope"
-                    class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                    >Telescope</a
-                  >, and more.
+                    link-class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
+                  >Telescope</ExternalLinkConfirm>, and more.
                 </p>
               </div>
             </div>

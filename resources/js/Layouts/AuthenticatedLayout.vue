@@ -3,9 +3,9 @@ import { computed } from 'vue';
 import AppSidebar from '@/Components/AppSidebar.vue';
 import StatusBanner from '@/Components/StatusBanner.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import type { User } from '@/types';
+import type { AuthUser } from '@/types';
 
-const page = usePage<{ auth: { user: User | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
+const page = usePage<{ auth: { user: AuthUser | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
 const authUser = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
 const stats = computed(() => page.props.ui?.stats ?? {});
@@ -26,20 +26,46 @@ const manageNavItems = computed(() => [
   { label: 'バンド登録', href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
   { label: 'マーチ登録', href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
   { label: '投稿作成', href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
+]);
+
+const accountNavItems = computed(() => [
   { label: 'プロフィール設定', href: route('profile.edit'), active: route().current('profile.edit') },
+  { label: 'ログアウト', href: route('logout'), active: false, method: 'post' as const, as: 'button' as const },
 ]);
 
 const sidebarSections = computed(() => [
   {
     title: 'Browse',
     items: browseNavItems.value,
+    scrollable: true,
   },
   {
     title: 'Manage',
     items: manageNavItems.value,
     compact: true,
   },
+  {
+    title: 'Account',
+    items: accountNavItems.value,
+    compact: true,
+  },
 ]);
+
+const sidebarProps = computed(() => ({
+  homeHref: route('home'),
+  mobileTitle: 'MY PAGE',
+  mobileActionLabel: 'Manage',
+  mobileActionHref: route('posts.create'),
+  primarySections: sidebarSections.value,
+  ctaLabel: '投稿する',
+  ctaHref: route('posts.create'),
+  footerTitle: authUser.name,
+  footerSubtitle: `@${authUser.username}`,
+  footerAvatarUrl: authUser.avatar_path ? `/storage/${authUser.avatar_path}` : null,
+  footerAvatarFocusX: authUser.avatar_focus_x ?? 50,
+  footerAvatarFocusY: authUser.avatar_focus_y ?? 50,
+  footerAvatarZoom: authUser.avatar_zoom ?? 1,
+}));
 </script>
 
 <template>
@@ -50,36 +76,12 @@ const sidebarSections = computed(() => [
       <div class="absolute bottom-0 left-1/4 h-[28rem] w-[28rem] rounded-full bg-cyan-300/18 blur-3xl" />
     </div>
 
-    <AppSidebar
-      :home-href="route('home')"
-      mobile-title="MY PAGE"
-      mobile-action-label="Manage"
-      :mobile-action-href="route('posts.create')"
-      :primary-sections="sidebarSections"
-      cta-label="投稿する"
-      :cta-href="route('posts.create')"
-      :footer-title="authUser.name"
-      :footer-subtitle="`@${authUser.username}`"
-      :footer-meta="authUser.email"
-      :show-desktop="false"
-    />
+    <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
-      <AppSidebar
-        :home-href="route('home')"
-        mobile-title="MY PAGE"
-        mobile-action-label="Manage"
-        :mobile-action-href="route('posts.create')"
-        :primary-sections="sidebarSections"
-        cta-label="投稿する"
-        :cta-href="route('posts.create')"
-        :footer-title="authUser.name"
-        :footer-subtitle="`@${authUser.username}`"
-        :footer-meta="authUser.email"
-        :show-mobile="false"
-      />
+      <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
-      <main class="min-h-screen w-full max-w-[680px] border-x border-white/30 pb-24 md:pb-10">
+      <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
         <div v-if="$slots.header" class="px-4 pt-5 sm:px-6 sm:pt-7">
           <div class="glass-panel rounded-3xl px-6 py-5">
             <slot name="header" />
@@ -94,7 +96,7 @@ const sidebarSections = computed(() => [
       <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:block">
         <div class="space-y-5">
           <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Account</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Overview</p>
             <h2 class="mt-3 text-2xl font-bold text-slate-800">Your Space</h2>
             <div class="mt-4 grid grid-cols-3 gap-3 text-center">
               <div class="glass-panel rounded-2xl px-3 py-4">
@@ -113,10 +115,6 @@ const sidebarSections = computed(() => [
             <div class="mt-4 space-y-3 text-sm text-slate-600">
               <p>閲覧と登録を同じレイアウト内で行き来できるようにしています。</p>
               <p>次の一手を右カラムからすぐ選べるように改善しています。</p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <Link :href="route('profile.edit')" class="glass-link text-sm font-medium">プロフィール設定</Link>
-              <Link :href="route('logout')" method="post" as="button" class="glass-link text-sm font-medium">ログアウト</Link>
             </div>
           </section>
         </div>

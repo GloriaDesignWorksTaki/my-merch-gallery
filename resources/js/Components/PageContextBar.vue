@@ -11,30 +11,45 @@ type Action = {
   href: string;
 };
 
-defineProps<{
+const props = defineProps<{
   crumbs: Crumb[];
   actions?: Action[];
 }>();
+
+const isLastOddTile = (index: number) => {
+  const list = props.actions;
+
+  if (!list || list.length <= 1) {
+    return false;
+  }
+
+  return index === list.length - 1 && list.length % 2 === 1;
+};
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center justify-between gap-4">
-    <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+  <div class="flex w-full min-w-0 flex-col gap-3">
+    <nav class="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
       <template v-for="(crumb, index) in crumbs" :key="`${crumb.label}-${index}`">
-        <span v-if="index > 0">/</span>
-        <Link v-if="crumb.href" :href="crumb.href" class="glass-link text-sm font-medium">{{ crumb.label }}</Link>
-        <span v-else class="font-medium text-slate-600">{{ crumb.label }}</span>
+        <span v-if="index > 0" class="shrink-0">/</span>
+        <Link v-if="crumb.href" :href="crumb.href" class="glass-link min-w-0 break-words text-sm font-medium">{{ crumb.label }}</Link>
+        <span v-else class="min-w-0 break-words font-medium text-slate-600">{{ crumb.label }}</span>
       </template>
-    </div>
+    </nav>
 
-    <div v-if="actions?.length" class="flex flex-wrap items-center gap-2">
+    <div
+      v-if="actions?.length"
+      class="grid w-full min-w-0 gap-2"
+      :class="actions.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'"
+    >
       <Link
-        v-for="action in actions"
-        :key="action.label"
+        v-for="(action, index) in actions"
+        :key="`action-${index}`"
         :href="action.href"
-        class="glass-panel rounded-full px-4 py-2 text-sm font-medium text-sky-700 hover:bg-white/55"
+        class="glass-panel flex min-h-[3rem] min-w-0 items-center justify-center rounded-2xl px-4 py-3 text-center text-sm font-medium leading-snug text-sky-700 hover:bg-white/55"
+        :class="isLastOddTile(index) ? 'sm:col-span-2' : ''"
       >
-        {{ action.label }}
+        <span class="break-words">{{ action.label }}</span>
       </Link>
     </div>
   </div>

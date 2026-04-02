@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CompactPagination from '@/Components/CompactPagination.vue';
 import PageContextBar from '@/Components/PageContextBar.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';

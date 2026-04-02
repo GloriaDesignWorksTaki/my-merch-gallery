@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CompactPagination from '@/Components/CompactPagination.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { PaginatedList } from '@/types/inertia';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -12,18 +13,8 @@ type BandRow = {
   merch_items_count?: number;
 };
 
-type PaginationLink = {
-  url: string | null;
-  label: string;
-  active: boolean;
-};
-
 const props = defineProps<{
-  bands: {
-    data: BandRow[];
-    links: PaginationLink[];
-    current_page: number;
-  };
+  bands: PaginatedList<BandRow> & { current_page: number };
   selectedLetter?: string;
   availableLetters?: string[];
 }>();

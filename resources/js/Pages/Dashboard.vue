@@ -9,7 +9,7 @@ defineProps<{
     posts: number;
   };
   recentBands: { id: number; name: string; slug: string }[];
-  recentMerchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null }[];
+  recentMerchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: { image_path: string; alt_text?: string | null } | null }[];
   recentPosts: { id: number; body: string; band?: { name: string; slug: string } | null; cover_image?: { image_path: string } | null }[];
   profileHints: {
     bioMissing: boolean;
@@ -35,49 +35,7 @@ defineProps<{
     </template>
 
     <div class="mx-auto max-w-4xl space-y-6">
-      <section class="grid gap-5 md:grid-cols-3">
-        <div class="glass-surface p-6">
-          <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Bands</p>
-          <p class="mt-4 text-3xl font-semibold text-slate-800">{{ summary.bands }}</p>
-          <p class="mt-2 text-sm text-slate-500">登録済みバンド</p>
-        </div>
-        <div class="glass-surface p-6">
-          <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Merch</p>
-          <p class="mt-4 text-3xl font-semibold text-slate-800">{{ summary.merchItems }}</p>
-          <p class="mt-2 text-sm text-slate-500">登録済みマーチ</p>
-        </div>
-        <div class="glass-surface p-6">
-          <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Posts</p>
-          <p class="mt-4 text-3xl font-semibold text-slate-800">{{ summary.posts }}</p>
-          <p class="mt-2 text-sm text-slate-500">あなたの投稿数</p>
-        </div>
-      </section>
-
-      <section class="glass-surface p-6">
-        <div class="flex items-center justify-between gap-4">
-          <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Quick flow</p>
-            <h3 class="mt-2 text-xl font-semibold text-slate-800">MVP の登録導線</h3>
-          </div>
-          <div class="text-sm text-slate-500">soft glass layout</div>
-        </div>
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-          <Link :href="route('bands.create')" class="glass-panel rounded-2xl p-4 hover:bg-white/55">
-            <p class="text-sm font-medium text-slate-800">1. バンド登録</p>
-            <p class="mt-2 text-sm text-slate-500">メジャーもインディーズもここから追加。</p>
-          </Link>
-          <Link :href="route('merch-items.create')" class="glass-panel rounded-2xl p-4 hover:bg-white/55">
-            <p class="text-sm font-medium text-slate-800">2. マーチ登録</p>
-            <p class="mt-2 text-sm text-slate-500">カテゴリと時期ラベルを紐づける。</p>
-          </Link>
-          <Link :href="route('posts.create')" class="glass-panel rounded-2xl p-4 hover:bg-white/55">
-            <p class="text-sm font-medium text-slate-800">3. 投稿作成</p>
-            <p class="mt-2 text-sm text-slate-500">記録と会話をここから開始。</p>
-          </Link>
-        </div>
-      </section>
-
-      <section class="grid gap-6 xl:grid-cols-3">
+      <section class="space-y-6">
         <div class="glass-surface p-6">
           <div class="flex items-center justify-between gap-4">
             <h3 class="text-lg font-semibold text-slate-800">最近登録したバンド</h3>
@@ -97,9 +55,14 @@ defineProps<{
             <Link :href="route('merch-items.index')" class="glass-link text-sm font-medium">一覧へ</Link>
           </div>
           <div class="mt-4 space-y-3">
-            <Link v-for="item in recentMerchItems" :key="item.id" :href="route('merch-items.show', item.slug)" class="glass-panel block rounded-2xl px-4 py-4 hover:bg-white/55">
-              <p class="font-medium text-slate-800">{{ item.name }}</p>
-              <p v-if="item.band" class="mt-1 text-sm text-slate-500">{{ item.band.name }}</p>
+            <Link v-for="item in recentMerchItems" :key="item.id" :href="route('merch-items.show', item.slug)" class="glass-panel flex items-center gap-4 rounded-2xl px-4 py-4 hover:bg-white/55">
+              <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
+                <img v-if="item.cover_image" :src="`/storage/${item.cover_image.image_path}`" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
+              </div>
+              <div class="min-w-0">
+                <p class="font-medium text-slate-800">{{ item.name }}</p>
+                <p v-if="item.band" class="mt-1 text-sm text-slate-500">{{ item.band.name }}</p>
+              </div>
             </Link>
             <p v-if="recentMerchItems.length === 0" class="text-sm text-slate-500">まだマーチ登録がありません。</p>
           </div>

@@ -8,7 +8,7 @@ declare global {
     axios: AxiosInstance;
   }
 
-  /* eslint-disable no-var */
+  // Ziggy が注入するグローバル（ビルド時に存在）
   var route: typeof ziggyRoute;
 }
 
