@@ -19,6 +19,7 @@ const form = useForm({
 });
 
 const submit = () => {
+  console.log('[Login] submit called', { email: form.email });
   form.post(route('login'), {
     onFinish: () => {
       form.reset('password');
@@ -84,6 +85,7 @@ const submit = () => {
         </Link>
 
         <PrimaryButton
+          type="submit"
           class="ms-4"
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"

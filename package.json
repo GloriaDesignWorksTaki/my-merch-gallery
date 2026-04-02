@@ -28,5 +28,8 @@
         "vite": "^8.0.0",
         "vue": "^3.4.0",
         "vue-tsc": "^2.0.24"
+    },
+    "dependencies": {
+        "@inertiajs/inertia": "^0.11.1"
     }
 }
