@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Web root
+ * @description Web rootを定義する
+ * @author Gloria Design Works
+ * @copyright 2026 Gloria Design Works
+ * @version 1.00.000
+*/
 use App\Http\Controllers\Band\BandController;
 use App\Http\Controllers\Collection\CollectionController;
 use App\Http\Controllers\DashboardController;
@@ -12,16 +18,25 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Home route
 Route::get('/', HomeController::class)->name('home');
 
+// Bands route
 Route::get('/bands', [BandController::class, 'index'])->name('bands.index');
+
+// Merch items route
 Route::get('/merch-items', [MerchItemController::class, 'index'])->name('merch-items.index');
 
+// Posts route
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+
+// Posts show route
 Route::get('/posts/{post}', [PostController::class, 'show'])->whereNumber('post')->name('posts.show');
 
+// Users show route
 Route::get('/users/{user}', [PublicProfileController::class, 'show'])->whereNumber('user')->name('users.show');
 
+// Welcome legacy route
 Route::get('/welcome-legacy', function () {
   return Inertia::render('Welcome', [
     'canLogin' => Route::has('login'),
@@ -31,6 +46,7 @@ Route::get('/welcome-legacy', function () {
   ]);
 })->name('welcome.legacy');
 
+// Dashboard route
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -57,7 +73,10 @@ Route::middleware('auth')->group(function () {
   Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
 });
 
+// Bands show route
 Route::get('/bands/{band:slug}', [BandController::class, 'show'])->name('bands.show');
+
+// Merch items show route
 Route::get('/merch-items/{merchItem:slug}', [MerchItemController::class, 'show'])->name('merch-items.show');
 
 require __DIR__.'/auth.php';

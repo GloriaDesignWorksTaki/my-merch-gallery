@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * 認証関連ルート
+ * @description 認証関連ルートを定義する
+ * @author Gloria Design Works
+ * @copyright 2026 Gloria Design Works
+ * @version 1.00.000
+*/
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -11,6 +17,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+// ゲスト向けルート
 Route::middleware('guest')->group(function () {
   Route::get('register', [RegisteredUserController::class, 'create'])
     ->name('register');
@@ -35,6 +42,7 @@ Route::middleware('guest')->group(function () {
     ->name('password.store');
 });
 
+// 認証済みユーザー向けルート
 Route::middleware('auth')->group(function () {
   Route::get('verify-email', EmailVerificationPromptController::class)
     ->name('verification.notice');
