@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 type PublicUser = {
   id: number;
@@ -45,11 +48,11 @@ defineProps<{
       </div>
       <p v-if="profileUser.bio" class="mt-4 text-gray-700">{{ profileUser.bio }}</p>
       <p v-if="profileUser.posts_count !== undefined" class="mt-4 text-sm text-gray-600">
-        公開投稿 {{ profileUser.posts_count }} 件
+        {{ t('pages.users.publicPosts', { count: profileUser.posts_count }) }}
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
-        <Link :href="route('posts.index')" class="glass-link text-sm font-medium">投稿一覧へ</Link>
-        <Link :href="route('home')" class="glass-link text-sm font-medium">ホームへ</Link>
+        <Link :href="route('posts.index')" class="glass-link text-sm font-medium">{{ t('pages.users.toPostsIndex') }}</Link>
+        <Link :href="route('home')" class="glass-link text-sm font-medium">{{ t('pages.users.toHome') }}</Link>
       </div>
     </section>
   </PublicLayout>

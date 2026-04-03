@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import AppButton from '@/Components/parts/AppButton.vue';
+import ApplicationLogo from '@/Components/parts/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -21,7 +22,6 @@ type NavSection = {
 type SidebarAction = {
   label: string;
   href: string;
-  tone?: 'primary' | 'secondary';
 };
 
 const props = withDefaults(defineProps<{
@@ -105,25 +105,26 @@ const footerAvatarStyle = computed(() => ({
           </section>
 
           <div class="mt-5 space-y-3">
-            <Link
+            <AppButton
               :href="ctaHref"
-              class="flex w-full items-center justify-center rounded-2xl border border-white/50 bg-white/70 px-5 py-3.5 text-base font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80"
+              variant="white"
+              size="lg"
+              radius="md"
+              extra-class="w-full"
             >
               {{ ctaLabel }}
-            </Link>
-            <Link
-              v-for="action in ctaActions"
+            </AppButton>
+            <AppButton
+              v-for="action in ctaActions ?? []"
               :key="action.label"
               :href="action.href"
-              class="flex w-full items-center justify-center rounded-2xl border px-5 py-3.5 text-base font-bold backdrop-blur-xl transition"
-              :class="
-                action.tone === 'secondary'
-                  ? 'border-sky-200/70 bg-sky-100/70 text-sky-700 hover:bg-sky-100'
-                  : 'border-white/50 bg-white/70 text-sky-700 hover:bg-white/80'
-              "
+              variant="signup"
+              size="lg"
+              radius="md"
+              extra-class="w-full"
             >
               {{ action.label }}
-            </Link>
+            </AppButton>
           </div>
         </div>
       </div>

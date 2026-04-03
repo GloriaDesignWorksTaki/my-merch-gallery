@@ -25,7 +25,7 @@ class MerchItemController extends Controller
   public function index(Request $request): Response
   {
     $search = trim((string) $request->string('search')->toString());
-    $selectedBand = $request->integer('band');
+    $bandIds = $this->bandIdsFromRequest($request);
     $selectedCategory = $request->integer('category');
     $sort = $request->string('sort')->toString();
     $allowedSorts = ['newest', 'oldest', 'name'];
@@ -46,8 +46,8 @@ class MerchItemController extends Controller
       $query->where('name', 'like', '%'.$search.'%');
     }
 
-    if ($selectedBand > 0) {
-      $query->where('band_id', $selectedBand);
+    if (count($bandIds) > 0) {
+      $query->whereIn('band_id', $bandIds);
     }
 
     if ($selectedCategory > 0) {
@@ -66,7 +66,7 @@ class MerchItemController extends Controller
         ->withQueryString(),
       'filters' => [
         'search' => $search,
-        'band' => $selectedBand > 0 ? $selectedBand : null,
+        'bands' => $bandIds,
         'category' => $selectedCategory > 0 ? $selectedCategory : null,
         'sort' => $sort,
       ],
@@ -138,13 +138,7 @@ class MerchItemController extends Controller
     return Inertia::render('MerchItems/Show', [
       'merchItem' => $merchItem,
       'canEdit' => Auth::check() && Gate::allows('update', $merchItem),
-      'returnTo' => route('merch-items.index', array_filter([
-        'page' => $request->query('page'),
-        'search' => $request->query('search'),
-        'band' => $request->query('band'),
-        'category' => $request->query('category'),
-        'sort' => $request->query('sort'),
-      ], fn ($value) => filled($value))),
+      'returnTo' => route('merch-items.index', $this->merchIndexQueryForReturn($request)),
       'relatedMerchItems' => $relatedMerchItems,
       'relatedPosts' => $relatedPosts,
     ]);

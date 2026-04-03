@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import InputLabel from '@/Components/InputLabel.vue';
-import Modal from '@/Components/Modal.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import Modal from '@/Components/container/Modal.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import SecondaryButton from '@/Components/parts/SecondaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 type GenreOption = {
   id: number;
@@ -71,19 +74,19 @@ const apply = () => {
     <div class="p-6 sm:p-7">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h3 id="genre-multi-select-title" class="text-lg font-semibold text-slate-900">ジャンルを選択</h3>
-          <p class="mt-1 text-sm text-slate-600">複数選択できます。チェックを付けたジャンルが保存されます。</p>
+          <h3 id="genre-multi-select-title" class="text-lg font-semibold text-slate-900">{{ t('modals.genreSelect.title') }}</h3>
+          <p class="mt-1 text-sm text-slate-600">{{ t('modals.genreSelect.lead') }}</p>
         </div>
-        <div class="rounded-full bg-sky-100/70 px-3 py-1 text-sm font-medium text-sky-700">{{ draftIds.length }}件選択中</div>
+        <div class="rounded-full bg-sky-100/70 px-3 py-1 text-sm font-medium text-sky-700">{{ t('modals.genreSelect.selectedCount', { count: draftIds.length }) }}</div>
       </div>
 
       <div class="mt-5">
-        <InputLabel for="genre-search" value="ジャンル検索" />
+        <InputLabel for="genre-search" :value="t('modals.genreSelect.searchLabel')" />
         <TextInput
           id="genre-search"
           v-model="keyword"
           class="mt-2 block w-full"
-          placeholder="emo / grunge / indie など"
+          :placeholder="t('modals.genreSelect.searchPlaceholder')"
           autofocus
         />
       </div>
@@ -114,12 +117,12 @@ const apply = () => {
           />
           <span class="text-sm font-medium text-slate-800">{{ genre.name }}</span>
         </label>
-        <p v-if="filteredGenres.length === 0" class="px-3 py-6 text-sm text-slate-500">該当するジャンルがありません。</p>
+        <p v-if="filteredGenres.length === 0" class="px-3 py-6 text-sm text-slate-500">{{ t('modals.genreSelect.empty') }}</p>
       </div>
 
       <div class="mt-6 flex justify-end gap-3">
-        <SecondaryButton type="button" @click="emit('close')">閉じる</SecondaryButton>
-        <PrimaryButton type="button" @click="apply">この内容で反映</PrimaryButton>
+        <SecondaryButton type="button" @click="emit('close')">{{ t('common.close') }}</SecondaryButton>
+        <PrimaryButton type="button" @click="apply">{{ t('modals.genreSelect.apply') }}</PrimaryButton>
       </div>
     </div>
   </Modal>

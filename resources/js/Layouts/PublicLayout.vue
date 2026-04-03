@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import AppSidebar from '@/Components/AppSidebar.vue';
-import StatusBanner from '@/Components/StatusBanner.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import AppSidebar from '@/Components/container/AppSidebar.vue';
+import LoginRequiredModal from '@/Components/modules/LoginRequiredModal.vue';
+import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
+import StatusBanner from '@/Components/container/StatusBanner.vue';
 import type { AuthUser } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed, provide, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const page = usePage<{ auth: { user: AuthUser | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
 const user = page.props.auth.user;
@@ -11,51 +16,51 @@ const status = computed(() => page.props.flash?.status ?? null);
 const stats = computed(() => page.props.ui?.stats ?? {});
 
 const primaryNavItems = computed(() => [
-  { label: 'ホーム', href: route('home'), active: route().current('home') },
-  { label: 'バンド', href: route('bands.index'), active: route().current('bands.*') },
-  { label: 'マーチ', href: route('merch-items.index'), active: route().current('merch-items.*') },
-  { label: '投稿', href: route('posts.index'), active: route().current('posts.*') },
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
+  { label: t('layout.nav.bandsList'), href: route('bands.index'), active: route().current('bands.*') },
+  { label: t('layout.nav.merchList'), href: route('merch-items.index'), active: route().current('merch-items.*') },
+  { label: t('layout.nav.postsList'), href: route('posts.index'), active: route().current('posts.*') },
 ]);
 
 const browseNavItems = computed(() => [
-  { label: 'ホーム', href: route('home'), active: route().current('home') },
-  { label: 'マイページ', href: route('dashboard'), active: route().current('dashboard') },
-  { label: 'バンド一覧', href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
-  { label: 'マーチ一覧', href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
-  { label: '投稿一覧', href: route('posts.index'), active: route().current('posts.index') || route().current('posts.show') },
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
+  { label: t('layout.nav.dashboard'), href: route('dashboard'), active: route().current('dashboard') },
+  { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
+  { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
+  { label: t('layout.nav.postsIndex'), href: route('posts.index'), active: route().current('posts.index') || route().current('posts.show') },
 ]);
 
 const manageNavItems = computed(() => [
-  { label: 'バンド登録', href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
-  { label: 'マーチ登録', href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
-  { label: '投稿作成', href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
+  { label: t('layout.nav.bandRegister'), href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
+  { label: t('layout.nav.merchRegister'), href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
+  { label: t('layout.nav.postCreate'), href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
 ]);
 
 const accountNavItems = computed(() => [
-  { label: 'プロフィール設定', href: route('profile.edit'), active: route().current('profile.edit') },
-  { label: 'ログアウト', href: route('logout'), active: false, method: 'post' as const, as: 'button' as const },
+  { label: t('layout.nav.profile'), href: route('profile.edit'), active: route().current('profile.edit') },
+  { label: t('layout.nav.logout'), href: route('logout'), active: false, method: 'post' as const, as: 'button' as const },
 ]);
 
 const guestSidebarSections = computed(() => [
   {
-    title: 'Navigation',
+    title: t('layout.sidebar.navigation'),
     items: primaryNavItems.value,
   },
 ]);
 
 const userSidebarSections = computed(() => [
   {
-    title: 'Browse',
+    title: t('layout.sidebar.browse'),
     items: browseNavItems.value,
     scrollable: true,
   },
   {
-    title: 'Manage',
+    title: t('layout.sidebar.manage'),
     items: manageNavItems.value,
     compact: true,
   },
   {
-    title: 'Account',
+    title: t('layout.sidebar.account'),
     items: accountNavItems.value,
     compact: true,
   },
@@ -63,16 +68,30 @@ const userSidebarSections = computed(() => [
 
 const sidebarSections = computed(() => (user ? userSidebarSections.value : guestSidebarSections.value));
 
+const loginRequiredOpen = ref(false);
+const loginRequiredFeature = ref('');
+
+function openLoginRequired(feature?: string) {
+  loginRequiredFeature.value = feature ?? t('layout.loginRequired.defaultFeature');
+  loginRequiredOpen.value = true;
+}
+
+function closeLoginRequired() {
+  loginRequiredOpen.value = false;
+}
+
+provide('openLoginRequired', openLoginRequired);
+
 /** モバイル／デスクトップで二重に書かないよう AppSidebar へ渡す共通プロップ */
 const sidebarProps = computed(() => ({
   homeHref: route('home'),
-  mobileTitle: user ? 'MY PAGE' : 'GLORIA',
-  mobileActionLabel: user ? 'Manage' : '登録',
+  mobileTitle: user ? t('layout.mobile.myPage') : t('layout.mobile.gloria'),
+  mobileActionLabel: user ? t('layout.mobile.manage') : t('layout.mobile.register'),
   mobileActionHref: user ? route('posts.create') : route('register'),
   primarySections: sidebarSections.value,
-  ctaLabel: user ? '投稿する' : 'ログイン',
+  ctaLabel: user ? t('layout.mobile.post') : t('layout.mobile.login'),
   ctaHref: user ? route('posts.create') : route('login'),
-  ctaActions: user ? [] : [{ label: 'サインアップ', href: route('register'), tone: 'secondary' as const }],
+  ctaActions: user ? [] : [{ label: t('layout.mobile.signup'), href: route('register') }],
   footerTitle: user?.name ?? 'Gloria Design Works',
   footerSubtitle: user ? `@${user.username}` : '@GloriaDesignWKS',
   footerAvatarUrl: user?.avatar_path ? `/storage/${user.avatar_path}` : null,
@@ -92,6 +111,10 @@ const sidebarProps = computed(() => ({
 
     <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
+    <div class="mx-auto max-w-[1440px] px-4 pb-3 pt-2 xl:hidden md:px-5">
+      <RightPaneSearch variant="compact" />
+    </div>
+
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
       <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
@@ -102,35 +125,41 @@ const sidebarProps = computed(() => ({
         </div>
       </main>
 
-      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:block">
-        <div class="space-y-5">
+      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
+        <div class="flex h-full min-h-0 flex-col gap-5">
+          <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
+          <RightPaneSearch variant="panel" />
           <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Shortcuts</p>
-            <h2 class="mt-3 text-2xl font-bold text-slate-800">Quick Links</h2>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">{{ t('layout.public.shortcutsEyebrow') }}</p>
+            <h2 class="mt-3 text-2xl font-bold text-slate-800">{{ t('layout.public.quickLinksTitle') }}</h2>
             <div class="mt-4 flex flex-col gap-2.5">
-              <Link :href="route('bands.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">バンド一覧</Link>
-              <Link :href="route('merch-items.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">マーチ一覧</Link>
-              <Link :href="route('posts.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">投稿一覧</Link>
-              <Link v-if="user" :href="route('dashboard')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">マイページ</Link>
+              <Link :href="route('bands.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">{{ t('layout.public.linkBands') }}</Link>
+              <Link :href="route('merch-items.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">{{ t('layout.public.linkMerch') }}</Link>
+              <Link :href="route('posts.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">{{ t('layout.public.linkPosts') }}</Link>
+              <Link v-if="user" :href="route('dashboard')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">{{ t('layout.public.linkDashboard') }}</Link>
             </div>
           </section>
           <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Overview</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">{{ t('layout.public.overviewEyebrow') }}</p>
             <div class="mt-4 grid grid-cols-3 gap-3 text-center">
               <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Bands</p>
+                <p class="text-xs text-slate-500">{{ t('layout.overview.statBands') }}</p>
                 <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.bands ?? 0 }}</p>
               </div>
               <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Merch</p>
+                <p class="text-xs text-slate-500">{{ t('layout.overview.statMerch') }}</p>
                 <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.merchItems ?? 0 }}</p>
               </div>
               <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Posts</p>
+                <p class="text-xs text-slate-500">{{ t('layout.overview.statPosts') }}</p>
                 <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.posts ?? 0 }}</p>
               </div>
             </div>
           </section>
+          </div>
+          <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500">
+            {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
+          </p>
         </div>
       </aside>
     </div>
@@ -148,5 +177,11 @@ const sidebarProps = computed(() => ({
         </Link>
       </div>
     </nav>
+
+    <LoginRequiredModal
+      :show="loginRequiredOpen"
+      :feature="loginRequiredFeature"
+      @close="closeLoginRequired"
+    />
   </div>
 </template>

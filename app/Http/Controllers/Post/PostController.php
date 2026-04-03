@@ -24,7 +24,7 @@ class PostController extends Controller
   public function index(Request $request): Response
   {
     $search = trim((string) $request->string('search')->toString());
-    $selectedBand = $request->integer('band');
+    $bandIds = $this->bandIdsFromRequest($request);
     $visibility = $request->string('visibility')->toString();
     $sort = $request->string('sort')->toString();
     $allowedVisibility = ['public', 'unlisted'];
@@ -48,8 +48,8 @@ class PostController extends Controller
       $query->where('body', 'like', '%'.$search.'%');
     }
 
-    if ($selectedBand > 0) {
-      $query->where('band_id', $selectedBand);
+    if (count($bandIds) > 0) {
+      $query->whereIn('band_id', $bandIds);
     }
 
     if (in_array($visibility, $allowedVisibility, true)) {
@@ -65,7 +65,7 @@ class PostController extends Controller
       'posts' => $query->paginate(24)->withQueryString(),
       'filters' => [
         'search' => $search,
-        'band' => $selectedBand > 0 ? $selectedBand : null,
+        'bands' => $bandIds,
         'visibility' => in_array($visibility, $allowedVisibility, true) ? $visibility : null,
         'sort' => $sort,
       ],
@@ -150,13 +150,7 @@ class PostController extends Controller
       'post' => $post,
       'comments' => $comments,
       'canEdit' => Auth::check() && Gate::allows('update', $post),
-      'returnTo' => route('posts.index', array_filter([
-        'page' => $request->query('page'),
-        'search' => $request->query('search'),
-        'band' => $request->query('band'),
-        'visibility' => $request->query('visibility'),
-        'sort' => $request->query('sort'),
-      ], fn ($value) => filled($value))),
+      'returnTo' => route('posts.index', $this->postsIndexQueryForReturn($request)),
       'relatedPosts' => $relatedPosts,
       'relatedMerchItems' => $relatedMerchItems,
     ]);

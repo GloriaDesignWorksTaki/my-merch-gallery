@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import FormTextarea from '@/Components/FormTextarea.vue';
-import Modal from '@/Components/Modal.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/form/InputError.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import FormTextarea from '@/Components/form/FormTextarea.vue';
+import Modal from '@/Components/container/Modal.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import SecondaryButton from '@/Components/parts/SecondaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import type { AuthUser } from '@/types';
 import { computed, onBeforeUnmount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   mustVerifyEmail?: boolean;
@@ -129,7 +132,7 @@ const endAvatarDrag = (event?: PointerEvent) => {
 
 const submit = () => {
   form
-    .transform((data) => ({
+    .transform((data: Record<string, unknown>) => ({
       ...data,
       _method: 'patch',
       remove_avatar: data.remove_avatar ? 1 : 0,
@@ -148,11 +151,11 @@ onBeforeUnmount(() => {
   <section>
     <header>
       <h2 class="text-lg font-medium text-slate-900">
-        プロフィール
+        {{ t('profile.heading') }}
       </h2>
 
       <p class="mt-1 text-sm text-slate-600">
-        表示名、メール、自己紹介、プロフィール画像を更新できます。
+        {{ t('profile.lead') }}
       </p>
     </header>
 
@@ -161,7 +164,7 @@ onBeforeUnmount(() => {
       class="mt-6 space-y-6"
     >
       <div>
-        <InputLabel value="プロフィール画像" />
+        <InputLabel :value="t('profile.avatarLabel')" />
         <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
           <div class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/50 bg-white/55 text-2xl font-semibold text-slate-500 shadow-[0_10px_30px_rgba(125,166,214,0.12)]">
             <img
@@ -180,7 +183,7 @@ onBeforeUnmount(() => {
                 class="glass-panel rounded-full px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-white/70"
                 @click="openAvatarPicker"
               >
-                画像を選ぶ
+                {{ t('profile.chooseImage') }}
               </button>
               <button
                 v-if="avatarPreviewUrl"
@@ -188,7 +191,7 @@ onBeforeUnmount(() => {
                 class="glass-panel rounded-full px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-50/80"
                 @click="avatarEditorOpen = true"
               >
-                位置調整
+                {{ t('profile.adjustPosition') }}
               </button>
               <button
                 v-if="avatarPreviewUrl"
@@ -196,10 +199,10 @@ onBeforeUnmount(() => {
                 class="glass-panel rounded-full px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-50/80"
                 @click="removeAvatar"
               >
-                削除
+                {{ t('profile.remove') }}
               </button>
             </div>
-            <p class="text-sm text-slate-500">PNG / JPG / WEBP, 5MBまで。位置調整で見せたい部分を合わせられます。</p>
+            <p class="text-sm text-slate-500">{{ t('profile.avatarHint') }}</p>
           </div>
         </div>
         <input
@@ -213,7 +216,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div>
-        <InputLabel for="name" value="表示名" />
+        <InputLabel for="name" :value="t('profile.displayName')" />
 
         <TextInput
           id="name"
@@ -229,7 +232,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div>
-        <InputLabel for="username" value="ユーザー名" />
+        <InputLabel for="username" :value="t('auth.username')" />
         <input
           id="username"
           type="text"
@@ -238,11 +241,11 @@ onBeforeUnmount(() => {
           readonly
           autocomplete="username"
         />
-        <p class="mt-2 text-sm text-slate-500">ユーザー名は固定です。変更できません。</p>
+        <p class="mt-2 text-sm text-slate-500">{{ t('profile.usernameFixed') }}</p>
       </div>
 
       <div>
-        <InputLabel for="email" value="メールアドレス" />
+        <InputLabel for="email" :value="t('profile.emailLabel')" />
 
         <TextInput
           id="email"
@@ -257,7 +260,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div>
-        <InputLabel for="bio" value="自己紹介" />
+        <InputLabel for="bio" :value="t('profile.bioLabel')" />
 
         <FormTextarea
           id="bio"
@@ -271,14 +274,14 @@ onBeforeUnmount(() => {
 
       <div v-if="mustVerifyEmail && emailVerifiedAt === null">
         <p class="mt-2 text-sm text-slate-700">
-          メールアドレスが未認証です。
+          {{ t('profile.unverified') }}
           <Link
             :href="route('verification.send')"
             method="post"
             as="button"
             class="rounded-md text-sm text-slate-600 underline hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:ring-offset-2"
           >
-            認証メールを再送する
+            {{ t('profile.resendVerification') }}
           </Link>
         </p>
 
@@ -286,12 +289,12 @@ onBeforeUnmount(() => {
           v-show="status === 'verification-link-sent'"
           class="mt-2 text-sm font-medium text-emerald-600"
         >
-          認証メールを再送しました。
+          {{ t('profile.verificationSent') }}
         </div>
       </div>
 
       <div class="flex items-center gap-4">
-        <PrimaryButton type="submit" :disabled="form.processing">更新する</PrimaryButton>
+        <PrimaryButton type="submit" :disabled="form.processing">{{ t('profile.submitUpdate') }}</PrimaryButton>
 
         <Transition
           enter-active-class="transition ease-in-out"
@@ -303,7 +306,7 @@ onBeforeUnmount(() => {
             v-if="form.recentlySuccessful"
             class="text-sm text-slate-600"
           >
-            保存しました。
+            {{ t('profile.saved') }}
           </p>
         </Transition>
       </div>
@@ -311,8 +314,8 @@ onBeforeUnmount(() => {
 
     <Modal :show="avatarEditorOpen" max-width="lg" :title-id="'avatar-editor-title'" @close="avatarEditorOpen = false">
       <div class="p-6">
-        <h3 id="avatar-editor-title" class="text-lg font-semibold text-slate-900">プロフィール画像の位置調整</h3>
-        <p class="mt-1 text-sm text-slate-600">丸く切り抜かれる前提で、見せたい位置を合わせてください。</p>
+        <h3 id="avatar-editor-title" class="text-lg font-semibold text-slate-900">{{ t('profile.avatarModalTitle') }}</h3>
+        <p class="mt-1 text-sm text-slate-600">{{ t('profile.avatarModalLead') }}</p>
 
         <div class="mt-5 flex justify-center">
           <div
@@ -336,16 +339,16 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="mt-6 space-y-5">
-          <p class="text-sm text-slate-600">画像をドラッグして位置を調整してください。</p>
+          <p class="text-sm text-slate-600">{{ t('profile.avatarDragHint') }}</p>
           <label class="block">
-            <span class="text-sm font-medium text-slate-700">ズーム</span>
+            <span class="text-sm font-medium text-slate-700">{{ t('profile.zoom') }}</span>
             <input v-model.number="form.avatar_zoom" type="range" min="1" max="2.5" step="0.05" class="mt-2 w-full" autofocus />
           </label>
         </div>
 
         <div class="mt-6 flex justify-end gap-3">
-          <SecondaryButton @click="avatarEditorOpen = false">閉じる</SecondaryButton>
-          <PrimaryButton type="button" @click="avatarEditorOpen = false">この位置で使う</PrimaryButton>
+          <SecondaryButton @click="avatarEditorOpen = false">{{ t('common.close') }}</SecondaryButton>
+          <PrimaryButton type="button" @click="avatarEditorOpen = false">{{ t('profile.usePosition') }}</PrimaryButton>
         </div>
       </div>
     </Modal>

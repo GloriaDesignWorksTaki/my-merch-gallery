@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/form/InputError.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const form = useForm({
   name: '',
@@ -25,11 +28,11 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Register" />
+    <Head :title="t('auth.registerTitle')" />
 
     <form @submit.prevent="submit">
       <div>
-        <InputLabel for="name" value="Name" />
+        <InputLabel for="name" :value="t('auth.name')" />
 
         <TextInput
           id="name"
@@ -45,7 +48,7 @@ const submit = () => {
       </div>
 
       <div class="mt-4">
-        <InputLabel for="username" value="ユーザー名" />
+        <InputLabel for="username" :value="t('auth.username')" />
 
         <TextInput
           id="username"
@@ -56,13 +59,13 @@ const submit = () => {
           autocomplete="username"
         />
 
-        <p class="mt-1 text-xs text-gray-500">英数字とアンダースコアのみ</p>
+        <p class="mt-1 text-xs text-gray-500">{{ t('auth.usernameHint') }}</p>
 
         <InputError class="mt-2" :message="form.errors.username" />
       </div>
 
       <div class="mt-4">
-        <InputLabel for="email" value="Email" />
+        <InputLabel for="email" :value="t('auth.email')" />
 
         <TextInput
           id="email"
@@ -77,7 +80,7 @@ const submit = () => {
       </div>
 
       <div class="mt-4">
-        <InputLabel for="password" value="Password" />
+        <InputLabel for="password" :value="t('auth.password')" />
 
         <TextInput
           id="password"
@@ -94,7 +97,7 @@ const submit = () => {
       <div class="mt-4">
         <InputLabel
           for="password_confirmation"
-          value="Confirm Password"
+          :value="t('auth.confirmPassword')"
         />
 
         <TextInput
@@ -117,7 +120,7 @@ const submit = () => {
           :href="route('login')"
           class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Already registered?
+          {{ t('auth.alreadyRegistered') }}
         </Link>
 
         <PrimaryButton
@@ -126,7 +129,7 @@ const submit = () => {
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
-          Register
+          {{ t('auth.registerButton') }}
         </PrimaryButton>
       </div>
     </form>

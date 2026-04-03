@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import BandSelectModal from '@/Components/BandSelectModal.vue';
-import FormSelect from '@/Components/FormSelect.vue';
-import FormTextarea from '@/Components/FormTextarea.vue';
-import FormErrorSummary from '@/Components/FormErrorSummary.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import BandSelectModal from '@/Components/modules/BandSelectModal.vue';
+import FormSelect from '@/Components/form/FormSelect.vue';
+import FormTextarea from '@/Components/form/FormTextarea.vue';
+import FormErrorSummary from '@/Components/form/FormErrorSummary.vue';
+import InputError from '@/Components/form/InputError.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   merchItem: {
@@ -57,7 +60,7 @@ const form = useForm({
 const imageErrors = computed(() =>
   Object.entries(form.errors)
     .filter(([key]) => key.startsWith('images.'))
-    .map(([, message]) => message),
+    .map(([, message]) => String(message ?? '')),
 );
 
 const selectedBand = computed(() =>
@@ -106,7 +109,7 @@ onBeforeUnmount(() => {
 });
 
 const submit = () =>
-  form.transform((data) => ({
+  form.transform((data: Record<string, unknown>) => ({
     ...data,
     _method: 'patch',
   })).post(route('merch-items.update', props.merchItem.slug ?? props.merchItem.id), {
@@ -115,13 +118,13 @@ const submit = () =>
 </script>
 
 <template>
-  <Head :title="`${merchItem.name} を編集`" />
+  <Head :title="t('pages.merch.editHead', { name: merchItem.name })" />
 
   <AuthenticatedLayout>
     <template #header>
       <div>
-        <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">Catalog</p>
-        <h2 class="mt-2 text-2xl font-semibold leading-tight text-slate-800">マーチ編集</h2>
+        <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">{{ t('merch.catalogEyebrow') }}</p>
+        <h2 class="mt-2 text-2xl font-semibold leading-tight text-slate-800">{{ t('forms.merch.editTitle') }}</h2>
       </div>
     </template>
 
@@ -129,26 +132,26 @@ const submit = () =>
       <form @submit.prevent="submit" class="glass-surface space-y-6 p-5 sm:p-6">
         <FormErrorSummary :errors="form.errors" />
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <Link :href="returnTo" class="glass-link text-sm font-medium">← マーチ詳細へ戻る</Link>
-          <Link :href="route('merch-items.index')" class="glass-link text-sm font-medium">マーチ一覧へ</Link>
+          <Link :href="returnTo" class="glass-link text-sm font-medium">{{ t('forms.merch.backToMerchDetail') }}</Link>
+          <Link :href="route('merch-items.index')" class="glass-link text-sm font-medium">{{ t('forms.merch.backToMerchListNav') }}</Link>
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2">
           <div>
-            <InputLabel for="band_id" value="バンド" />
+            <InputLabel for="band_id" :value="t('forms.merch.band')" />
             <button
               id="band_id"
               type="button"
               class="glass-panel mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-slate-700 hover:bg-white/55"
               @click="bandModalOpen = true"
             >
-              <span>{{ selectedBand?.name ?? 'バンドを選ぶ' }}</span>
-              <span class="text-sm text-slate-500">開く</span>
+              <span>{{ selectedBand?.name ?? t('forms.merch.chooseBand') }}</span>
+              <span class="text-sm text-slate-500">{{ t('forms.merch.open') }}</span>
             </button>
             <InputError class="mt-2" :message="form.errors.band_id" />
           </div>
           <div>
-            <InputLabel for="merch_category_id" value="カテゴリ" />
+            <InputLabel for="merch_category_id" :value="t('forms.merch.category')" />
             <FormSelect id="merch_category_id" v-model="form.merch_category_id" class="mt-1 block w-full">
               <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
             </FormSelect>
@@ -157,20 +160,20 @@ const submit = () =>
         </div>
 
         <div>
-          <InputLabel for="name" value="アイテム名" />
+          <InputLabel for="name" :value="t('forms.merch.itemName')" />
           <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
           <InputError class="mt-2" :message="form.errors.name" />
         </div>
 
         <div>
-          <InputLabel for="description" value="説明" />
+          <InputLabel for="description" :value="t('forms.merch.description')" />
           <FormTextarea id="description" v-model="form.description" rows="5" class="mt-1 block w-full" />
           <InputError class="mt-2" :message="form.errors.description" />
         </div>
 
         <div class="space-y-4">
           <div>
-            <InputLabel for="images" value="画像（最大4枚）" />
+            <InputLabel for="images" :value="t('forms.merch.imagesMax')" />
             <input
               id="images"
               type="file"
@@ -179,9 +182,9 @@ const submit = () =>
               class="mt-1 block w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700"
               @change="onImagesSelected"
             />
-            <p class="mt-2 text-sm text-slate-500">既存画像も含めて合計4枚まで設定できます。</p>
+            <p class="mt-2 text-sm text-slate-500">{{ t('forms.merch.imagesNote') }}</p>
             <p v-if="existingImages.length || newImagePreviews.length" class="mt-2 text-sm text-slate-500">
-              {{ existingImages.length + newImagePreviews.length }}枚設定中
+              {{ t('forms.merch.imagesSlotCount', { count: existingImages.length + newImagePreviews.length }) }}
             </p>
             <InputError class="mt-2" :message="form.errors.images" />
             <InputError
@@ -193,7 +196,7 @@ const submit = () =>
           </div>
 
           <div v-if="existingImages.length || newImagePreviews.length">
-            <p class="text-sm font-medium text-slate-700">画像プレビュー</p>
+            <p class="text-sm font-medium text-slate-700">{{ t('forms.merch.preview') }}</p>
             <div class="mt-3 grid gap-3 sm:grid-cols-2">
               <div
                 v-for="image in existingImages"
@@ -233,12 +236,12 @@ const submit = () =>
 
         <div class="grid gap-6 sm:grid-cols-2">
           <div>
-            <InputLabel for="release_year" value="リリース年" />
+            <InputLabel for="release_year" :value="t('forms.merch.releaseYear')" />
             <TextInput id="release_year" v-model="form.release_year" type="number" class="mt-1 block w-full" min="1900" max="2100" />
             <InputError class="mt-2" :message="form.errors.release_year" />
           </div>
           <div>
-            <InputLabel for="era_label" value="時期ラベル" />
+            <InputLabel for="era_label" :value="t('forms.merch.eraLabel')" />
             <TextInput id="era_label" v-model="form.era_label" class="mt-1 block w-full" />
             <InputError class="mt-2" :message="form.errors.era_label" />
           </div>
@@ -246,23 +249,23 @@ const submit = () =>
 
         <div class="grid gap-6 sm:grid-cols-2">
           <div>
-            <InputLabel for="source_type" value="登録ソース" />
+            <InputLabel for="source_type" :value="t('forms.merch.sourceType')" />
             <FormSelect id="source_type" v-model="form.source_type" class="mt-1 block w-full">
-              <option value="user_created">ユーザー登録</option>
-              <option value="official">公式情報</option>
-              <option value="imported">外部取込</option>
+              <option value="user_created">{{ t('forms.merch.sourceUser') }}</option>
+              <option value="official">{{ t('forms.merch.sourceOfficialInfo') }}</option>
+              <option value="imported">{{ t('forms.merch.sourceImported') }}</option>
             </FormSelect>
             <InputError class="mt-2" :message="form.errors.source_type" />
           </div>
           <label class="flex items-center gap-2 text-sm text-slate-600 sm:pt-8">
             <input v-model="form.is_official" type="checkbox" class="rounded border-white/40 text-sky-600 shadow-sm focus:ring-sky-200/60" />
-            公式マーチ
+            {{ t('forms.merch.officialMerch') }}
           </label>
         </div>
 
         <div class="flex items-center justify-end gap-3">
-          <Link :href="returnTo" class="glass-panel inline-flex min-h-11 items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50/60 hover:text-rose-700">キャンセル</Link>
-          <PrimaryButton type="submit" :disabled="form.processing">更新する</PrimaryButton>
+          <Link :href="returnTo" class="glass-panel inline-flex min-h-11 items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50/60 hover:text-rose-700">{{ t('forms.merch.cancel') }}</Link>
+          <PrimaryButton type="submit" :disabled="form.processing">{{ t('forms.merch.submit') }}</PrimaryButton>
         </div>
       </form>
     </div>
@@ -271,7 +274,7 @@ const submit = () =>
       :bands="bands"
       :selected-id="form.band_id"
       @close="bandModalOpen = false"
-      @apply="form.band_id = $event"
+      @apply="(id) => { if (typeof id === 'number') form.band_id = id; }"
     />
   </AuthenticatedLayout>
 </template>

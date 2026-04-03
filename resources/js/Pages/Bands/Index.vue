@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import CompactPagination from '@/Components/CompactPagination.vue';
+import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import type { PaginatedList } from '@/types/inertia';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 type BandRow = {
   id: number;
@@ -54,12 +57,12 @@ const letterLinks = computed(() => {
 
 <template>
   <PublicLayout>
-    <Head title="バンド一覧" />
+    <Head :title="t('bands.indexTitle')" />
 
     <div class="flex items-center justify-between gap-4 px-1">
       <div>
-        <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">Catalog</p>
-        <h1 class="mt-2 text-2xl font-semibold text-slate-800">バンド</h1>
+        <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">{{ t('bands.catalogEyebrow') }}</p>
+        <h1 class="mt-2 text-2xl font-semibold text-slate-800">{{ t('bands.listPageHead') }}</h1>
       </div>
     </div>
     <div class="mt-7 space-y-7">
@@ -69,7 +72,7 @@ const letterLinks = computed(() => {
           class="rounded-full px-3 py-1.5 text-sm transition"
           :class="!selectedLetter ? 'bg-sky-600 text-white' : 'glass-link text-slate-700 hover:bg-white/55'"
         >
-          All
+          {{ t('bands.letterAll') }}
         </Link>
         <Link
           v-for="item in letterLinks"
@@ -96,13 +99,13 @@ const letterLinks = computed(() => {
                 <p class="font-medium text-slate-800">{{ b.name }}</p>
                 <p v-if="b.country" class="mt-1 text-sm text-slate-500">{{ b.country.name }}</p>
               </div>
-              <span v-if="b.merch_items_count !== undefined" class="text-sm text-slate-500">マーチ {{ b.merch_items_count }}</span>
+              <span v-if="b.merch_items_count !== undefined" class="text-sm text-slate-500">{{ t('bands.merchCount', { count: b.merch_items_count }) }}</span>
             </Link>
           </li>
         </ul>
       </section>
     </div>
     <CompactPagination :links="bands.links" />
-    <p v-if="bands.data.length === 0" class="mt-4 text-slate-500">まだバンドがありません。</p>
+    <p v-if="bands.data.length === 0" class="mt-4 text-slate-500">{{ t('bands.empty') }}</p>
   </PublicLayout>
 </template>

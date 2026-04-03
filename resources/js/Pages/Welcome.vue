@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import ExternalLinkConfirm from '@/Components/ExternalLinkConfirm.vue';
+import ExternalLinkConfirm from '@/Components/modules/ExternalLinkConfirm.vue';
 
 defineProps<{
   canLogin?: boolean;

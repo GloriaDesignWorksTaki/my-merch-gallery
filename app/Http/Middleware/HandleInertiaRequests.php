@@ -32,6 +32,14 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'locale' => fn () => app()->getLocale(),
+            'locales' => fn () => collect(config('i18n.supported', ['en']))
+                ->map(fn (string $code) => [
+                    'code' => $code,
+                    'label' => config('i18n.labels')[$code] ?? strtoupper($code),
+                ])
+                ->values()
+                ->all(),
             'auth' => [
                 'user' => fn () => InertiaShared::authUser($request->user()),
             ],
