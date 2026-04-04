@@ -7,13 +7,31 @@ use App\Models\User;
 
 class BandPolicy
 {
-  public function update(User $user, Band $band): bool
-  {
-    return $user->id === $band->created_by || $user->role === 'admin';
-  }
+    public function like(User $user, Band $band): bool
+    {
+        return true;
+    }
 
-  public function delete(User $user, Band $band): bool
-  {
-    return $this->update($user, $band);
-  }
+    public function update(User $user, Band $band): bool
+    {
+        return $user->isStaff();
+    }
+
+    public function createEditRequest(User $user, Band $band): bool
+    {
+        if ($user->isBanned()) {
+            return false;
+        }
+
+        if ($user->isStaff()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function delete(User $user, Band $band): bool
+    {
+        return $this->update($user, $band);
+    }
 }

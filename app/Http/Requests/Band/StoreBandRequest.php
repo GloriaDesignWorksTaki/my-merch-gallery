@@ -2,49 +2,31 @@
 
 namespace App\Http\Requests\Band;
 
-use App\Models\Band;
+use App\Http\Requests\Band\Concerns\ValidatesBandPayload;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
 class StoreBandRequest extends FormRequest
 {
-  public function authorize(): bool
-  {
-    return $this->user() !== null;
-  }
+    use ValidatesBandPayload;
 
-  public function rules(): array
-  {
-    return [
-      'name' => ['required', 'string', 'max:255'],
-      'country_id' => ['nullable', 'integer', 'exists:countries,id'],
-      'genre_ids' => ['nullable', 'array', 'max:10'],
-      'genre_ids.*' => ['integer', 'exists:genres,id'],
-      'links' => ['nullable', 'array', 'max:3'],
-      'links.*' => ['nullable', 'url', 'max:2048'],
-      'description' => ['nullable', 'string', 'max:5000'],
-      'formed_year' => ['nullable', 'integer', 'between:1900,2100'],
-      'is_active' => ['required', 'boolean'],
-    ];
-  }
+    public function authorize(): bool
+    {
+        $user = $this->user();
 
-  public function withValidator(Validator $validator): void
-  {
-    $validator->after(function (Validator $validator) {
-      $normalizedName = Band::normalizeComparableName((string) $this->input('name'));
+        return $user !== null && ! $user->isBanned();
+    }
 
-      if ($normalizedName === '') {
-        return;
-      }
+    public function rules(): array
+    {
+        $rules = $this->bandPayloadRules();
+        unset($rules['remove_image']);
 
-      $duplicateExists = Band::query()
-        ->select(['id', 'name'])
-        ->get()
-        ->contains(fn (Band $band) => Band::normalizeComparableName($band->name) === $normalizedName);
+        return $rules;
+    }
 
-      if ($duplicateExists) {
-        $validator->errors()->add('name', '同じバンド名はすでに登録されています。');
-      }
-    });
-  }
+    public function withValidator(Validator $validator): void
+    {
+        $this->withBandPayloadValidator($validator, null);
+    }
 }

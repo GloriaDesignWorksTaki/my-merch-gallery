@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import InputError from '@/Components/form/InputError.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps<{
   status?: string;
@@ -21,12 +25,10 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Forgot Password" />
+    <SeoHead page="authForgotPassword" />
 
     <div class="mb-4 text-sm text-gray-600">
-      Forgot your password? No problem. Just let us know your email
-      address and we will email you a password reset link that will allow
-      you to choose a new one.
+      {{ t('auth.forgotLead') }}
     </div>
 
     <div
@@ -38,7 +40,7 @@ const submit = () => {
 
     <form @submit.prevent="submit">
       <div>
-        <InputLabel for="email" value="Email" />
+        <InputLabel for="email" :value="t('auth.email')" />
 
         <TextInput
           id="email"
@@ -55,10 +57,11 @@ const submit = () => {
 
       <div class="mt-4 flex items-center justify-end">
         <PrimaryButton
+          type="submit"
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
-          Email Password Reset Link
+          {{ t('auth.forgotSubmitButton') }}
         </PrimaryButton>
       </div>
     </form>

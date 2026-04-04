@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
   status?: string;
@@ -21,7 +22,7 @@ const verificationLinkSent = computed(
 
 <template>
   <GuestLayout>
-    <Head title="Email Verification" />
+    <SeoHead page="authVerifyEmail" />
 
     <div class="mb-4 text-sm text-gray-600">
       Thanks for signing up! Before getting started, could you verify your
@@ -40,6 +41,7 @@ const verificationLinkSent = computed(
     <form @submit.prevent="submit">
       <div class="mt-4 flex items-center justify-between">
         <PrimaryButton
+          type="submit"
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
@@ -51,8 +53,9 @@ const verificationLinkSent = computed(
           method="post"
           as="button"
           class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >Log Out</Link
         >
+          Log Out
+        </Link>
       </div>
     </form>
   </GuestLayout>

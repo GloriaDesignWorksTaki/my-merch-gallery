@@ -1,45 +1,76 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import AppSidebar from '@/Components/AppSidebar.vue';
-import StatusBanner from '@/Components/StatusBanner.vue';
+import AppSidebar from '@/Components/container/AppSidebar.vue';
+import LikesHistoryShortcut from '@/Components/parts/LikesHistoryShortcut.vue';
+import NotificationBell from '@/Components/parts/NotificationBell.vue';
+import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
+import StatusBanner from '@/Components/container/StatusBanner.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import type { User } from '@/types';
+import type { AuthUser } from '@/types';
+import type { FooterMenuItem } from '@/types/sidebar';
+import { useI18n } from 'vue-i18n';
 
-const page = usePage<{ auth: { user: User | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
+const { t } = useI18n();
+
+const page = usePage<{
+  auth: { user: AuthUser | null };
+  flash?: { status?: string | null };
+  inbox?: { unreadCount: number };
+}>();
 const authUser = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
-const stats = computed(() => page.props.ui?.stats ?? {});
 
 if (!authUser) {
   throw new Error('AuthenticatedLayout requires a logged-in user.');
 }
 
 const browseNavItems = computed(() => [
-  { label: 'ホーム', href: route('home'), active: route().current('home') },
-  { label: 'マイページ', href: route('dashboard'), active: route().current('dashboard') },
-  { label: 'バンド一覧', href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
-  { label: 'マーチ一覧', href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
-  { label: '投稿一覧', href: route('posts.index'), active: route().current('posts.index') || route().current('posts.show') },
-]);
-
-const manageNavItems = computed(() => [
-  { label: 'バンド登録', href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
-  { label: 'マーチ登録', href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
-  { label: '投稿作成', href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
-  { label: 'プロフィール設定', href: route('profile.edit'), active: route().current('profile.edit') },
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
+  { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
+  { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
+  {
+    label: t('layout.nav.dashboard'),
+    href: route('dashboard'),
+    active: route().current('dashboard') && !route().current('dashboard.likes'),
+  },
 ]);
 
 const sidebarSections = computed(() => [
   {
-    title: 'Browse',
+    title: t('layout.sidebar.browse'),
     items: browseNavItems.value,
-  },
-  {
-    title: 'Manage',
-    items: manageNavItems.value,
-    compact: true,
+    scrollable: false,
   },
 ]);
+
+const footerMenuItems = computed((): FooterMenuItem[] => {
+  const items: FooterMenuItem[] = [{ label: t('layout.nav.profile'), href: route('profile.edit') }];
+  if (authUser.role === 'admin' || authUser.role === 'owner') {
+    items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard') });
+  }
+  items.push({ label: t('layout.nav.logout'), href: route('logout'), method: 'post', as: 'button', danger: true });
+
+  return items;
+});
+
+const sidebarProps = computed(() => ({
+  homeHref: route('home'),
+  mobileTitle: t('layout.mobile.myPage'),
+  mobileActionLabel: t('layout.mobile.manage'),
+  mobileActionHref: route('merch-items.create'),
+  primarySections: sidebarSections.value,
+  ctaLabel: t('layout.nav.bandRegister'),
+  ctaHref: route('bands.create'),
+  ctaActions: [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create') }],
+  footerTitle: authUser.name,
+  footerSubtitle: `@${authUser.username}`,
+  footerAvatarUrl: authUser.avatar_path ? `/storage/${authUser.avatar_path}` : null,
+  footerAvatarFocusX: authUser.avatar_focus_x ?? 50,
+  footerAvatarFocusY: authUser.avatar_focus_y ?? 50,
+  footerAvatarZoom: authUser.avatar_zoom ?? 1,
+  footerMenuItems: footerMenuItems.value,
+  footerMenuPlacement: 'top-start' as const,
+}));
 </script>
 
 <template>
@@ -50,75 +81,45 @@ const sidebarSections = computed(() => [
       <div class="absolute bottom-0 left-1/4 h-[28rem] w-[28rem] rounded-full bg-cyan-300/18 blur-3xl" />
     </div>
 
-    <AppSidebar
-      :home-href="route('home')"
-      mobile-title="MY PAGE"
-      mobile-action-label="Manage"
-      :mobile-action-href="route('posts.create')"
-      :primary-sections="sidebarSections"
-      cta-label="投稿する"
-      :cta-href="route('posts.create')"
-      :footer-title="authUser.name"
-      :footer-subtitle="`@${authUser.username}`"
-      :footer-meta="authUser.email"
-      :show-desktop="false"
-    />
+    <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
+
+    <div class="mx-auto flex max-w-[1440px] items-center gap-2 px-4 pb-3 pt-2 md:px-5 xl:hidden">
+      <div class="flex shrink-0 items-center gap-2">
+        <LikesHistoryShortcut />
+        <NotificationBell />
+      </div>
+      <div class="min-w-0 flex-1">
+        <RightPaneSearch variant="compact" />
+      </div>
+    </div>
 
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
-      <AppSidebar
-        :home-href="route('home')"
-        mobile-title="MY PAGE"
-        mobile-action-label="Manage"
-        :mobile-action-href="route('posts.create')"
-        :primary-sections="sidebarSections"
-        cta-label="投稿する"
-        :cta-href="route('posts.create')"
-        :footer-title="authUser.name"
-        :footer-subtitle="`@${authUser.username}`"
-        :footer-meta="authUser.email"
-        :show-mobile="false"
-      />
+      <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
-      <main class="min-h-screen w-full max-w-[680px] border-x border-white/30 pb-24 md:pb-10">
-        <div v-if="$slots.header" class="px-4 pt-5 sm:px-6 sm:pt-7">
-          <div class="glass-panel rounded-3xl px-6 py-5">
+      <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
+        <div v-if="$slots.header" class="px-4 pt-4 sm:px-6 sm:pt-5">
+          <div class="glass-panel rounded-2xl px-4 py-3.5 sm:px-5 sm:py-4">
             <slot name="header" />
           </div>
         </div>
-        <div class="px-4 py-5 sm:px-6 sm:py-7">
+        <div class="px-4 py-4 sm:px-6 sm:py-5">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
         </div>
       </main>
 
-      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:block">
-        <div class="space-y-5">
-          <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Account</p>
-            <h2 class="mt-3 text-2xl font-bold text-slate-800">Your Space</h2>
-            <div class="mt-4 grid grid-cols-3 gap-3 text-center">
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Bands</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.bands ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Merch</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.merchItems ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Posts</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.posts ?? 0 }}</p>
-              </div>
-            </div>
-            <div class="mt-4 space-y-3 text-sm text-slate-600">
-              <p>閲覧と登録を同じレイアウト内で行き来できるようにしています。</p>
-              <p>次の一手を右カラムからすぐ選べるように改善しています。</p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <Link :href="route('profile.edit')" class="glass-link text-sm font-medium">プロフィール設定</Link>
-              <Link :href="route('logout')" method="post" as="button" class="glass-link text-sm font-medium">ログアウト</Link>
-            </div>
-          </section>
+      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
+        <div class="flex h-full min-h-0 flex-col gap-5">
+          <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
+          <div class="flex items-center justify-end gap-2">
+            <LikesHistoryShortcut />
+            <NotificationBell />
+          </div>
+          <RightPaneSearch variant="panel" />
+          </div>
+          <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500">
+            {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
+          </p>
         </div>
       </aside>
     </div>

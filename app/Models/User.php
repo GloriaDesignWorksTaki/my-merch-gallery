@@ -11,55 +11,82 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
-  'name',
-  'username',
-  'email',
-  'password',
-  'bio',
-  'avatar_path',
-  'role',
+    'name',
+    'username',
+    'email',
+    'password',
+    'bio',
+    'avatar_path',
+    'avatar_focus_x',
+    'avatar_focus_y',
+    'avatar_zoom',
+    'role',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-  /** @use HasFactory<UserFactory> */
-  use HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
 
-  /**
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-  protected function casts(): array
-  {
-    return [
-      'email_verified_at' => 'datetime',
-      'password' => 'hashed',
-    ];
-  }
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'avatar_focus_x' => 'integer',
+            'avatar_focus_y' => 'integer',
+            'avatar_zoom' => 'float',
+            'banned_at' => 'datetime',
+        ];
+    }
 
-  public function createdBands()
-  {
-    return $this->hasMany(Band::class, 'created_by');
-  }
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
 
-  public function createdMerchItems()
-  {
-    return $this->hasMany(MerchItem::class, 'created_by');
-  }
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
-  public function posts()
-  {
-    return $this->hasMany(Post::class);
-  }
+    public function isStaff(): bool
+    {
+        return $this->isOwner() || $this->isAdmin();
+    }
 
-  public function comments()
-  {
-    return $this->hasMany(Comment::class);
-  }
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
+    }
 
-  public function postLikes()
-  {
-    return $this->hasMany(PostLike::class);
-  }
+    public function createdBands()
+    {
+        return $this->hasMany(Band::class, 'created_by');
+    }
+
+    public function createdMerchItems()
+    {
+        return $this->hasMany(MerchItem::class, 'created_by');
+    }
+
+    public function merchItemComments()
+    {
+        return $this->hasMany(MerchItemComment::class);
+    }
+
+    public function merchItemLikes()
+    {
+        return $this->hasMany(MerchItemLike::class);
+    }
+
+    public function bandLikes()
+    {
+        return $this->hasMany(BandLike::class);
+    }
 }

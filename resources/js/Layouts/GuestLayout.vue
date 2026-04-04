@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import LocaleSwitcher from '@/Components/parts/LocaleSwitcher.vue';
+import ApplicationLogo from '@/Components/parts/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
@@ -7,10 +8,13 @@ import { Link } from '@inertiajs/vue3';
   <div
     class="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0"
   >
-    <div>
-      <Link href="/">
-        <ApplicationLogo class="h-20 w-20 fill-current text-sky-600" />
-      </Link>
+    <div class="flex w-full max-w-md flex-col items-stretch gap-4 px-4 sm:px-0">
+      <div class="flex items-center justify-between gap-3">
+        <Link href="/" class="shrink-0 pl-2">
+          <ApplicationLogo class="h-20 w-20 fill-current text-sky-600" />
+        </Link>
+        <LocaleSwitcher class="max-w-[min(100%,14rem)]" />
+      </div>
     </div>
 
     <div

@@ -1,37 +1,167 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import AppSidebar from '@/Components/AppSidebar.vue';
-import StatusBanner from '@/Components/StatusBanner.vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import type { User } from '@/types';
+import AppSidebar from '@/Components/container/AppSidebar.vue';
+import AuthModals from '@/Components/modules/AuthModals.vue';
+import LoginRequiredModal from '@/Components/modules/LoginRequiredModal.vue';
+import LikesHistoryShortcut from '@/Components/parts/LikesHistoryShortcut.vue';
+import NotificationBell from '@/Components/parts/NotificationBell.vue';
+import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
+import StatusBanner from '@/Components/container/StatusBanner.vue';
+import type { AuthUser } from '@/types';
+import type { FooterMenuItem } from '@/types/sidebar';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { computed, provide, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const page = usePage<{ auth: { user: User | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
+const { t } = useI18n();
+
+const page = usePage<{
+  auth: { user: AuthUser | null };
+  flash?: { status?: string | null };
+  inbox?: { unreadCount: number; recent: unknown[] };
+}>();
 const user = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
-const stats = computed(() => page.props.ui?.stats ?? {});
 
-const primaryNavItems = computed(() => [
-  { label: 'ホーム', href: route('home'), active: route().current('home') },
-  { label: 'バンド', href: route('bands.index'), active: route().current('bands.*') },
-  { label: 'マーチ', href: route('merch-items.index'), active: route().current('merch-items.*') },
-  { label: '投稿', href: route('posts.index'), active: route().current('posts.*') },
+const browseNavItemsBase = computed(() => [
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
+  { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
+  { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
 ]);
 
-const secondaryNavItems = computed(() =>
-  user
-    ? [{ label: 'マイページ', href: route('dashboard'), active: route().current('dashboard') }]
-    : [
-        { label: 'ログイン', href: route('login'), active: route().current('login') },
-        { label: '登録', href: route('register'), active: route().current('register') },
-      ],
-);
+const loggedInBrowseNavItems = computed(() => [
+  ...browseNavItemsBase.value,
+  {
+    label: t('layout.nav.dashboard'),
+    href: route('dashboard'),
+    active: route().current('dashboard') && !route().current('dashboard.likes'),
+  },
+]);
 
 const sidebarSections = computed(() => [
   {
-    title: 'Navigation',
-    items: [...primaryNavItems.value, ...secondaryNavItems.value],
+    title: t('layout.sidebar.browse'),
+    items: user ? loggedInBrowseNavItems.value : browseNavItemsBase.value,
+    scrollable: false,
   },
 ]);
+
+const mobileBottomNavItems = computed(() => (user ? loggedInBrowseNavItems.value : browseNavItemsBase.value));
+
+const loginRequiredOpen = ref(false);
+const loginRequiredFeature = ref('');
+const showAuthLogin = ref(false);
+const showAuthRegister = ref(false);
+
+function openLoginRequired(feature?: string) {
+  loginRequiredFeature.value = feature ?? t('layout.loginRequired.defaultFeature');
+  loginRequiredOpen.value = true;
+}
+
+function closeLoginRequired() {
+  loginRequiredOpen.value = false;
+}
+
+function openAuthLogin() {
+  showAuthRegister.value = false;
+  showAuthLogin.value = true;
+}
+
+function openAuthRegister() {
+  showAuthLogin.value = false;
+  showAuthRegister.value = true;
+}
+
+function parseAuthQuery(url: string): 'login' | 'register' | null {
+  try {
+    const resolved = url.startsWith('http')
+      ? url
+      : `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
+    const u = new URL(resolved);
+    const a = u.searchParams.get('auth');
+    if (a === 'login' || a === 'register') {
+      return a;
+    }
+  } catch {
+  }
+  return null;
+}
+
+function pathWithoutAuthQuery(url: string): string | null {
+  try {
+    const resolved = url.startsWith('http')
+      ? url
+      : `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
+    const u = new URL(resolved);
+    if (!u.searchParams.has('auth')) {
+      return null;
+    }
+    u.searchParams.delete('auth');
+    return u.pathname + (u.search || '') + u.hash;
+  } catch {
+    return null;
+  }
+}
+
+watch(
+  () => page.url,
+  () => {
+    const auth = parseAuthQuery(page.url);
+    if (auth === 'login') {
+      openAuthLogin();
+      const next = pathWithoutAuthQuery(page.url);
+      if (next !== null) {
+        router.visit(next, { replace: true, preserveState: true, preserveScroll: true });
+      }
+    } else if (auth === 'register') {
+      openAuthRegister();
+      const next = pathWithoutAuthQuery(page.url);
+      if (next !== null) {
+        router.visit(next, { replace: true, preserveState: true, preserveScroll: true });
+      }
+    }
+  },
+  { immediate: true },
+);
+
+provide('openLoginRequired', openLoginRequired);
+provide('openAuthLogin', openAuthLogin);
+provide('openAuthRegister', openAuthRegister);
+
+const sidebarProps = computed(() => ({
+  homeHref: route('home'),
+  mobileTitle: user ? t('layout.mobile.myPage') : t('layout.mobile.gloria'),
+  mobileActionLabel: user ? t('layout.mobile.manage') : t('layout.mobile.login'),
+  mobileActionHref: user ? route('merch-items.create') : null,
+  mobileAuthModal: !user,
+  primarySections: sidebarSections.value,
+  ctaLabel: user ? t('layout.nav.bandRegister') : t('layout.mobile.login'),
+  ctaHref: user ? route('bands.create') : null,
+  ctaAuthModal: !user,
+  ctaActions: user
+    ? [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create') }]
+    : [{ label: t('layout.mobile.signup'), useRegisterModal: true }],
+  footerTitle: user?.name ?? 'Gloria Design Works',
+  footerSubtitle: user ? `@${user.username}` : '@GloriaDesignWKS',
+  footerAvatarUrl: user?.avatar_path ? `/storage/${user.avatar_path}` : null,
+  footerAvatarFocusX: user?.avatar_focus_x ?? 50,
+  footerAvatarFocusY: user?.avatar_focus_y ?? 50,
+  footerAvatarZoom: user?.avatar_zoom ?? 1,
+  showFooter: Boolean(user),
+  footerMenuItems: user
+    ? (() => {
+        const items: FooterMenuItem[] = [
+          { label: t('layout.nav.profile'), href: route('profile.edit') },
+        ];
+        if (user.role === 'admin' || user.role === 'owner') {
+          items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard') });
+        }
+        items.push({ label: t('layout.nav.logout'), href: route('logout'), method: 'post', as: 'button', danger: true });
+
+        return items;
+      })()
+    : undefined,
+  footerMenuPlacement: 'top-start' as const,
+}));
 </script>
 
 <template>
@@ -41,77 +171,51 @@ const sidebarSections = computed(() => [
       <div class="absolute bottom-[-8rem] right-[-10rem] h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
     </div>
 
-    <AppSidebar
-      :home-href="route('home')"
-      mobile-title="GLORIA"
-      :mobile-action-label="user ? '管理' : '登録'"
-      :mobile-action-href="user ? route('dashboard') : route('register')"
-      :primary-sections="sidebarSections"
-      :cta-label="user ? '投稿する' : 'ログイン'"
-      :cta-href="user ? route('posts.create') : route('login')"
-      :footer-title="user?.name ?? 'Gloria Design Works'"
-      :footer-subtitle="user ? `@${user.username}` : '@GloriaDesignWKS'"
-      :show-desktop="false"
-    />
+    <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
+
+    <div class="mx-auto flex max-w-[1440px] items-center gap-2 px-4 pb-3 pt-2 md:px-5 xl:hidden">
+      <div v-if="user" class="flex shrink-0 items-center gap-2">
+        <LikesHistoryShortcut />
+        <NotificationBell />
+      </div>
+      <div class="min-w-0 flex-1">
+        <RightPaneSearch variant="compact" />
+      </div>
+    </div>
 
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
-      <AppSidebar
-        :home-href="route('home')"
-        mobile-title="GLORIA"
-        :mobile-action-label="user ? '管理' : '登録'"
-        :mobile-action-href="user ? route('dashboard') : route('register')"
-        :primary-sections="sidebarSections"
-        :cta-label="user ? '投稿する' : 'ログイン'"
-        :cta-href="user ? route('posts.create') : route('login')"
-        :footer-title="user?.name ?? 'Gloria Design Works'"
-        :footer-subtitle="user ? `@${user.username}` : '@GloriaDesignWKS'"
-        :show-mobile="false"
-      />
+      <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
-      <main class="min-h-screen w-full max-w-[680px] border-x border-white/30 pb-24 md:pb-10">
+      <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
         <div class="px-4 py-5 sm:px-6 sm:py-7">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
         </div>
       </main>
 
-      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:block">
-        <div class="space-y-5">
-          <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Shortcuts</p>
-            <h2 class="mt-3 text-2xl font-bold text-slate-800">Quick Links</h2>
-            <div class="mt-4 flex flex-col gap-2.5">
-              <Link :href="route('bands.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">バンド一覧</Link>
-              <Link :href="route('merch-items.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">マーチ一覧</Link>
-              <Link :href="route('posts.index')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">投稿一覧</Link>
-              <Link v-if="user" :href="route('dashboard')" class="rounded-2xl px-4 py-3 text-sm text-slate-700 transition hover:bg-white/40">マイページ</Link>
-            </div>
-          </section>
-          <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">Overview</p>
-            <div class="mt-4 grid grid-cols-3 gap-3 text-center">
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Bands</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.bands ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Merch</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.merchItems ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">Posts</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.posts ?? 0 }}</p>
-              </div>
-            </div>
-          </section>
+      <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
+        <div class="flex h-full min-h-0 flex-col gap-5">
+          <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
+          <div v-if="user" class="flex items-center justify-end gap-2">
+            <LikesHistoryShortcut />
+            <NotificationBell />
+          </div>
+          <RightPaneSearch variant="panel" />
+          </div>
+          <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500">
+            {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
+          </p>
         </div>
       </aside>
     </div>
 
     <nav class="fixed inset-x-0 bottom-0 z-30 px-3 pb-3 md:hidden">
-      <div class="mx-auto grid max-w-md grid-cols-4 rounded-[1.75rem] border border-white/40 bg-white/55 shadow-[0_10px_35px_rgba(148,163,184,0.18)] backdrop-blur-2xl">
+      <div
+        class="mx-auto grid rounded-[1.75rem] border border-white/40 bg-white/55 shadow-[0_10px_35px_rgba(148,163,184,0.18)] backdrop-blur-2xl"
+        :class="user ? 'max-w-lg grid-cols-4' : 'max-w-md grid-cols-3'"
+      >
         <Link
-          v-for="item in primaryNavItems"
+          v-for="item in mobileBottomNavItems"
           :key="item.label"
           :href="item.href"
           class="flex flex-col items-center justify-center px-2 py-3 text-[11px] font-semibold transition"
@@ -121,5 +225,13 @@ const sidebarSections = computed(() => [
         </Link>
       </div>
     </nav>
+
+    <AuthModals v-model:show-login="showAuthLogin" v-model:show-register="showAuthRegister" />
+
+    <LoginRequiredModal
+      :show="loginRequiredOpen"
+      :feature="loginRequiredFeature"
+      @close="closeLoginRequired"
+    />
   </div>
 </template>

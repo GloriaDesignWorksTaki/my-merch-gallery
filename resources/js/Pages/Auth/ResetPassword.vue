@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import InputError from '@/Components/form/InputError.vue';
+import InputLabel from '@/Components/form/InputLabel.vue';
+import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
+import TextInput from '@/Components/form/TextInput.vue';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
   email: string;
@@ -29,7 +30,7 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Reset Password" />
+    <SeoHead page="authResetPassword" />
 
     <form @submit.prevent="submit">
       <div>
@@ -86,6 +87,7 @@ const submit = () => {
 
       <div class="mt-4 flex items-center justify-end">
         <PrimaryButton
+          type="submit"
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
