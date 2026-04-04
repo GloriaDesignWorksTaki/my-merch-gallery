@@ -4,7 +4,6 @@ namespace App\Support;
 
 use App\Models\Band;
 use App\Models\MerchItem;
-use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,7 +23,7 @@ final class InertiaShared
     }
 
     /**
-     * @return array{bands: int, merchItems: int, posts: int}
+     * @return array{bands: int, merchItems: int}
      */
     public static function cachedGlobalStats(): array
     {
@@ -32,7 +31,6 @@ final class InertiaShared
             return [
                 'bands' => Band::query()->count(),
                 'merchItems' => MerchItem::query()->count(),
-                'posts' => Post::query()->count(),
             ];
         });
     }

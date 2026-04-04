@@ -1,8 +1,3 @@
-/**
- * AppInput / AppTextarea / AppSelect 共通の見た目トークン。
- * AppButton と同様、variant・size・radius で揃える。
- */
-
 export type FieldSize = 'sm' | 'md' | 'lg';
 export type FieldRadius = 'sm' | 'md' | 'full';
 export type FieldVariant = 'default' | 'error';

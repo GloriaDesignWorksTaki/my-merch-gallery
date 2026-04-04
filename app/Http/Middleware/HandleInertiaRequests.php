@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Support\InertiaShared;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -32,6 +33,7 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'appName' => fn () => config('app.name'),
             'locale' => fn () => app()->getLocale(),
             'locales' => fn () => collect(config('i18n.supported', ['en']))
                 ->map(fn (string $code) => [
@@ -48,6 +50,17 @@ class HandleInertiaRequests extends Middleware
             ],
             'ui' => [
                 'stats' => fn () => InertiaShared::cachedGlobalStats(),
+                'canResetPassword' => fn () => Route::has('password.request'),
+            ],
+            'inbox' => [
+                'unreadCount' => function () use ($request) {
+                    $user = $request->user();
+                    if ($user === null) {
+                        return 0;
+                    }
+
+                    return $user->unreadNotifications()->count();
+                },
             ],
         ];
     }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { Link } from '@inertiajs/vue3';
 import ExternalLinkConfirm from '@/Components/modules/ExternalLinkConfirm.vue';
 
 defineProps<{
@@ -18,7 +19,7 @@ function handleImageError() {
 </script>
 
 <template>
-  <Head title="Welcome" />
+  <SeoHead page="welcome" />
   <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
     <img
       id="background"
@@ -56,7 +57,7 @@ function handleImageError() {
 
             <template v-else>
               <Link
-                :href="route('login')"
+                :href="route('home', { auth: 'login' })"
                 class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
               >
                 Log in
@@ -64,7 +65,7 @@ function handleImageError() {
 
               <Link
                 v-if="canRegister"
-                :href="route('register')"
+                :href="route('home', { auth: 'register' })"
                 class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
               >
                 Register

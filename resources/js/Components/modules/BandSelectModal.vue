@@ -18,9 +18,7 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     bands: BandOption[];
-    /** 作成・編集（単一ラジオ） */
     selectedId: number | string;
-    /** 一覧フィルタ（複数チェック） */
     selectedIds?: number[];
     filterMode?: boolean;
   }>(),
@@ -32,7 +30,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   close: [];
-  /** フィルタ: number[]（空=全バンド） / 作成・編集: number | null */
   apply: [value: number | null | number[]];
 }>();
 

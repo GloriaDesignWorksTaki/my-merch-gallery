@@ -8,8 +8,9 @@ import InputError from '@/Components/form/InputError.vue';
 import InputLabel from '@/Components/form/InputLabel.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
 import TextInput from '@/Components/form/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -25,6 +26,7 @@ const props = defineProps<{
     formed_year: number | null;
     is_active: boolean;
     slug?: string;
+    image_path?: string | null;
   };
   countries: { id: number; name: string }[];
   genres: { id: number; name: string }[];
@@ -38,9 +40,53 @@ const form = useForm({
   description: props.band.description ?? '',
   formed_year: props.band.formed_year ? String(props.band.formed_year) : '',
   is_active: props.band.is_active,
+  image: null as File | null,
+  remove_image: false,
 });
 
 const genreModalOpen = ref(false);
+const newImagePreviewUrl = ref<string | null>(null);
+
+watch(
+  () => form.remove_image,
+  (v) => {
+    if (v && newImagePreviewUrl.value) {
+      URL.revokeObjectURL(newImagePreviewUrl.value);
+      newImagePreviewUrl.value = null;
+      form.image = null;
+    }
+  },
+);
+
+function onBandImageSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+  if (newImagePreviewUrl.value) {
+    URL.revokeObjectURL(newImagePreviewUrl.value);
+    newImagePreviewUrl.value = null;
+  }
+  if (file) {
+    form.remove_image = false;
+    form.image = file;
+    newImagePreviewUrl.value = URL.createObjectURL(file);
+  } else {
+    form.image = null;
+  }
+}
+
+function clearNewBandImage() {
+  if (newImagePreviewUrl.value) {
+    URL.revokeObjectURL(newImagePreviewUrl.value);
+    newImagePreviewUrl.value = null;
+  }
+  form.image = null;
+}
+
+onBeforeUnmount(() => {
+  if (newImagePreviewUrl.value) {
+    URL.revokeObjectURL(newImagePreviewUrl.value);
+  }
+});
 
 const linkError = (index: number) => form.errors[`links.${index}` as keyof typeof form.errors] as string | undefined;
 
@@ -48,11 +94,19 @@ const selectedGenres = computed(() =>
   props.genres.filter((genre) => form.genre_ids.includes(genre.id)),
 );
 
-const submit = () => form.patch(route('bands.update', props.band.slug ?? props.band.id));
+const submit = () =>
+  form
+    .transform((data: Record<string, unknown>) => ({
+      ...data,
+      _method: 'patch',
+    }))
+    .post(route('bands.update', props.band.slug ?? props.band.id), {
+      forceFormData: true,
+    });
 </script>
 
 <template>
-  <Head :title="t('pages.bands.editHead', { name: band.name })" />
+  <SeoHead page="bandsEdit" :params="{ name: band.name }" />
 
   <AuthenticatedLayout>
     <template #header>
@@ -74,6 +128,37 @@ const submit = () => form.patch(route('bands.update', props.band.slug ?? props.b
           <InputLabel for="name" :value="t('forms.band.name')" />
           <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
           <InputError class="mt-2" :message="form.errors.name" />
+        </div>
+
+        <div>
+          <InputLabel for="band-image" :value="t('forms.band.bandImage')" />
+          <div v-if="band.image_path && !form.remove_image && !newImagePreviewUrl" class="mt-2 flex items-center gap-3">
+            <img
+              :src="`/storage/${band.image_path}`"
+              alt=""
+              class="h-24 w-24 rounded-2xl border border-white/50 object-cover"
+            />
+            <span class="text-xs text-slate-500">{{ t('forms.band.currentBandImage') }}</span>
+          </div>
+          <input
+            id="band-image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-white"
+            @change="onBandImageSelected"
+          />
+          <p class="mt-1 text-xs text-slate-500">{{ t('forms.band.bandImageHint') }}</p>
+          <InputError class="mt-2" :message="form.errors.image" />
+          <div v-if="newImagePreviewUrl" class="mt-3 flex items-start gap-3">
+            <img :src="newImagePreviewUrl" alt="" class="h-24 w-24 rounded-2xl border border-white/50 object-cover" />
+            <button type="button" class="text-sm font-medium text-rose-600 hover:underline" @click="clearNewBandImage">
+              {{ t('forms.band.removeBandImage') }}
+            </button>
+          </div>
+          <label v-if="band.image_path" class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+            <input v-model="form.remove_image" type="checkbox" class="rounded border-white/40 text-sky-600 shadow-sm focus:ring-sky-200/60" />
+            {{ t('forms.band.removeBandImage') }}
+          </label>
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2">

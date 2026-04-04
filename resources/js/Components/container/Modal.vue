@@ -6,12 +6,7 @@ const props = withDefaults(
     show?: boolean;
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     closeable?: boolean;
-    /**
-     * ダイアログ見出し（aria-labelledby 用）
-     * 例: 見出し要素に id="xxx" を付けて、この prop に title-id="xxx" を渡す。
-     */
     titleId?: string;
-    /** titleId 未指定時に使う代替（aria-label） */
     ariaLabel?: string;
   }>(),
   {
@@ -94,9 +89,6 @@ watch(
     }
 
     if (props.show) {
-      // スクロール漏れ（オーバースクロール/スクロール・チェイニング）対策:
-      // overflow hidden だけだと「スクロールバーを強制ドラッグ」等で漏れる場合があるので、
-      // body を position: fixed で完全に固定する。
       previousBodyOverflow.value = document.body.style.overflow;
       previousHtmlOverflow.value = document.documentElement.style.overflow;
       previousBodyPosition.value = document.body.style.position;
@@ -120,9 +112,7 @@ watch(
 
       lastActiveElement.value = document.activeElement as HTMLElement | null;
 
-      // ダイアログを開いた後にフォーカスを当てる（アクセシビリティ向上）
       nextTick(() => {
-        // 明示的な `autofocus` があればそれを優先
         const autoFocusEl = dialogRef.value?.querySelector<HTMLElement>('[autofocus]');
         if (autoFocusEl) {
           autoFocusEl.focus();
@@ -137,7 +127,6 @@ watch(
         showSlot.value = false;
         closeTimer = null;
 
-        // スクロールロック復元
         document.body.style.overflow = previousBodyOverflow.value;
         document.documentElement.style.overflow = previousHtmlOverflow.value;
         document.documentElement.style.overscrollBehavior = previousHtmlOverscrollBehavior.value;
@@ -156,12 +145,10 @@ watch(
         previousBodyLeft.value = '';
         previousBodyWidth.value = '';
 
-        // 元のスクロール位置へ戻す
         window.scrollTo(0, previousScrollY.value);
 
         previousScrollY.value = 0;
 
-        // 閉じた後に元のフォーカスへ戻す（UX）
         lastActiveElement.value?.focus?.();
         lastActiveElement.value = null;
       }, 200);
@@ -195,7 +182,6 @@ onUnmounted(() => {
   document.removeEventListener('keydown', closeOnEscape);
   document.removeEventListener('keydown', trapFocus);
 
-  // 念のため、未クローズ時のロックも復元する
   document.body.style.overflow = previousBodyOverflow.value;
   document.documentElement.style.overflow = previousHtmlOverflow.value;
   document.documentElement.style.overscrollBehavior = previousHtmlOverscrollBehavior.value;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -14,7 +15,7 @@ type PublicUser = {
   avatar_focus_x?: number;
   avatar_focus_y?: number;
   avatar_zoom?: number;
-  posts_count?: number;
+  merch_comments_count?: number;
 };
 
 defineProps<{
@@ -24,7 +25,7 @@ defineProps<{
 
 <template>
   <PublicLayout>
-    <Head :title="profileUser.username" />
+    <SeoHead page="usersShow" :params="{ username: profileUser.username }" />
 
     <section class="glass-surface p-6">
       <div class="flex items-start gap-4">
@@ -47,11 +48,11 @@ defineProps<{
         </div>
       </div>
       <p v-if="profileUser.bio" class="mt-4 text-gray-700">{{ profileUser.bio }}</p>
-      <p v-if="profileUser.posts_count !== undefined" class="mt-4 text-sm text-gray-600">
-        {{ t('pages.users.publicPosts', { count: profileUser.posts_count }) }}
+      <p v-if="profileUser.merch_comments_count !== undefined" class="mt-4 text-sm text-gray-600">
+        {{ t('pages.users.merchCommentsCount', { count: profileUser.merch_comments_count }) }}
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
-        <Link :href="route('posts.index')" class="glass-link text-sm font-medium">{{ t('pages.users.toPostsIndex') }}</Link>
+        <Link :href="route('merch-items.index')" class="glass-link text-sm font-medium">{{ t('pages.users.toMerchIndex') }}</Link>
         <Link :href="route('home')" class="glass-link text-sm font-medium">{{ t('pages.users.toHome') }}</Link>
       </div>
     </section>

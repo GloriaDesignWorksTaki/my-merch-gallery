@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { AuthUser } from '@/types';
+import { fallbackVisitAuthLoginModal } from '@/utils/authModalFallback';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, inject } from 'vue';
 
 const props = withDefaults(
   defineProps<{
     href: string;
-    /** モーダル本文「〇〇を利用するには…」の〇〇 */
-    feature: string;
-    /** Link / button 共通のクラス */
+    feature?: string;
     contentClass?: string;
   }>(),
   {},
@@ -17,15 +16,11 @@ const props = withDefaults(
 const page = usePage<{ auth: { user: AuthUser | null } }>();
 const user = computed(() => page.props.auth.user);
 
-type OpenLoginRequired = (feature: string) => void;
-
-function noopLoginRequired(_feature: string): void {}
-
-const openLoginRequired = inject('openLoginRequired', noopLoginRequired) as OpenLoginRequired;
+const openAuthLogin = inject('openAuthLogin', fallbackVisitAuthLoginModal) as () => void;
 
 function onGuestClick(e: MouseEvent) {
   e.preventDefault();
-  openLoginRequired(props.feature);
+  openAuthLogin();
 }
 </script>
 

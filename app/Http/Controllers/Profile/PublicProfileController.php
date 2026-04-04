@@ -11,9 +11,7 @@ class PublicProfileController extends Controller
 {
     public function show(User $user): Response
     {
-        $user->loadCount([
-            'posts' => fn ($query) => $query->visibleOnFeed(),
-        ]);
+        $user->loadCount('merchItemComments');
 
         return Inertia::render('Users/Show', [
             'profileUser' => [
@@ -25,7 +23,7 @@ class PublicProfileController extends Controller
                 'avatar_focus_x' => $user->avatar_focus_x,
                 'avatar_focus_y' => $user->avatar_focus_y,
                 'avatar_zoom' => $user->avatar_zoom,
-                'posts_count' => $user->posts_count,
+                'merch_comments_count' => $user->merch_item_comments_count,
             ],
         ]);
     }

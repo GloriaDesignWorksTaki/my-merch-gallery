@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AppButton from '@/Components/parts/AppButton.vue';
 import Modal from '@/Components/container/Modal.vue';
+import { fallbackVisitAuthLoginModal, fallbackVisitAuthRegisterModal } from '@/utils/authModalFallback';
+import { inject, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
   show: boolean;
-  /** モーダルに表示する機能名（例: 投稿作成） */
   feature: string;
 }>();
 
@@ -14,6 +15,19 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+const openAuthLogin = inject('openAuthLogin', fallbackVisitAuthLoginModal) as () => void;
+const openAuthRegister = inject('openAuthRegister', fallbackVisitAuthRegisterModal) as () => void;
+
+function goToLogin() {
+  emit('close');
+  nextTick(() => openAuthLogin());
+}
+
+function goToRegister() {
+  emit('close');
+  nextTick(() => openAuthRegister());
+}
 </script>
 
 <template>
@@ -31,15 +45,15 @@ const { t } = useI18n();
         {{ t('modals.loginRequired.body', { feature }) }}
       </p>
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <AppButton :href="route('login')" variant="secondary" size="md" radius="md">
+        <AppButton variant="secondary" size="md" radius="md" native-type="button" @click="goToLogin">
           {{ t('modals.loginRequired.toLogin') }}
         </AppButton>
-        <AppButton :href="route('register')" variant="signup" size="md" radius="md">
+        <AppButton variant="signup" size="md" radius="md" native-type="button" @click="goToRegister">
           {{ t('modals.loginRequired.signup') }}
         </AppButton>
         <AppButton
           variant="muted"
-          size="sm"
+          size="md"
           radius="md"
           native-type="button"
           extra-class="ml-auto"

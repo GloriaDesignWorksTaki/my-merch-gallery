@@ -10,9 +10,7 @@ type Crumb = {
 type Action = {
   label: string;
   href: string;
-  /** 未ログイン時はログイン必須モーダル（PublicLayout の provide が必要） */
   loginRequired?: boolean;
-  /** モーダル表示用。未指定時は label を使う */
   featureLabel?: string;
 };
 

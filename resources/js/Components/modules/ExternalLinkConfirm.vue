@@ -11,7 +11,6 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<{
     href: string;
-    /** トリガー（リンク／ボタン）に付与するクラス */
     linkClass?: string;
   }>(),
   {

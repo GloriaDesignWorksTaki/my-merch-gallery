@@ -13,7 +13,6 @@ const props = withDefaults(
     size?: FieldSize;
     radius?: FieldRadius;
     extraClass?: string;
-    /** input の type（text, email, password, search …） */
     inputType?: string;
   }>(),
   {

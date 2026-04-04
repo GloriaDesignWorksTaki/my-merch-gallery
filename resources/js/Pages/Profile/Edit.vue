@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { Head } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -17,7 +17,7 @@ defineProps<{
 </script>
 
 <template>
-  <Head :title="t('profile.editTitle')" />
+  <SeoHead page="profileEdit" />
 
   <AuthenticatedLayout>
     <template #header>

@@ -1,26 +1,14 @@
 <script setup lang="ts">
-/**
- * 検索結果ページ
- * @param q 検索ワード
- * @param tab タブ
- * @param counts カウント
- * @param bands バンド
- * @param merchItems マーチ
- * @param posts 投稿
-*/
-
-// import
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import type { PaginatedList } from '@/types/inertia';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// マルチリンガル対応用テキスト用関数
 const { t } = useI18n();
 
-// バンドデータ型
 type BandRow = {
   id: number;
   name: string;
@@ -28,54 +16,43 @@ type BandRow = {
   country?: { name: string } | null;
   merch_items_count?: number;
 };
-// マーチデータ型
+
 type MerchRow = {
   id: number;
   name: string;
   slug: string;
   release_year?: number | null;
+  size_note?: string | null;
   is_official: boolean;
   band: { name: string; slug: string };
   category?: { name: string } | null;
   cover_image?: { image_path: string; alt_text?: string | null } | null;
 };
-// 投稿データ型
-type PostRow = {
-  id: number;
-  body: string;
-  visibility: string;
-  user: { name: string; username: string };
-  band: { name: string; slug: string };
-  merch_item?: { name: string } | null;
-  cover_image?: { image_path: string } | null;
-};
 
-// プロパティ定義
 const props = defineProps<{
   q: string;
-  tab: 'bands' | 'merch' | 'posts';
-  counts: { bands: number; merch: number; posts: number };
+  tab: 'bands' | 'merch';
+  counts: { bands: number; merch: number };
   bands: (PaginatedList<BandRow> & { current_page: number; links: { url: string | null; label: string; active: boolean }[] }) | null;
   merchItems: (PaginatedList<MerchRow> & { current_page: number; links: { url: string | null; label: string; active: boolean }[] }) | null;
-  posts: (PaginatedList<PostRow> & { current_page: number; links: { url: string | null; label: string; active: boolean }[] }) | null;
 }>();
 
-// タブアイテム
 const tabItems = computed(() => [
   { id: 'bands' as const, label: t('search.tabs.bands'), count: props.counts.bands },
   { id: 'merch' as const, label: t('search.tabs.merch'), count: props.counts.merch },
-  { id: 'posts' as const, label: t('search.tabs.posts'), count: props.counts.posts },
 ]);
 
-// ページタイトル
 const pageTitle = computed(() =>
   props.q ? t('search.title.withQuery', { q: props.q }) : t('search.title.default'),
 );
+
+const seoPage = computed(() => (props.q ? 'searchWithQuery' : 'search'));
+const seoParams = computed(() => (props.q ? { q: props.q } : {}));
 </script>
 
 <template>
   <PublicLayout>
-    <Head :title="pageTitle" />
+    <SeoHead :page="seoPage" :params="seoParams" />
     <div class="px-1">
       <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">{{ t('search.eyebrow') }}</p>
       <h1 class="mt-2 text-2xl font-semibold text-slate-800">{{ pageTitle }}</h1>
@@ -158,6 +135,7 @@ const pageTitle = computed(() =>
                       <p class="mt-2 text-sm text-slate-500">
                         <span v-if="item.category">{{ item.category.name }}</span>
                         <span v-if="item.release_year"> · {{ item.release_year }}</span>
+                        <span v-if="item.size_note"> · {{ t('pages.merch.sizeNoteShort', { note: item.size_note }) }}</span>
                         <span v-if="item.is_official"> · {{ t('search.official') }}</span>
                       </p>
                     </div>
@@ -169,44 +147,6 @@ const pageTitle = computed(() =>
           </ul>
           <p v-else class="text-slate-500">{{ t('search.empty.merch') }}</p>
           <CompactPagination v-if="merchItems.data.length" class="mt-6" :links="merchItems.links" />
-        </template>
-        <template v-if="tab === 'posts' && posts">
-          <ul v-if="posts.data.length" class="space-y-5">
-            <li v-for="p in posts.data" :key="p.id" class="glass-surface p-5">
-              <Link
-                :href="route('posts.show', {
-                  post: p.id,
-                  q,
-                  tab: 'posts',
-                  page: posts.current_page,
-                })"
-                class="block hover:opacity-90"
-              >
-                <div class="flex items-start justify-between gap-4">
-                  <div class="min-w-0 flex-1">
-                    <p class="line-clamp-3 text-slate-800">{{ p.body }}</p>
-                    <p class="mt-3 text-sm text-slate-500">
-                      @{{ p.user.username }} · {{ p.band.name }}
-                      <span v-if="p.merch_item"> · {{ p.merch_item.name }}</span>
-                      <span>
-                        ·
-                        {{
-                          p.visibility === 'public'
-                            ? t('search.visibility.public')
-                            : t('search.visibility.limited')
-                        }}
-                      </span>
-                    </p>
-                  </div>
-                  <div v-if="p.cover_image" class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
-                    <img :src="`/storage/${p.cover_image.image_path}`" alt="" class="h-full w-full object-cover" />
-                  </div>
-                </div>
-              </Link>
-            </li>
-          </ul>
-          <p v-else class="text-slate-500">{{ t('search.empty.posts') }}</p>
-          <CompactPagination v-if="posts.data.length" class="mt-6" :links="posts.links" />
         </template>
       </div>
     </template>

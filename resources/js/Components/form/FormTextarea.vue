@@ -2,9 +2,6 @@
 import AppTextarea from '@/Components/form/AppTextarea.vue';
 import { ref } from 'vue';
 
-/**
- * 互換ラッパー。AppTextarea の variant / size / radius を利用可能。
- */
 const model = defineModel<string>({ required: true });
 
 const appTextareaRef = ref<{ focus: () => void } | null>(null);

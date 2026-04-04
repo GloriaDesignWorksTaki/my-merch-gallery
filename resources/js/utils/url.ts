@@ -1,6 +1,3 @@
-/**
- * href がブラウザで開いてよい http / https か（javascript: 等を除外）。
- */
 export function isSafeHttpUrl(href: string): boolean {
   try {
     const u = new URL(href, window.location.href);
@@ -11,7 +8,6 @@ export function isSafeHttpUrl(href: string): boolean {
   }
 }
 
-/** 同一オリジン以外の http(s) リンクか */
 export function isExternalHttpUrl(href: string): boolean {
   if (!isSafeHttpUrl(href)) {
     return false;

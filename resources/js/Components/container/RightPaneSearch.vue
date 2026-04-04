@@ -8,7 +8,6 @@ const { t } = useI18n();
 
 withDefaults(
   defineProps<{
-    /** 右ペイン用の広いスタイル / モバイル用のコンパクト行 */
     variant?: 'panel' | 'compact';
   }>(),
   { variant: 'panel' },
@@ -30,11 +29,11 @@ watch(() => page.url, syncSearchFromUrl, { immediate: true });
 
 function submitSearch() {
   const q = searchInput.value.trim();
-  let tab: 'bands' | 'merch' | 'posts' = 'bands';
+  let tab: 'bands' | 'merch' = 'bands';
   try {
     const url = new URL(page.url, 'http://rightpane.local');
     const t = url.searchParams.get('tab');
-    if (t === 'merch' || t === 'posts' || t === 'bands') {
+    if (t === 'merch' || t === 'bands') {
       tab = t;
     }
   } catch {

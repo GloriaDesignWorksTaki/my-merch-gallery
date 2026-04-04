@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Band;
 use App\Models\MerchItem;
-use App\Models\Post;
 use App\Support\Search\FlexibleSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,7 +16,7 @@ class SearchController extends Controller
     {
         $q = trim((string) $request->string('q')->toString());
         $tab = $request->string('tab')->toString();
-        $allowedTabs = ['bands', 'merch', 'posts'];
+        $allowedTabs = ['bands', 'merch'];
         if (! in_array($tab, $allowedTabs, true)) {
             $tab = 'bands';
         }
@@ -28,12 +26,10 @@ class SearchController extends Controller
         $counts = [
             'bands' => 0,
             'merch' => 0,
-            'posts' => 0,
         ];
 
         $bands = null;
         $merchItems = null;
-        $posts = null;
 
         $tokens = FlexibleSearch::tokens($q);
 
@@ -58,7 +54,7 @@ class SearchController extends Controller
             $counts['bands'] = (clone $bandsBase)->count();
 
             $merchBase = MerchItem::query()
-                ->select(['id', 'band_id', 'merch_category_id', 'name', 'slug', 'release_year', 'is_official'])
+                ->select(['id', 'band_id', 'merch_category_id', 'name', 'slug', 'release_year', 'is_official', 'size_note'])
                 ->with([
                     'band:id,name,slug',
                     'category:id,name',
@@ -69,7 +65,7 @@ class SearchController extends Controller
                 $inner->where(function (Builder $sub) use ($pattern): void {
                     FlexibleSearch::whereLowerLike($sub, 'name', $pattern);
                     FlexibleSearch::orWhereLowerLike($sub, 'description', $pattern);
-                    FlexibleSearch::orWhereLowerLike($sub, 'era_label', $pattern);
+                    FlexibleSearch::orWhereLowerLike($sub, 'size_note', $pattern);
                     $sub->orWhereHas('category', function (Builder $c) use ($pattern): void {
                         FlexibleSearch::whereLowerLike($c, 'name', $pattern);
                     })->orWhereHas('band', function (Builder $b) use ($pattern): void {
@@ -80,44 +76,13 @@ class SearchController extends Controller
 
             $counts['merch'] = (clone $merchBase)->count();
 
-            $postsBase = Post::query()
-                ->select(['id', 'user_id', 'band_id', 'merch_item_id', 'body', 'visibility', 'published_at'])
-                ->visibleTo(Auth::user())
-                ->with([
-                    'user:id,name,username',
-                    'band:id,name,slug',
-                    'merchItem:id,name,slug',
-                    'coverImage:id,post_id,image_path',
-                ]);
-
-            FlexibleSearch::whereAllTokensMatch($postsBase, $tokens, function (Builder $inner, string $pattern): void {
-                $inner->where(function (Builder $sub) use ($pattern): void {
-                    FlexibleSearch::whereLowerLike($sub, 'body', $pattern);
-                    $sub->orWhereHas('user', function (Builder $u) use ($pattern): void {
-                        FlexibleSearch::whereLowerLike($u, 'username', $pattern);
-                        FlexibleSearch::orWhereLowerLike($u, 'name', $pattern);
-                    })->orWhereHas('band', function (Builder $b) use ($pattern): void {
-                        FlexibleSearch::whereLowerLike($b, 'name', $pattern);
-                    })->orWhereHas('merchItem', function (Builder $m) use ($pattern): void {
-                        FlexibleSearch::whereLowerLike($m, 'name', $pattern);
-                    });
-                });
-            });
-
-            $counts['posts'] = (clone $postsBase)->count();
-
             match ($tab) {
                 'bands' => $bands = $bandsBase
                     ->orderBy('sort_name')
                     ->orderBy('name')
                     ->paginate($perPage)
                     ->withQueryString(),
-                'merch' => $merchItems = $merchBase
-                    ->latest()
-                    ->paginate($perPage)
-                    ->withQueryString(),
-                default => $posts = $postsBase
-                    ->latest('published_at')
+                default => $merchItems = $merchBase
                     ->latest()
                     ->paginate($perPage)
                     ->withQueryString(),
@@ -130,7 +95,6 @@ class SearchController extends Controller
             'counts' => $counts,
             'bands' => $bands,
             'merchItems' => $merchItems,
-            'posts' => $posts,
         ]);
     }
 }

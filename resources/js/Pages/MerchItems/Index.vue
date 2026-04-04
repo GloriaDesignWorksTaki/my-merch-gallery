@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import BandSelectModal from '@/Components/modules/BandSelectModal.vue';
+import LikeToggleInline from '@/Components/parts/LikeToggleInline.vue';
 import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import FormSelect from '@/Components/form/FormSelect.vue';
 import TextInput from '@/Components/form/TextInput.vue';
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import type { PaginatedList } from '@/types/inertia';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -20,6 +22,8 @@ type MerchRow = {
   band: { name: string; slug: string };
   category?: { name: string } | null;
   cover_image?: { image_path: string; alt_text?: string | null } | null;
+  likes_count?: number;
+  liked?: boolean;
 };
 
 const props = defineProps<{
@@ -78,7 +82,7 @@ function onBandFilterApply(value: number | null | number[]) {
 
 <template>
   <PublicLayout>
-    <Head :title="t('merch.indexTitle')" />
+    <SeoHead page="merchIndex" />
 
     <div class="flex items-center justify-between gap-4 px-1">
       <div>
@@ -132,44 +136,55 @@ function onBandFilterApply(value: number | null | number[]) {
 
     <ul class="mt-7 space-y-5">
       <li v-for="item in merchItems.data" :key="item.id" class="glass-surface p-5">
-        <Link
-          :href="route('merch-items.show', {
-            merchItem: item.slug,
-            page: merchItems.current_page,
-            search: filters.search || undefined,
-            bands: filters.bands?.length ? filters.bands : undefined,
-            category: filters.category || undefined,
-            sort: filters.sort && filters.sort !== 'newest' ? filters.sort : undefined,
-          })"
-          class="block hover:opacity-90"
-        >
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex min-w-0 items-center gap-4">
-              <div class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
-                <img
-                  v-if="item.cover_image"
-                  :src="`/storage/${item.cover_image.image_path}`"
-                  :alt="item.cover_image.alt_text || item.name"
-                  class="h-full w-full object-cover"
-                />
-                <div v-else class="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  {{ t('search.noImage') }}
+        <div class="flex flex-col gap-3">
+          <Link
+            :href="route('merch-items.show', {
+              merchItem: item.slug,
+              page: merchItems.current_page,
+              search: filters.search || undefined,
+              bands: filters.bands?.length ? filters.bands : undefined,
+              category: filters.category || undefined,
+              sort: filters.sort && filters.sort !== 'newest' ? filters.sort : undefined,
+            })"
+            class="block hover:opacity-90"
+          >
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex min-w-0 items-center gap-4">
+                <div class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/50 bg-white/50 shadow-sm">
+                  <img
+                    v-if="item.cover_image"
+                    :src="`/storage/${item.cover_image.image_path}`"
+                    :alt="item.cover_image.alt_text || item.name"
+                    class="h-full w-full object-cover"
+                  />
+                  <div v-else class="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    {{ t('search.noImage') }}
+                  </div>
+                </div>
+
+                <div class="min-w-0">
+                  <p class="text-lg font-medium text-slate-800">{{ item.name }}</p>
+                  <p class="mt-1 text-sm text-slate-500">{{ item.band.name }}</p>
+                  <p class="mt-2 text-sm text-slate-500">
+                    <span v-if="item.category">{{ item.category.name }}</span>
+                    <span v-if="item.release_year"> · {{ item.release_year }}</span>
+                    <span v-if="item.is_official"> · {{ t('search.official') }}</span>
+                  </p>
                 </div>
               </div>
-
-              <div class="min-w-0">
-                <p class="text-lg font-medium text-slate-800">{{ item.name }}</p>
-                <p class="mt-1 text-sm text-slate-500">{{ item.band.name }}</p>
-                <p class="mt-2 text-sm text-slate-500">
-                  <span v-if="item.category">{{ item.category.name }}</span>
-                  <span v-if="item.release_year"> · {{ item.release_year }}</span>
-                  <span v-if="item.is_official"> · {{ t('search.official') }}</span>
-                </p>
-              </div>
+              <span class="glass-link shrink-0 text-sm font-medium">{{ t('merch.detailLink') }}</span>
             </div>
-            <span class="glass-link shrink-0 text-sm font-medium">{{ t('merch.detailLink') }}</span>
+          </Link>
+          <div class="flex items-center border-t border-white/35 pt-3">
+            <LikeToggleInline
+              :likes-count="item.likes_count ?? 0"
+              :liked="Boolean(item.liked)"
+              :feature-label="t('merch.featureLike')"
+              :toggle-href="route('merch-items.like.toggle', item.slug)"
+              variant="compact"
+            />
           </div>
-        </Link>
+        </div>
       </li>
     </ul>
 

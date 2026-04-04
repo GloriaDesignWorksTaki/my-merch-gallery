@@ -1,5 +1,2 @@
-/**
- * 互換エントリ
- * 実装：container/AppSidebar.vue
- */
 export { default } from './container/AppSidebar.vue';
+export type { FooterMenuPlacement } from '@/types/sidebar';

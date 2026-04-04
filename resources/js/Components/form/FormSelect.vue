@@ -11,9 +11,6 @@ withDefaults(
   },
 );
 
-/**
- * 互換ラッパー。AppSelect の variant / size / radius を利用可能。
- */
 const model = defineModel<string | number | boolean | Array<string | number>>({ required: true });
 
 const appSelectRef = ref<{ focus: () => void } | null>(null);

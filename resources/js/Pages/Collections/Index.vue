@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 </script>
 
 <template>
-  <Head :title="t('pages.collections.title')" />
+  <SeoHead page="collections" />
 
   <AuthenticatedLayout>
     <template #header>

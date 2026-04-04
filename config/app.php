@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => (($n = env('APP_NAME')) === null || $n === '' || $n === 'Laravel')
+        ? 'My Merch Gallery'
+        : $n,
 
     /*
     |--------------------------------------------------------------------------

@@ -2,25 +2,14 @@
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-/**
- * アプリ共通ボタン
- * variant: 見た目・意味付け
- * size: 高さ・文字サイズ・余白
- * radius: 角丸の強さ（角丸 vs ピル型）
- */
 const props = withDefaults(
   defineProps<{
-    /** 役割・カラー系（見た目の type に相当） */
     variant?: 'primary' | 'secondary' | 'white' | 'danger' | 'signup' | 'muted';
     size?: 'sm' | 'md' | 'lg';
-    /** md = 角丸（2xl）、full = ピル型 */
     radius?: 'md' | 'full';
-    /** ネイティブ button の type */
     nativeType?: 'button' | 'submit' | 'reset';
-    /** 指定時は Inertia の Link として描画 */
     href?: string;
     disabled?: boolean;
-    /** 追加クラス（w-full 等） */
     extraClass?: string;
   }>(),
   {
@@ -63,7 +52,6 @@ const sizeClass = computed(() => {
 
 const radiusClass = computed(() => (props.radius === 'full' ? 'rounded-full' : 'rounded-2xl'));
 
-/** danger は従来 UI に合わせて角だけ固定（小さめ） */
 const radiusOverride = computed(() => {
   if (props.variant === 'danger') {
     return 'rounded-md';

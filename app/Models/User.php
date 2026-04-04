@@ -41,7 +41,28 @@ class User extends Authenticatable
             'avatar_focus_x' => 'integer',
             'avatar_focus_y' => 'integer',
             'avatar_zoom' => 'float',
+            'banned_at' => 'datetime',
         ];
+    }
+
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->isOwner() || $this->isAdmin();
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
     }
 
     public function createdBands()
@@ -54,18 +75,18 @@ class User extends Authenticatable
         return $this->hasMany(MerchItem::class, 'created_by');
     }
 
-    public function posts()
+    public function merchItemComments()
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(MerchItemComment::class);
     }
 
-    public function comments()
+    public function merchItemLikes()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(MerchItemLike::class);
     }
 
-    public function postLikes()
+    public function bandLikes()
     {
-        return $this->hasMany(PostLike::class);
+        return $this->hasMany(BandLike::class);
     }
 }

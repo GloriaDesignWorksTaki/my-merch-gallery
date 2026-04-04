@@ -8,7 +8,6 @@ declare global {
     axios: AxiosInstance;
   }
 
-  // Ziggy が注入するグローバル（ビルド時に存在）
   var route: typeof ziggyRoute;
 }
 

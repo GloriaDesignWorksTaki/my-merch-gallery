@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from '@/Components/seo/SeoHead.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -9,14 +10,13 @@ defineProps<{
   featured: {
     bands: { id: number; name: string; slug: string }[];
     merchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: { image_path: string; alt_text?: string | null } | null }[];
-    posts: { id: number; body: string; user?: { username: string } | null; band?: { name: string; slug: string } | null; cover_image?: { image_path: string } | null }[];
   };
 }>();
 </script>
 
 <template>
   <PublicLayout>
-    <Head :title="t('home.title')" />
+    <SeoHead page="home" />
 
     <section class="glass-surface px-8 py-12">
       <p class="text-sm uppercase tracking-[0.35em] text-sky-600/70">{{ t('home.eyebrow') }}</p>
@@ -27,8 +27,8 @@ defineProps<{
       </div>
       <ul class="mt-8 flex flex-wrap gap-4 text-sm">
         <li><Link :href="route('bands.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkBands') }}</Link></li>
-        <li><Link :href="route('posts.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkPosts') }}</Link></li>
         <li><Link :href="route('merch-items.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkMerch') }}</Link></li>
+        <li><Link :href="route('search')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkSearch') }}</Link></li>
       </ul>
     </section>
 
@@ -52,33 +52,15 @@ defineProps<{
           </div>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-2">
-          <div class="glass-surface p-6">
-            <div class="flex items-center justify-between gap-4">
-              <h2 class="text-xl font-semibold text-slate-800">{{ t('home.featuredBands') }}</h2>
-              <Link :href="route('bands.index')" class="glass-link text-sm font-medium">{{ t('common.toList') }}</Link>
-            </div>
-            <div class="mt-4 space-y-3">
-              <Link v-for="band in featured.bands" :key="band.id" :href="route('bands.show', band.slug)" class="glass-panel block rounded-2xl px-4 py-4 font-medium text-slate-800 hover:bg-white/55">
-                {{ band.name }}
-              </Link>
-            </div>
+        <div class="glass-surface p-6">
+          <div class="flex items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold text-slate-800">{{ t('home.featuredBands') }}</h2>
+            <Link :href="route('bands.index')" class="glass-link text-sm font-medium">{{ t('common.toList') }}</Link>
           </div>
-
-          <div class="glass-surface p-6">
-            <div class="flex items-center justify-between gap-4">
-              <h2 class="text-xl font-semibold text-slate-800">{{ t('home.recentPostsSection') }}</h2>
-              <Link :href="route('posts.index')" class="glass-link text-sm font-medium">{{ t('common.toList') }}</Link>
-            </div>
-            <div class="mt-4 space-y-3">
-              <Link v-for="post in featured.posts" :key="post.id" :href="route('posts.show', post.id)" class="glass-panel block rounded-2xl px-4 py-4 hover:bg-white/55">
-                <p class="line-clamp-2 text-slate-800">{{ post.body }}</p>
-                <p class="mt-2 text-sm text-slate-500">
-                  <span v-if="post.user">@{{ post.user.username }}</span>
-                  <span v-if="post.band"> · {{ post.band.name }}</span>
-                </p>
-              </Link>
-            </div>
+          <div class="mt-4 space-y-3">
+            <Link v-for="band in featured.bands" :key="band.id" :href="route('bands.show', band.slug)" class="glass-panel block rounded-2xl px-4 py-4 font-medium text-slate-800 hover:bg-white/55">
+              {{ band.name }}
+            </Link>
           </div>
         </div>
       </div>

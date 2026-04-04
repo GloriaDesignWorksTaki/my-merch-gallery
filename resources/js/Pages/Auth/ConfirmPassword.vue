@@ -4,7 +4,8 @@ import InputError from '@/Components/form/InputError.vue';
 import InputLabel from '@/Components/form/InputLabel.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
 import TextInput from '@/Components/form/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
   password: '',
@@ -21,7 +22,7 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Confirm Password" />
+    <SeoHead page="authConfirmPassword" />
 
     <div class="mb-4 text-sm text-gray-600">
       This is a secure area of the application. Please confirm your

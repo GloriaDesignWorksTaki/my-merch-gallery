@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import AppSidebar from '@/Components/container/AppSidebar.vue';
+import LikesHistoryShortcut from '@/Components/parts/LikesHistoryShortcut.vue';
+import NotificationBell from '@/Components/parts/NotificationBell.vue';
 import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
 import StatusBanner from '@/Components/container/StatusBanner.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import type { AuthUser } from '@/types';
+import type { FooterMenuItem } from '@/types/sidebar';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const page = usePage<{ auth: { user: AuthUser | null }; flash?: { status?: string | null }; ui?: { stats?: { bands?: number; merchItems?: number; posts?: number } } }>();
+const page = usePage<{
+  auth: { user: AuthUser | null };
+  flash?: { status?: string | null };
+  inbox?: { unreadCount: number };
+}>();
 const authUser = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
-const stats = computed(() => page.props.ui?.stats ?? {});
 
 if (!authUser) {
   throw new Error('AuthenticatedLayout requires a logged-in user.');
@@ -20,55 +26,50 @@ if (!authUser) {
 
 const browseNavItems = computed(() => [
   { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
-  { label: t('layout.nav.dashboard'), href: route('dashboard'), active: route().current('dashboard') },
   { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
   { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
-  { label: t('layout.nav.postsIndex'), href: route('posts.index'), active: route().current('posts.index') || route().current('posts.show') },
-]);
-
-const manageNavItems = computed(() => [
-  { label: t('layout.nav.bandRegister'), href: route('bands.create'), active: route().current('bands.create') || route().current('bands.edit') },
-  { label: t('layout.nav.merchRegister'), href: route('merch-items.create'), active: route().current('merch-items.create') || route().current('merch-items.edit') },
-  { label: t('layout.nav.postCreate'), href: route('posts.create'), active: route().current('posts.create') || route().current('posts.edit') },
-]);
-
-const accountNavItems = computed(() => [
-  { label: t('layout.nav.profile'), href: route('profile.edit'), active: route().current('profile.edit') },
-  { label: t('layout.nav.logout'), href: route('logout'), active: false, method: 'post' as const, as: 'button' as const },
+  {
+    label: t('layout.nav.dashboard'),
+    href: route('dashboard'),
+    active: route().current('dashboard') && !route().current('dashboard.likes'),
+  },
 ]);
 
 const sidebarSections = computed(() => [
   {
     title: t('layout.sidebar.browse'),
     items: browseNavItems.value,
-    scrollable: true,
-  },
-  {
-    title: t('layout.sidebar.manage'),
-    items: manageNavItems.value,
-    compact: true,
-  },
-  {
-    title: t('layout.sidebar.account'),
-    items: accountNavItems.value,
-    compact: true,
+    scrollable: false,
   },
 ]);
+
+const footerMenuItems = computed((): FooterMenuItem[] => {
+  const items: FooterMenuItem[] = [{ label: t('layout.nav.profile'), href: route('profile.edit') }];
+  if (authUser.role === 'admin' || authUser.role === 'owner') {
+    items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard') });
+  }
+  items.push({ label: t('layout.nav.logout'), href: route('logout'), method: 'post', as: 'button', danger: true });
+
+  return items;
+});
 
 const sidebarProps = computed(() => ({
   homeHref: route('home'),
   mobileTitle: t('layout.mobile.myPage'),
   mobileActionLabel: t('layout.mobile.manage'),
-  mobileActionHref: route('posts.create'),
+  mobileActionHref: route('merch-items.create'),
   primarySections: sidebarSections.value,
-  ctaLabel: t('layout.mobile.post'),
-  ctaHref: route('posts.create'),
+  ctaLabel: t('layout.nav.bandRegister'),
+  ctaHref: route('bands.create'),
+  ctaActions: [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create') }],
   footerTitle: authUser.name,
   footerSubtitle: `@${authUser.username}`,
   footerAvatarUrl: authUser.avatar_path ? `/storage/${authUser.avatar_path}` : null,
   footerAvatarFocusX: authUser.avatar_focus_x ?? 50,
   footerAvatarFocusY: authUser.avatar_focus_y ?? 50,
   footerAvatarZoom: authUser.avatar_zoom ?? 1,
+  footerMenuItems: footerMenuItems.value,
+  footerMenuPlacement: 'top-start' as const,
 }));
 </script>
 
@@ -82,20 +83,26 @@ const sidebarProps = computed(() => ({
 
     <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
-    <div class="mx-auto max-w-[1440px] px-4 pb-3 pt-2 xl:hidden md:px-5">
-      <RightPaneSearch variant="compact" />
+    <div class="mx-auto flex max-w-[1440px] items-center gap-2 px-4 pb-3 pt-2 md:px-5 xl:hidden">
+      <div class="flex shrink-0 items-center gap-2">
+        <LikesHistoryShortcut />
+        <NotificationBell />
+      </div>
+      <div class="min-w-0 flex-1">
+        <RightPaneSearch variant="compact" />
+      </div>
     </div>
 
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
       <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
       <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
-        <div v-if="$slots.header" class="px-4 pt-5 sm:px-6 sm:pt-7">
-          <div class="glass-panel rounded-3xl px-6 py-5">
+        <div v-if="$slots.header" class="px-4 pt-4 sm:px-6 sm:pt-5">
+          <div class="glass-panel rounded-2xl px-4 py-3.5 sm:px-5 sm:py-4">
             <slot name="header" />
           </div>
         </div>
-        <div class="px-4 py-5 sm:px-6 sm:py-7">
+        <div class="px-4 py-4 sm:px-6 sm:py-5">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
         </div>
@@ -104,29 +111,11 @@ const sidebarProps = computed(() => ({
       <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
         <div class="flex h-full min-h-0 flex-col gap-5">
           <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
+          <div class="flex items-center justify-end gap-2">
+            <LikesHistoryShortcut />
+            <NotificationBell />
+          </div>
           <RightPaneSearch variant="panel" />
-          <section class="rounded-[2rem] border border-white/40 bg-white/35 p-6 backdrop-blur-xl">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">{{ t('layout.overview.eyebrow') }}</p>
-            <h2 class="mt-3 text-2xl font-bold text-slate-800">{{ t('layout.overview.title') }}</h2>
-            <div class="mt-4 grid grid-cols-3 gap-3 text-center">
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">{{ t('layout.overview.statBands') }}</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.bands ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">{{ t('layout.overview.statMerch') }}</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.merchItems ?? 0 }}</p>
-              </div>
-              <div class="glass-panel rounded-2xl px-3 py-4">
-                <p class="text-xs text-slate-500">{{ t('layout.overview.statPosts') }}</p>
-                <p class="mt-2 text-lg font-semibold text-slate-800">{{ stats.posts ?? 0 }}</p>
-              </div>
-            </div>
-            <div class="mt-4 space-y-3 text-sm text-slate-600">
-              <p>{{ t('layout.overview.hint1') }}</p>
-              <p>{{ t('layout.overview.hint2') }}</p>
-            </div>
-          </section>
           </div>
           <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500">
             {{ t('layout.copyright', { year: new Date().getFullYear() }) }}

@@ -8,7 +8,8 @@ import InputError from '@/Components/form/InputError.vue';
 import InputLabel from '@/Components/form/InputLabel.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
 import TextInput from '@/Components/form/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { Link, useForm } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -31,7 +32,7 @@ const form = useForm({
   name: '',
   description: '',
   release_year: '',
-  era_label: '',
+  size_note: '',
   is_official: true,
   source_type: 'user_created',
   images: [] as File[],
@@ -90,7 +91,7 @@ const submit = () =>
 </script>
 
 <template>
-  <Head :title="t('forms.merch.createTitle')" />
+  <SeoHead page="merchCreate" />
 
   <AuthenticatedLayout>
     <template #header>
@@ -159,7 +160,7 @@ const submit = () =>
             type="file"
             accept="image/png,image/jpeg,image/webp"
             multiple
-            class="mt-1 block w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700"
+            class="glass-panel mt-1 block w-full min-h-11 rounded-2xl px-4 py-2.5 text-sm text-slate-600 transition focus:border-sky-300/70 focus:outline-none focus:ring-2 focus:ring-sky-200/60 file:mr-4 file:rounded-2xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700"
             @change="onImagesSelected"
           />
           <p class="mt-2 text-sm text-slate-500">{{ t('forms.merch.imageHint') }}</p>
@@ -192,9 +193,28 @@ const submit = () =>
             <InputError class="mt-2" :message="form.errors.release_year" />
           </div>
           <div>
-            <InputLabel for="era_label" :value="t('forms.merch.eraLabel')" />
-            <TextInput id="era_label" v-model="form.era_label" class="mt-1 block w-full" :placeholder="t('forms.merch.eraPlaceholder')" />
-            <InputError class="mt-2" :message="form.errors.era_label" />
+            <InputLabel for="size_note" :value="t('forms.merch.sizeNote')" />
+            <TextInput
+              id="size_note"
+              v-model="form.size_note"
+              type="text"
+              class="mt-1 block w-full"
+              maxlength="255"
+              list="merch-size-suggestions"
+              autocomplete="off"
+            />
+            <datalist id="merch-size-suggestions">
+              <option value="XS" />
+              <option value="S" />
+              <option value="M" />
+              <option value="L" />
+              <option value="XL" />
+              <option value="XXL" />
+              <option value="フリー" />
+              <option value="S〜XL" />
+              <option value="one size" />
+            </datalist>
+            <InputError class="mt-2" :message="form.errors.size_note" />
           </div>
         </div>
 

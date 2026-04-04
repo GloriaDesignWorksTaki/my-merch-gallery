@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Models\Band;
 use App\Models\MerchItem;
-use App\Models\Post;
 use App\Models\User;
 use App\Support\InertiaShared;
 use Illuminate\Support\Facades\Gate;
@@ -28,9 +27,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        Gate::define('access-admin', fn (User $user): bool => $user->role === 'admin');
+        Gate::define('access-admin', fn (User $user): bool => $user->isStaff());
 
-        foreach ([Band::class, MerchItem::class, Post::class] as $modelClass) {
+        foreach ([Band::class, MerchItem::class] as $modelClass) {
             $modelClass::created(static fn () => InertiaShared::forgetGlobalStatsCache());
             $modelClass::deleted(static fn () => InertiaShared::forgetGlobalStatsCache());
         }

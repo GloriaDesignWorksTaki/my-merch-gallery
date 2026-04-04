@@ -2,7 +2,8 @@
 import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import SeoHead from '@/Components/seo/SeoHead.vue';
+import { Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
   status?: string;
@@ -21,7 +22,7 @@ const verificationLinkSent = computed(
 
 <template>
   <GuestLayout>
-    <Head title="Email Verification" />
+    <SeoHead page="authVerifyEmail" />
 
     <div class="mb-4 text-sm text-gray-600">
       Thanks for signing up! Before getting started, could you verify your

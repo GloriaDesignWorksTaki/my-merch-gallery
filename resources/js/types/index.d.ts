@@ -1,6 +1,3 @@
-/**
- * Inertia 共有 `auth.user`。メール・認証状態は載せず、プロフィール画面は専用プロップで渡す。
- */
 export interface AuthUser {
   id: number;
   name: string;
