@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 公開ユーザープロフィール（他者向け）
+ * @package App\Http\Controllers\Profile
+ */
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
@@ -9,22 +12,22 @@ use Inertia\Response;
 
 class PublicProfileController extends Controller
 {
-    public function show(User $user): Response
-    {
-        $user->loadCount('merchItemComments');
+  public function show(User $user): Response
+  {
+  $user->loadCount('merchItemComments');
 
-        return Inertia::render('Users/Show', [
-            'profileUser' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'bio' => $user->bio,
-                'avatar_path' => $user->avatar_path,
-                'avatar_focus_x' => $user->avatar_focus_x,
-                'avatar_focus_y' => $user->avatar_focus_y,
-                'avatar_zoom' => $user->avatar_zoom,
-                'merch_comments_count' => $user->merch_item_comments_count,
-            ],
-        ]);
-    }
+  return Inertia::render('Users/Show', [
+  'profileUser' => [
+    'id' => $user->id,
+    'name' => $user->name,
+    'username' => $user->username,
+    'bio' => $user->bio,
+    'avatar_path' => $user->avatar_path,
+    'avatar_focus_x' => $user->avatar_focus_x,
+    'avatar_focus_y' => $user->avatar_focus_y,
+    'avatar_zoom' => $user->avatar_zoom,
+    'merch_comments_count' => $user->merch_item_comments_count,
+  ],
+  ]);
+  }
 }

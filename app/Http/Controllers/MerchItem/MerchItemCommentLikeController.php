@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * マーチコメントいいねの付け外し（通知）
+ * @package App\Http\Controllers\MerchItem
+ */
 namespace App\Http\Controllers\MerchItem;
 
 use App\Http\Controllers\Controller;
@@ -13,31 +16,31 @@ use Illuminate\Support\Facades\DB;
 
 class MerchItemCommentLikeController extends Controller
 {
-    public function toggle(Request $request, MerchItem $merchItem, MerchItemComment $merchItemComment): RedirectResponse
-    {
-        abort_if($merchItemComment->merch_item_id !== $merchItem->id, 404);
+  public function toggle(Request $request, MerchItem $merchItem, MerchItemComment $merchItemComment): RedirectResponse
+  {
+    abort_if($merchItemComment->merch_item_id !== $merchItem->id, 404);
 
-        $userId = $request->user()->id;
+    $userId = $request->user()->id;
 
-        $created = false;
+    $created = false;
 
-        DB::transaction(function () use ($merchItemComment, $userId, &$created) {
-            $like = $merchItemComment->likes()->where('user_id', $userId)->first();
+    DB::transaction(function () use ($merchItemComment, $userId, &$created) {
+      $like = $merchItemComment->likes()->where('user_id', $userId)->first();
 
-            if ($like !== null) {
-                $like->delete();
-            } else {
-                $merchItemComment->likes()->create(['user_id' => $userId]);
-                $created = true;
-            }
-        });
+      if ($like !== null) {
+        $like->delete();
+      } else {
+        $merchItemComment->likes()->create(['user_id' => $userId]);
+        $created = true;
+      }
+    });
 
-        if ($created && (int) $merchItemComment->user_id !== (int) $userId) {
-            User::find($merchItemComment->user_id)?->notify(
-                new MerchCommentLikedNotification($merchItem, $merchItemComment, $request->user())
-            );
-        }
-
-        return back();
+    if ($created && (int) $merchItemComment->user_id !== (int) $userId) {
+      User::find($merchItemComment->user_id)?->notify(
+        new MerchCommentLikedNotification($merchItem, $merchItemComment, $request->user())
+      );
     }
+
+    return back();
+  }
 }

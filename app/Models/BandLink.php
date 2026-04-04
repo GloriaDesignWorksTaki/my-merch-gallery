@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * バンド外部リンクのモデル定義
+ * @package App\Models
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +15,6 @@ class BandLink extends Model
     'url',
     'sort_order',
   ];
-
   public function band(): BelongsTo
   {
     return $this->belongsTo(Band::class);

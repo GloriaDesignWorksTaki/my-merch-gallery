@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * コントローラ共通ヘルパ（クエリ組み立てなど）
+ * @package App\Http\Controllers
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -9,9 +12,7 @@ abstract class Controller
 {
   use AuthorizesRequests;
 
-  /**
-   * @return array<int, int>
-   */
+  // リクエストからバンド ID 配列（フィルタ用）
   protected function bandIdsFromRequest(Request $request): array
   {
     $raw = $request->input('bands');
@@ -27,9 +28,7 @@ abstract class Controller
     return $legacy > 0 ? [$legacy] : [];
   }
 
-  /**
-   * @return array<string, mixed>
-   */
+  // マーチ一覧に戻すときのクエリ文字列用
   protected function merchIndexQueryForReturn(Request $request): array
   {
     $bands = $this->bandIdsFromRequest($request);
@@ -48,9 +47,7 @@ abstract class Controller
     return $params;
   }
 
-  /**
-   * @return array<string, mixed>
-   */
+  // 投稿一覧に戻すときのクエリ文字列用
   protected function postsIndexQueryForReturn(Request $request): array
   {
     $bands = $this->bandIdsFromRequest($request);

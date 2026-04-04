@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 一般ユーザーからのバンド編集申請（作成）
+ * @package App\Http\Controllers\Band
+ */
 namespace App\Http\Controllers\Band;
 
 use App\Http\Controllers\Controller;
@@ -14,44 +17,44 @@ use Inertia\Response;
 
 class BandEditRequestController extends Controller
 {
-    public function create(Band $band): Response
-    {
-        $this->authorize('createEditRequest', $band);
+  public function create(Band $band): Response
+  {
+    $this->authorize('createEditRequest', $band);
 
-        $band->load(['genres:id', 'links:id,band_id,url,sort_order']);
+    $band->load(['genres:id', 'links:id,band_id,url,sort_order']);
 
-        return Inertia::render('Bands/RequestEdit', [
-            'band' => [
-                ...$band->toArray(),
-                'genre_ids' => $band->genres->pluck('id')->all(),
-                'links' => $band->links->pluck('url')->pad(3, '')->take(3)->values()->all(),
-            ],
-            'countries' => Country::query()->orderBy('name')->get(['id', 'name']),
-            'genres' => Genre::query()->orderBy('name')->get(['id', 'name']),
-        ]);
+    return Inertia::render('Bands/RequestEdit', [
+      'band' => [
+        ...$band->toArray(),
+        'genre_ids' => $band->genres->pluck('id')->all(),
+        'links' => $band->links->pluck('url')->pad(3, '')->take(3)->values()->all(),
+      ],
+      'countries' => Country::query()->orderBy('name')->get(['id', 'name']),
+      'genres' => Genre::query()->orderBy('name')->get(['id', 'name']),
+    ]);
+  }
+
+  public function store(StoreBandEditRequestRequest $request, Band $band): RedirectResponse
+  {
+    $exists = BandEditRequest::query()
+      ->where('band_id', $band->id)
+      ->where('user_id', $request->user()->id)
+      ->where('status', BandEditRequest::STATUS_PENDING)
+      ->exists();
+
+    if ($exists) {
+      return redirect()
+        ->route('bands.show', $band)
+        ->with('status', 'band-edit-request-duplicate');
     }
 
-    public function store(StoreBandEditRequestRequest $request, Band $band): RedirectResponse
-    {
-        $exists = BandEditRequest::query()
-            ->where('band_id', $band->id)
-            ->where('user_id', $request->user()->id)
-            ->where('status', BandEditRequest::STATUS_PENDING)
-            ->exists();
+    BandEditRequest::create([
+      'band_id' => $band->id,
+      'user_id' => $request->user()->id,
+      'payload' => $request->validated(),
+      'status' => BandEditRequest::STATUS_PENDING,
+    ]);
 
-        if ($exists) {
-            return redirect()
-                ->route('bands.show', $band)
-                ->with('status', 'band-edit-request-duplicate');
-        }
-
-        BandEditRequest::create([
-            'band_id' => $band->id,
-            'user_id' => $request->user()->id,
-            'payload' => $request->validated(),
-            'status' => BandEditRequest::STATUS_PENDING,
-        ]);
-
-        return redirect()->route('bands.show', $band)->with('status', 'band-edit-request-sent');
-    }
+    return redirect()->route('bands.show', $band)->with('status', 'band-edit-request-sent');
+  }
 }

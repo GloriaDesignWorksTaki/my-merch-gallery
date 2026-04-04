@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 管理画面トップ
+ * @package App\Http\Controllers\Admin
+ */
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -10,6 +13,6 @@ class AdminDashboardController extends Controller
 {
   public function __invoke(): Response
   {
-    return Inertia::render('Admin/Dashboard');
+  return Inertia::render('Admin/Dashboard');
   }
 }

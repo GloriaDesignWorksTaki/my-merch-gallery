@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * セッションの言語を Laravel に反映（HandleInertia より前）
+ * @package App\Http\Middleware
+ */
 namespace App\Http\Middleware;
 
 use Closure;
@@ -9,23 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
-    /**
-     * セッション（または既定）のロケールを Laravel に反映する。
-     * HandleInertiaRequests より前に実行すること。
-     */
-    public function handle(Request $request, Closure $next): Response
-    {
-        $supported = config('i18n.supported', ['en']);
-        $default = config('app.locale', 'en');
+  public function handle(Request $request, Closure $next): Response
+  {
+    $supported = config('i18n.supported', ['en']);
+    $default = config('app.locale', 'en');
 
-        $locale = $request->session()->get('locale', $default);
+    $locale = $request->session()->get('locale', $default);
 
-        if (! in_array($locale, $supported, true)) {
-            $locale = $default;
-        }
-
-        App::setLocale($locale);
-
-        return $next($request);
+    if (! in_array($locale, $supported, true)) {
+      $locale = $default;
     }
+
+    App::setLocale($locale);
+
+    return $next($request);
+  }
 }
