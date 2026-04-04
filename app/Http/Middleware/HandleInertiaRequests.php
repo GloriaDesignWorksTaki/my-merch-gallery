@@ -40,7 +40,7 @@ class HandleInertiaRequests extends Middleware
       ],
       'ui' => [
         'stats' => fn () => InertiaShared::cachedGlobalStats(),
-        'canResetPassword' => fn () => Route::has('password.request'),
+        'canResetPassword' => fn () => Route::has('password.email'),
       ],
       'inbox' => [
         'unreadCount' => function () use ($request) {

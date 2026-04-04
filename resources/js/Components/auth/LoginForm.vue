@@ -4,7 +4,7 @@ import InputError from '@/Components/form/InputError.vue';
 import InputLabel from '@/Components/form/InputLabel.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
 import TextInput from '@/Components/form/TextInput.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
@@ -15,6 +15,7 @@ defineProps<{
 
 const emit = defineEmits<{
   success: [];
+  'request-forgot-password': [];
 }>();
 
 const { t } = useI18n();
@@ -84,13 +85,14 @@ const submit = () => {
       </div>
 
       <div class="flex flex-wrap items-center justify-end gap-3 pt-1">
-        <Link
+        <button
           v-if="canResetPassword"
-          :href="route('password.request')"
+          type="button"
           class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          @click="$emit('request-forgot-password')"
         >
           {{ t('auth.forgotLink') }}
-        </Link>
+        </button>
 
         <PrimaryButton type="submit" class="ms-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
           {{ t('auth.loginButton') }}

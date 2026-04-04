@@ -29,6 +29,9 @@ watch(() => page.url, syncSearchFromUrl, { immediate: true });
 
 function submitSearch() {
   const q = searchInput.value.trim();
+  if (q === '') {
+    return;
+  }
   let tab: 'bands' | 'merch' = 'bands';
   try {
     const url = new URL(page.url, 'http://rightpane.local');

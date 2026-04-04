@@ -28,7 +28,6 @@ defineProps<{
       <ul class="mt-8 flex flex-wrap gap-4 text-sm">
         <li><Link :href="route('bands.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkBands') }}</Link></li>
         <li><Link :href="route('merch-items.index')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkMerch') }}</Link></li>
-        <li><Link :href="route('search')" class="glass-panel inline-flex rounded-full px-5 py-2.5 font-medium text-sky-700 hover:bg-white/55">{{ t('home.linkSearch') }}</Link></li>
       </ul>
     </section>
 

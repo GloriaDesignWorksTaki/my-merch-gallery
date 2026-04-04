@@ -119,7 +119,6 @@ export default {
     categoryNav: '検索カテゴリ',
     title: { default: '検索', withQuery: '「{q}」の検索結果' },
     tabs: { bands: 'バンド', merch: 'マーチ' },
-    hint: '右ペインの検索窓にキーワードを入力し、Enter または検索ボタンで結果を表示します。',
     empty: {
       bands: '該当するバンドはありません。',
       merch: '該当するマーチはありません。',
@@ -242,6 +241,7 @@ export default {
     password: 'パスワード',
     remember: 'ログイン状態を保持する',
     forgotLink: 'パスワードをお忘れですか？',
+    backToLogin: 'ログインに戻る',
     loginButton: 'ログイン',
     name: '名前',
     username: 'ユーザー名',
@@ -288,7 +288,6 @@ export default {
       'バンドマーチ、それはレコードやCDと並びアーカイブとして保存されるべきもの...\nあなたの自慢のバンドマーチを皆さんにシェアしてください。',
     linkBands: 'バンド一覧へ',
     linkMerch: 'マーチ一覧へ',
-    linkSearch: '検索へ',
     recentMerch: '最近追加されたマーチ',
     featuredBands: '注目バンド',
     more: 'もっと見る',

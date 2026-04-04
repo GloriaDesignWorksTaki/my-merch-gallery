@@ -119,7 +119,6 @@ export default {
     categoryNav: 'Search categories',
     title: { default: 'Search', withQuery: 'Search results for "{q}"' },
     tabs: { bands: 'Bands', merch: 'Merch' },
-    hint: 'Enter a keyword in the search box on the right, then press Enter or the search button.',
     empty: {
       bands: 'No matching bands.',
       merch: 'No matching merch.',
@@ -242,6 +241,7 @@ export default {
     password: 'Password',
     remember: 'Remember me',
     forgotLink: 'Forgot your password?',
+    backToLogin: 'Back to log in',
     loginButton: 'Log in',
     name: 'Name',
     username: 'Username',
@@ -288,7 +288,6 @@ export default {
       'Band merch deserves to be archived like records and CDs…\nShare your favorite pieces with everyone.',
     linkBands: 'All bands',
     linkMerch: 'All merch',
-    linkSearch: 'Search',
     recentMerch: 'Recently added merch',
     featuredBands: 'Featured bands',
     more: 'See more',

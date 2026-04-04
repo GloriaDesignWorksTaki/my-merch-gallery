@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import ForgotPasswordPanel from '@/Components/auth/ForgotPasswordPanel.vue';
 import LoginForm from '@/Components/auth/LoginForm.vue';
 import RegisterForm from '@/Components/auth/RegisterForm.vue';
 import Modal from '@/Components/container/Modal.vue';
 import type { PageProps } from '@/types';
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const showLogin = defineModel<boolean>('showLogin', { required: true });
@@ -18,20 +19,32 @@ const status = computed(() => page.props.flash?.status ?? undefined);
 
 const { t } = useI18n();
 
-function closeLogin() {
-  showLogin.value = false;
-}
+const showForgot = ref(false);
 
-function closeRegister() {
+const authOpen = computed(() => showLogin.value || showRegister.value || showForgot.value);
+
+const authTitleId = computed(() => {
+  if (showForgot.value) {
+    return 'auth-forgot-title';
+  }
+  if (showRegister.value) {
+    return 'auth-register-title';
+  }
+  return 'auth-login-title';
+});
+
+function closeAll() {
+  showLogin.value = false;
   showRegister.value = false;
+  showForgot.value = false;
 }
 
 function onLoginSuccess() {
-  closeLogin();
+  closeAll();
 }
 
 function onRegisterSuccess() {
-  closeRegister();
+  closeAll();
 }
 
 function switchToRegister() {
@@ -43,17 +56,28 @@ function switchToLogin() {
   showRegister.value = false;
   showLogin.value = true;
 }
+
+function openForgot() {
+  showLogin.value = false;
+  showForgot.value = true;
+}
+
+function backFromForgotToLogin() {
+  showForgot.value = false;
+  showLogin.value = true;
+}
 </script>
 
 <template>
-  <Modal :show="showLogin" max-width="md" title-id="auth-login-title" @close="closeLogin">
-    <div class="max-h-[min(85vh,32rem)] overflow-y-auto p-6 sm:p-8">
+  <Modal :show="authOpen" max-width="md" :title-id="authTitleId" @close="closeAll">
+    <div v-if="showLogin" class="max-h-[min(85vh,32rem)] overflow-y-auto p-6 sm:p-8">
       <h2 id="auth-login-title" class="text-lg font-semibold text-slate-800">{{ t('auth.loginTitle') }}</h2>
       <LoginForm
         class="mt-4"
         :can-reset-password="canResetPassword"
         :status="status"
         @success="onLoginSuccess"
+        @request-forgot-password="openForgot"
       />
       <p class="mt-5 text-center text-sm text-slate-600">
         <button type="button" class="font-medium text-sky-700 hover:underline" @click="switchToRegister">
@@ -61,10 +85,10 @@ function switchToLogin() {
         </button>
       </p>
     </div>
-  </Modal>
 
-  <Modal :show="showRegister" max-width="md" title-id="auth-register-title" @close="closeRegister">
-    <div class="max-h-[min(85vh,40rem)] overflow-y-auto p-6 sm:p-8">
+    <ForgotPasswordPanel v-else-if="showForgot" :open="showForgot" @back="backFromForgotToLogin" />
+
+    <div v-else-if="showRegister" class="max-h-[min(85vh,40rem)] overflow-y-auto p-6 sm:p-8">
       <h2 id="auth-register-title" class="text-lg font-semibold text-slate-800">{{ t('auth.registerTitle') }}</h2>
       <RegisterForm class="mt-4" @success="onRegisterSuccess" @switch-to-login="switchToLogin" />
     </div>

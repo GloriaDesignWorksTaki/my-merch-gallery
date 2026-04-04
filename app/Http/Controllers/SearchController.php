@@ -9,15 +9,19 @@ use App\Models\Band;
 use App\Models\MerchItem;
 use App\Support\Search\FlexibleSearch;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class SearchController extends Controller
 {
-  public function __invoke(Request $request): Response
+  public function __invoke(Request $request): InertiaResponse|RedirectResponse
   {
     $q = trim((string) $request->string('q')->toString());
+    if ($q === '') {
+      return redirect()->route('home');
+    }
     $tab = $request->string('tab')->toString();
     $allowedTabs = ['bands', 'merch'];
     if (! in_array($tab, $allowedTabs, true)) {

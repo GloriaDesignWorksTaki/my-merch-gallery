@@ -31,6 +31,9 @@ const previousScrollY = ref<number>(0);
 const previousHtmlOverscrollBehavior = ref<string>('');
 const previousBodyOverscrollBehavior = ref<string>('');
 
+/** 閉じるアニメーションと一致させる（CSS .mmg-modal-leave-active の時間） */
+const LEAVE_MS = 300;
+
 const getFocusableElements = () => {
   if (!dialogRef.value) {
     return [];
@@ -151,7 +154,7 @@ watch(
 
         lastActiveElement.value?.focus?.();
         lastActiveElement.value = null;
-      }, 200);
+      }, LEAVE_MS);
     }
   },
   { immediate: true },
@@ -222,52 +225,72 @@ const maxWidthClass = computed(() => {
   <Teleport to="body">
     <div
       v-if="show || showSlot"
-      class="fixed inset-0 z-50 overflow-y-hidden overscroll-contain px-4 py-8 sm:px-4 sm:py-10"
+      class="fixed inset-0 z-50 overflow-y-hidden overscroll-contain"
       scroll-region
     >
-      <Transition
-        enter-active-class="ease-out duration-300"
-        enter-from-class="opacity-0"
-        enter-to-class="opacity-100"
-        leave-active-class="ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
+      <Transition name="mmg-modal" appear>
         <div
-          v-show="show"
-          class="fixed inset-0 transform transition-all"
+          v-if="show"
+          class="fixed inset-0 z-50 flex min-h-full flex-col items-center justify-center bg-gray-500/75 px-4 py-8 sm:px-4 sm:py-10"
           @click="close"
         >
-          <div
-            class="absolute inset-0 bg-gray-500 opacity-75"
-          />
-        </div>
-      </Transition>
-
-      <Transition
-        enter-active-class="ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-active-class="ease-in duration-200"
-        leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-      >
-        <div v-show="show" class="flex min-h-full items-center justify-center">
-          <div
-            ref="dialogRef"
-            class="w-full transform overflow-hidden rounded-[2rem] border border-white/50 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.22)] transition-all"
-            :class="[maxWidthClass, 'max-h-[85vh]']"
-            role="dialog"
-            aria-modal="true"
-            tabindex="-1"
-            :aria-labelledby="titleId"
-            :aria-label="ariaLabel"
-            @click.stop
-          >
-            <slot v-if="showSlot" />
+          <div class="relative flex w-full min-h-0 max-h-full items-center justify-center">
+            <div
+              ref="dialogRef"
+              class="mmg-modal-dialog w-full overflow-hidden rounded-[2rem] border border-white/50 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.22)]"
+              :class="[maxWidthClass, 'max-h-[85vh]']"
+              role="dialog"
+              aria-modal="true"
+              tabindex="-1"
+              :aria-labelledby="titleId"
+              :aria-label="ariaLabel"
+              @click.stop
+            >
+              <slot v-if="showSlot" />
+            </div>
           </div>
         </div>
       </Transition>
     </div>
   </Teleport>
 </template>
+
+<style scoped>
+/* オーバーレイ全体のフェード */
+.mmg-modal-enter-active,
+.mmg-modal-leave-active {
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.mmg-modal-enter-from,
+.mmg-modal-leave-to {
+  opacity: 0;
+}
+
+/* パネル：開くときは下から＋少し縮小 → 開いた状態へ（閉じるときも同様に戻す） */
+.mmg-modal-enter-active .mmg-modal-dialog,
+.mmg-modal-leave-active .mmg-modal-dialog {
+  transition:
+    opacity 0.3s cubic-bezier(0, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.mmg-modal-enter-from .mmg-modal-dialog,
+.mmg-modal-leave-to .mmg-modal-dialog {
+  opacity: 0;
+  transform: translateY(1rem) scale(0.96);
+}
+
+@media (min-width: 640px) {
+  .mmg-modal-enter-from .mmg-modal-dialog,
+  .mmg-modal-leave-to .mmg-modal-dialog {
+    transform: scale(0.96);
+  }
+}
+
+.mmg-modal-enter-to .mmg-modal-dialog,
+.mmg-modal-leave-from .mmg-modal-dialog {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+</style>
