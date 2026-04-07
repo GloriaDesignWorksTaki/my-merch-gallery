@@ -34,5 +34,5 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 
 EXPOSE 10000
 
-# NOTE: Run "php artisan migrate --force" via Render Post-Deploy Command.
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+# 起動前にマイグレーションを実行
+CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
