@@ -262,7 +262,6 @@ export default {
   dashboard: {
     title: 'Dashboard',
     eyebrow: 'Workspace',
-    badge: 'MVP control center',
     recentBands: 'Recently added bands',
     recentMerch: 'Recently added merch',
     profileSection: 'Profile',
@@ -276,7 +275,7 @@ export default {
     emptyMerch: 'No merch yet.',
     likesTitle: 'Your likes',
     likesEyebrow: 'Activity',
-    likesHint: 'Switch tabs to see bands and merch you liked.',
+    likesHint: 'See bands and merch you liked.',
     likesEmptyBands: 'You have not liked any bands yet.',
     likesEmptyMerch: 'You have not liked any merch yet.',
   },
@@ -396,7 +395,7 @@ export default {
   pages: {
     merch: {
       editHead: 'Edit {name}',
-      registeredBy: 'Added by {username}',
+      registeredByTitle: 'Added by',
       listCrumb: 'All merch',
       editAction: 'Edit',
       detailEyebrow: 'Merch detail',
@@ -454,7 +453,17 @@ export default {
       lead: 'The collections table is not created in the MVP. Owned items will connect here in a later phase.',
     },
     users: {
-      merchCommentsCount: '{count} merch comments',
+      activityNav: 'User activity',
+      tabs: {
+        posts: 'Posted merch',
+        likedBands: 'Liked bands',
+        likedMerch: 'Liked merch',
+      },
+      empty: {
+        posts: 'No merch posted by this user yet.',
+        likedBands: 'No liked bands yet.',
+        likedMerch: 'No liked merch yet.',
+      },
       toMerchIndex: 'All merch',
       toHome: 'Home',
     },

@@ -7,6 +7,7 @@ import NotificationBell from '@/Components/parts/NotificationBell.vue';
 import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
 import StatusBanner from '@/Components/container/StatusBanner.vue';
 import type { AuthUser } from '@/types';
+import { sidebarNavIcons } from '@/constants/sidebarIcons';
 import type { FooterMenuItem } from '@/types/sidebar';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed, provide, ref, watch } from 'vue';
@@ -23,9 +24,19 @@ const user = page.props.auth.user;
 const status = computed(() => page.props.flash?.status ?? null);
 
 const browseNavItemsBase = computed(() => [
-  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
-  { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
-  { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home'), icon: 'home' as const },
+  {
+    label: t('layout.nav.bandsIndex'),
+    href: route('bands.index'),
+    active: route().current('bands.index') || route().current('bands.show'),
+    icon: 'bands' as const,
+  },
+  {
+    label: t('layout.nav.merchIndex'),
+    href: route('merch-items.index'),
+    active: route().current('merch-items.index') || route().current('merch-items.show'),
+    icon: 'merch' as const,
+  },
 ]);
 
 const loggedInBrowseNavItems = computed(() => [
@@ -34,6 +45,7 @@ const loggedInBrowseNavItems = computed(() => [
     label: t('layout.nav.dashboard'),
     href: route('dashboard'),
     active: route().current('dashboard') && !route().current('dashboard.likes'),
+    icon: 'dashboard' as const,
   },
 ]);
 
@@ -137,9 +149,10 @@ const sidebarProps = computed(() => ({
   ctaLabel: user ? t('layout.nav.bandRegister') : t('layout.mobile.login'),
   ctaHref: user ? route('bands.create') : null,
   ctaAuthModal: !user,
+  ctaIcon: user ? ('bandRegister' as const) : ('login' as const),
   ctaActions: user
-    ? [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create') }]
-    : [{ label: t('layout.mobile.signup'), useRegisterModal: true }],
+    ? [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create'), icon: 'merchRegister' as const }]
+    : [{ label: t('layout.mobile.signup'), useRegisterModal: true, icon: 'signup' as const }],
   footerTitle: user?.name ?? 'Gloria Design Works',
   footerSubtitle: user ? `@${user.username}` : '@GloriaDesignWKS',
   footerAvatarUrl: user?.avatar_path ? `/storage/${user.avatar_path}` : null,
@@ -150,12 +163,19 @@ const sidebarProps = computed(() => ({
   footerMenuItems: user
     ? (() => {
         const items: FooterMenuItem[] = [
-          { label: t('layout.nav.profile'), href: route('profile.edit') },
+          { label: t('layout.nav.profile'), href: route('profile.edit'), icon: 'profile' },
         ];
         if (user.role === 'admin' || user.role === 'owner') {
-          items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard') });
+          items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard'), icon: 'admin' });
         }
-        items.push({ label: t('layout.nav.logout'), href: route('logout'), method: 'post', as: 'button', danger: true });
+        items.push({
+          label: t('layout.nav.logout'),
+          href: route('logout'),
+          method: 'post',
+          as: 'button',
+          danger: true,
+          icon: 'logout',
+        });
 
         return items;
       })()
@@ -218,10 +238,17 @@ const sidebarProps = computed(() => ({
           v-for="item in mobileBottomNavItems"
           :key="item.label"
           :href="item.href"
-          class="flex flex-col items-center justify-center px-2 py-3 text-[11px] font-semibold transition"
+          class="flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 text-[11px] font-semibold transition"
           :class="item.active ? 'text-slate-900' : 'text-slate-500'"
         >
-          {{ item.label }}
+          <component
+            v-if="item.icon"
+            :is="sidebarNavIcons[item.icon]"
+            class="h-6 w-6"
+            :class="item.active ? 'text-sky-800' : 'text-slate-400'"
+            aria-hidden="true"
+          />
+          <span class="max-w-[4.5rem] truncate text-center leading-tight">{{ item.label }}</span>
         </Link>
       </div>
     </nav>

@@ -128,7 +128,12 @@ class MerchItemController extends Controller
   {
   $viewer = Auth::user();
 
-  $merchItem->load(['band', 'category', 'images', 'creator:id,name,username']);
+  $merchItem->load([
+    'band',
+    'category',
+    'images',
+    'creator:id,name,username,avatar_path,avatar_focus_x,avatar_focus_y,avatar_zoom',
+  ]);
   $merchItem->loadCount('likes');
 
   if ($viewer !== null) {

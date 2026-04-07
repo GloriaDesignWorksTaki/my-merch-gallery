@@ -1,3 +1,6 @@
+/** 左ペイン閲覧ナビのアイコン（Heroicons キー） */
+export type SidebarNavIcon = 'home' | 'bands' | 'merch' | 'dashboard';
+
 /** サイドバー「閲覧」ナビの1行 */
 export type SidebarNavItem = {
   label: string;
@@ -5,6 +8,7 @@ export type SidebarNavItem = {
   active: boolean;
   method?: 'get' | 'post';
   as?: 'button';
+  icon?: SidebarNavIcon;
 };
 
 export type SidebarNavSection = {
@@ -14,11 +18,18 @@ export type SidebarNavSection = {
   scrollable?: boolean;
 };
 
+/** CTA ボタン用アイコン */
+export type SidebarCtaIcon = 'login' | 'bandRegister' | 'merchRegister' | 'signup';
+
 export type SidebarCtaAction = {
   label: string;
   href?: string;
   useRegisterModal?: boolean;
+  icon?: SidebarCtaIcon;
 };
+
+/** フッターメニュー1行のアイコン */
+export type FooterMenuIcon = 'profile' | 'admin' | 'logout';
 
 export type FooterMenuItem = {
   label: string;
@@ -26,6 +37,7 @@ export type FooterMenuItem = {
   method?: 'get' | 'post';
   as?: 'button';
   danger?: boolean;
+  icon?: FooterMenuIcon;
 };
 
 export type FooterMenuPlacement = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';

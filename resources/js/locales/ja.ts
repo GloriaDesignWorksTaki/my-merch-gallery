@@ -262,7 +262,6 @@ export default {
   dashboard: {
     title: 'マイページ',
     eyebrow: 'ワークスペース',
-    badge: 'MVP コントロール',
     recentBands: '最近登録したバンド',
     recentMerch: '最近登録したマーチ',
     profileSection: 'プロフィール整備',
@@ -276,7 +275,7 @@ export default {
     emptyMerch: 'まだマーチ登録がありません。',
     likesTitle: 'いいね履歴',
     likesEyebrow: 'Activity',
-    likesHint: 'いいねしたバンド・マーチをタブで切り替えて確認できます。',
+    likesHint: 'いいねしたバンド・マーチを確認できます。',
     likesEmptyBands: 'いいねしたバンドはまだありません。',
     likesEmptyMerch: 'いいねしたマーチはまだありません。',
   },
@@ -396,7 +395,7 @@ export default {
   pages: {
     merch: {
       editHead: '{name} を編集',
-      registeredBy: '登録者 {username}',
+      registeredByTitle: '登録者',
       listCrumb: 'マーチ一覧',
       editAction: '編集する',
       detailEyebrow: 'マーチ詳細',
@@ -454,7 +453,17 @@ export default {
       lead: 'MVP では collections テーブルは未作成です。次フェーズで所有リストをここに接続します。',
     },
     users: {
-      merchCommentsCount: 'マーチへのコメント {count} 件',
+      activityNav: 'ユーザーのアクティビティ',
+      tabs: {
+        posts: '投稿したマーチ',
+        likedBands: 'いいねしたバンド',
+        likedMerch: 'いいねしたマーチ',
+      },
+      empty: {
+        posts: 'このユーザーが投稿したマーチはまだありません。',
+        likedBands: 'このユーザーがいいねしたバンドはまだありません。',
+        likedMerch: 'このユーザーがいいねしたマーチはまだありません。',
+      },
       toMerchIndex: 'マーチ一覧へ',
       toHome: 'ホームへ',
     },

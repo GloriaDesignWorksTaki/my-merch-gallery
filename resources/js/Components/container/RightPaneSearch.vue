@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LocaleSwitcher from '@/Components/parts/LocaleSwitcher.vue';
+import { IconSearch } from '@tabler/icons-vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -59,21 +60,30 @@ function submitSearch() {
         {{ t('rightPane.heading') }}
       </p>
       <form class="mt-3 space-y-3" @submit.prevent="submitSearch">
-        <input
-          v-model="searchInput"
-          type="search"
-          name="q"
-          autocomplete="off"
-          :placeholder="t('rightPane.placeholder')"
-          class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 text-slate-800 placeholder:text-slate-400 shadow-[0_10px_30px_rgba(125,166,214,0.12)] focus:border-sky-300/70 focus:ring-sky-200/60"
-          :class="variant === 'panel' ? 'px-4 py-3' : 'px-3 py-2 text-sm'"
-        />
+        <div class="relative">
+          <IconSearch
+            class="pointer-events-none absolute top-1/2 -translate-y-1/2 text-slate-400"
+            :class="variant === 'panel' ? 'left-4' : 'left-3'"
+            :size="variant === 'panel' ? 20 : 18"
+            aria-hidden="true"
+          />
+          <input
+            v-model="searchInput"
+            type="search"
+            name="q"
+            autocomplete="off"
+            :placeholder="t('rightPane.placeholder')"
+            class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 text-slate-800 placeholder:text-slate-400 shadow-[0_10px_30px_rgba(125,166,214,0.12)] focus:border-sky-300/70 focus:ring-sky-200/60"
+            :class="variant === 'panel' ? 'py-3 pl-11 pr-4' : 'py-2 pl-10 pr-3 text-sm'"
+          />
+        </div>
         <div class="flex justify-end">
           <button
             type="submit"
-            class="w-full rounded-2xl border border-white/50 bg-white/70 font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 sm:w-auto"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 sm:w-auto"
             :class="variant === 'panel' ? 'px-6 py-3 text-sm' : 'px-4 py-2 text-xs'"
           >
+            <IconSearch :size="variant === 'panel' ? 18 : 16" class="shrink-0" aria-hidden="true" />
             {{ t('rightPane.submit') }}
           </button>
         </div>
