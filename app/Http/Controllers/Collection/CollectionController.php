@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * コレクション（一覧はプレースホルダー）
+ * @package App\Http\Controllers\Collection
+ */
 namespace App\Http\Controllers\Collection;
 
 use App\Http\Controllers\Controller;
@@ -8,11 +11,8 @@ use Inertia\Response;
 
 class CollectionController extends Controller
 {
-  /**
-     * collections テーブル導入まではプレースホルダー。
-     */
   public function index(): Response
   {
-    return Inertia::render('Collections/Index');
+  return Inertia::render('Collections/Index');
   }
 }

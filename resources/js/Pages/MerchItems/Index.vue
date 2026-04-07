@@ -5,6 +5,7 @@ import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import FormSelect from '@/Components/form/FormSelect.vue';
 import TextInput from '@/Components/form/TextInput.vue';
 import SeoHead from '@/Components/seo/SeoHead.vue';
+import { IconSearch } from '@tabler/icons-vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import type { PaginatedList } from '@/types/inertia';
 import { Link, router } from '@inertiajs/vue3';
@@ -94,18 +95,26 @@ function onBandFilterApply(value: number | null | number[]) {
     <section class="glass-surface mt-7 p-5">
       <div class="space-y-4">
         <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
-          <TextInput
-            v-model="filterForm.search"
-            type="text"
-            class="min-w-0 w-full flex-1"
-            :placeholder="t('merch.filterSearchPlaceholder')"
-            @keyup.enter="applyFilters"
-          />
+          <div class="relative min-w-0 w-full flex-1">
+            <IconSearch
+              class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-400"
+              :size="18"
+              aria-hidden="true"
+            />
+            <TextInput
+              v-model="filterForm.search"
+              type="text"
+              class="min-w-0 w-full !pl-10"
+              :placeholder="t('merch.filterSearchPlaceholder')"
+              @keyup.enter="applyFilters"
+            />
+          </div>
           <button
             type="button"
-            class="w-full shrink-0 rounded-2xl border border-white/50 bg-white/70 px-5 py-3 text-sm font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 sm:w-auto sm:px-6"
+            class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 px-5 py-3 text-sm font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 sm:w-auto sm:px-6"
             @click="applyFilters"
           >
+            <IconSearch :size="18" class="shrink-0" aria-hidden="true" />
             {{ t('rightPane.submit') }}
           </button>
         </div>

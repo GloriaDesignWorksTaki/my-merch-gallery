@@ -1,0 +1,9 @@
+{
+  "intelephense.environment.includePaths": [
+    "${workspaceFolder}/vendor",
+    "${workspaceFolder}/app",
+    "${workspaceFolder}/tests",
+    "${workspaceFolder}/database"
+  ],
+  "intelephense.environment.phpVersion": "8.3.0"
+}

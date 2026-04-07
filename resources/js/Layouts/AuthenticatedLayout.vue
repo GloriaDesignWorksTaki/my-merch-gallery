@@ -7,6 +7,7 @@ import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
 import StatusBanner from '@/Components/container/StatusBanner.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import type { AuthUser } from '@/types';
+import { sidebarNavIcons } from '@/constants/sidebarIcons';
 import type { FooterMenuItem } from '@/types/sidebar';
 import { useI18n } from 'vue-i18n';
 
@@ -25,13 +26,24 @@ if (!authUser) {
 }
 
 const browseNavItems = computed(() => [
-  { label: t('layout.nav.home'), href: route('home'), active: route().current('home') },
-  { label: t('layout.nav.bandsIndex'), href: route('bands.index'), active: route().current('bands.index') || route().current('bands.show') },
-  { label: t('layout.nav.merchIndex'), href: route('merch-items.index'), active: route().current('merch-items.index') || route().current('merch-items.show') },
+  { label: t('layout.nav.home'), href: route('home'), active: route().current('home'), icon: 'home' as const },
+  {
+    label: t('layout.nav.bandsIndex'),
+    href: route('bands.index'),
+    active: route().current('bands.index') || route().current('bands.show'),
+    icon: 'bands' as const,
+  },
+  {
+    label: t('layout.nav.merchIndex'),
+    href: route('merch-items.index'),
+    active: route().current('merch-items.index') || route().current('merch-items.show'),
+    icon: 'merch' as const,
+  },
   {
     label: t('layout.nav.dashboard'),
     href: route('dashboard'),
     active: route().current('dashboard') && !route().current('dashboard.likes'),
+    icon: 'dashboard' as const,
   },
 ]);
 
@@ -44,11 +56,18 @@ const sidebarSections = computed(() => [
 ]);
 
 const footerMenuItems = computed((): FooterMenuItem[] => {
-  const items: FooterMenuItem[] = [{ label: t('layout.nav.profile'), href: route('profile.edit') }];
+  const items: FooterMenuItem[] = [{ label: t('layout.nav.profile'), href: route('profile.edit'), icon: 'profile' }];
   if (authUser.role === 'admin' || authUser.role === 'owner') {
-    items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard') });
+    items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard'), icon: 'admin' });
   }
-  items.push({ label: t('layout.nav.logout'), href: route('logout'), method: 'post', as: 'button', danger: true });
+  items.push({
+    label: t('layout.nav.logout'),
+    href: route('logout'),
+    method: 'post',
+    as: 'button',
+    danger: true,
+    icon: 'logout',
+  });
 
   return items;
 });
@@ -61,7 +80,8 @@ const sidebarProps = computed(() => ({
   primarySections: sidebarSections.value,
   ctaLabel: t('layout.nav.bandRegister'),
   ctaHref: route('bands.create'),
-  ctaActions: [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create') }],
+  ctaIcon: 'bandRegister' as const,
+  ctaActions: [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create'), icon: 'merchRegister' as const }],
   footerTitle: authUser.name,
   footerSubtitle: `@${authUser.username}`,
   footerAvatarUrl: authUser.avatar_path ? `/storage/${authUser.avatar_path}` : null,
@@ -130,10 +150,17 @@ const sidebarProps = computed(() => ({
           v-for="item in browseNavItems.slice(0, 4)"
           :key="item.label"
           :href="item.href"
-          class="flex flex-col items-center justify-center px-2 py-3 text-[11px] font-semibold transition"
+          class="flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 text-[11px] font-semibold transition"
           :class="item.active ? 'text-slate-900' : 'text-slate-500'"
         >
-          {{ item.label }}
+          <component
+            v-if="item.icon"
+            :is="sidebarNavIcons[item.icon]"
+            class="h-6 w-6"
+            :class="item.active ? 'text-sky-800' : 'text-slate-400'"
+            aria-hidden="true"
+          />
+          <span class="max-w-[4.5rem] truncate text-center leading-tight">{{ item.label }}</span>
         </Link>
       </div>
     </nav>

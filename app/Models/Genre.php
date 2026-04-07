@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * ジャンルマスタのモデル定義
+ * @package App\Models
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +14,6 @@ class Genre extends Model
     'name',
     'slug',
   ];
-
   public function bands(): BelongsToMany
   {
     return $this->belongsToMany(Band::class)->withTimestamps();

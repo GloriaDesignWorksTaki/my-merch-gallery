@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 通知一覧・既読処理
+ * @package App\Http\Controllers
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
@@ -9,32 +12,32 @@ use Inertia\Response;
 
 class NotificationController extends Controller
 {
-    public function index(Request $request): Response
-    {
-        $notifications = $request->user()
-            ->notifications()
-            ->paginate(30)
-            ->withQueryString();
+  public function index(Request $request): Response
+  {
+    $notifications = $request->user()
+      ->notifications()
+      ->paginate(30)
+      ->withQueryString();
 
-        return Inertia::render('Notifications/Index', [
-            'notifications' => $notifications,
-        ]);
+    return Inertia::render('Notifications/Index', [
+      'notifications' => $notifications,
+    ]);
+  }
+
+  public function read(Request $request, string $id): RedirectResponse
+  {
+    $notification = $request->user()->notifications()->where('id', $id)->firstOrFail();
+    if ($notification->read_at === null) {
+      $notification->markAsRead();
     }
 
-    public function read(Request $request, string $id): RedirectResponse
-    {
-        $notification = $request->user()->notifications()->where('id', $id)->firstOrFail();
-        if ($notification->read_at === null) {
-            $notification->markAsRead();
-        }
+    return back();
+  }
 
-        return back();
-    }
+  public function readAll(Request $request): RedirectResponse
+  {
+    $request->user()->unreadNotifications->markAsRead();
 
-    public function readAll(Request $request): RedirectResponse
-    {
-        $request->user()->unreadNotifications->markAsRead();
-
-        return back();
-    }
+    return back();
+  }
 }

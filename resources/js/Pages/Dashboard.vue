@@ -25,14 +25,9 @@ defineProps<{
   <SeoHead page="dashboard" />
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">{{ t('dashboard.eyebrow') }}</p>
-          <h2 class="mt-2 text-2xl font-semibold leading-tight text-slate-800">{{ t('dashboard.title') }}</h2>
-        </div>
-        <div class="glass-panel rounded-full px-4 py-2 text-sm text-slate-600">
-          {{ t('dashboard.badge') }}
-        </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.35em] text-sky-600/70">{{ t('dashboard.eyebrow') }}</p>
+        <h2 class="mt-2 text-2xl font-semibold leading-tight text-slate-800">{{ t('dashboard.title') }}</h2>
       </div>
     </template>
 

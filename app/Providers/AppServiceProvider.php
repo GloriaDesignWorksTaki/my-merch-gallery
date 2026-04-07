@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 起動時の横断設定
+ * @package App\Providers
+ */
 namespace App\Providers;
 
 use App\Models\Band;
@@ -12,26 +15,20 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
+  public function register(): void
+  {
+    // 何もしない
+  }
+  public function boot(): void
+  {
+    // 表示を速くする
+    Vite::prefetch(concurrency: 3);
+    // 管理画面はスタッフのみ
+    Gate::define('access-admin', fn (User $user): bool => $user->isStaff());
+    // 件数表示を最新に保つ
+    foreach ([Band::class, MerchItem::class] as $modelClass) {
+      $modelClass::created(static fn () => InertiaShared::forgetGlobalStatsCache());
+      $modelClass::deleted(static fn () => InertiaShared::forgetGlobalStatsCache());
     }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        Vite::prefetch(concurrency: 3);
-
-        Gate::define('access-admin', fn (User $user): bool => $user->isStaff());
-
-        foreach ([Band::class, MerchItem::class] as $modelClass) {
-            $modelClass::created(static fn () => InertiaShared::forgetGlobalStatsCache());
-            $modelClass::deleted(static fn () => InertiaShared::forgetGlobalStatsCache());
-        }
-    }
+  }
 }

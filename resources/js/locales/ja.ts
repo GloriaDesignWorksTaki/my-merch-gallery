@@ -119,7 +119,6 @@ export default {
     categoryNav: '検索カテゴリ',
     title: { default: '検索', withQuery: '「{q}」の検索結果' },
     tabs: { bands: 'バンド', merch: 'マーチ' },
-    hint: '右ペインの検索窓にキーワードを入力し、Enter または検索ボタンで結果を表示します。',
     empty: {
       bands: '該当するバンドはありません。',
       merch: '該当するマーチはありません。',
@@ -242,6 +241,7 @@ export default {
     password: 'パスワード',
     remember: 'ログイン状態を保持する',
     forgotLink: 'パスワードをお忘れですか？',
+    backToLogin: 'ログインに戻る',
     loginButton: 'ログイン',
     name: '名前',
     username: 'ユーザー名',
@@ -262,7 +262,6 @@ export default {
   dashboard: {
     title: 'マイページ',
     eyebrow: 'ワークスペース',
-    badge: 'MVP コントロール',
     recentBands: '最近登録したバンド',
     recentMerch: '最近登録したマーチ',
     profileSection: 'プロフィール整備',
@@ -276,7 +275,7 @@ export default {
     emptyMerch: 'まだマーチ登録がありません。',
     likesTitle: 'いいね履歴',
     likesEyebrow: 'Activity',
-    likesHint: 'いいねしたバンド・マーチをタブで切り替えて確認できます。',
+    likesHint: 'いいねしたバンド・マーチを確認できます。',
     likesEmptyBands: 'いいねしたバンドはまだありません。',
     likesEmptyMerch: 'いいねしたマーチはまだありません。',
   },
@@ -288,7 +287,6 @@ export default {
       'バンドマーチ、それはレコードやCDと並びアーカイブとして保存されるべきもの...\nあなたの自慢のバンドマーチを皆さんにシェアしてください。',
     linkBands: 'バンド一覧へ',
     linkMerch: 'マーチ一覧へ',
-    linkSearch: '検索へ',
     recentMerch: '最近追加されたマーチ',
     featuredBands: '注目バンド',
     more: 'もっと見る',
@@ -397,7 +395,7 @@ export default {
   pages: {
     merch: {
       editHead: '{name} を編集',
-      registeredBy: '登録者 {username}',
+      registeredByTitle: '登録者',
       listCrumb: 'マーチ一覧',
       editAction: '編集する',
       detailEyebrow: 'マーチ詳細',
@@ -455,7 +453,17 @@ export default {
       lead: 'MVP では collections テーブルは未作成です。次フェーズで所有リストをここに接続します。',
     },
     users: {
-      merchCommentsCount: 'マーチへのコメント {count} 件',
+      activityNav: 'ユーザーのアクティビティ',
+      tabs: {
+        posts: '投稿したマーチ',
+        likedBands: 'いいねしたバンド',
+        likedMerch: 'いいねしたマーチ',
+      },
+      empty: {
+        posts: 'このユーザーが投稿したマーチはまだありません。',
+        likedBands: 'このユーザーがいいねしたバンドはまだありません。',
+        likedMerch: 'このユーザーがいいねしたマーチはまだありません。',
+      },
       toMerchIndex: 'マーチ一覧へ',
       toHome: 'ホームへ',
     },

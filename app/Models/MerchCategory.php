@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * マーチカテゴリマスタのモデル定義
+ * @package App\Models
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +15,6 @@ class MerchCategory extends Model
     'slug',
     'sort_order',
   ];
-
   public function merchItems(): HasMany
   {
     return $this->hasMany(MerchItem::class);

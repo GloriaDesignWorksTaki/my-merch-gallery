@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * バンドいいねの付け外し
+ * @package App\Http\Controllers\Band
+ */
 namespace App\Http\Controllers\Band;
 
 use App\Http\Controllers\Controller;
@@ -10,22 +13,22 @@ use Illuminate\Support\Facades\DB;
 
 class BandLikeController extends Controller
 {
-    public function toggle(Request $request, Band $band): RedirectResponse
-    {
-        $this->authorize('like', $band);
+  public function toggle(Request $request, Band $band): RedirectResponse
+  {
+    $this->authorize('like', $band);
 
-        $userId = $request->user()->id;
+    $userId = $request->user()->id;
 
-        DB::transaction(function () use ($band, $userId) {
-            $like = $band->likes()->where('user_id', $userId)->first();
+    DB::transaction(function () use ($band, $userId) {
+      $like = $band->likes()->where('user_id', $userId)->first();
 
-            if ($like !== null) {
-                $like->delete();
-            } else {
-                $band->likes()->create(['user_id' => $userId]);
-            }
-        });
+      if ($like !== null) {
+        $like->delete();
+      } else {
+        $band->likes()->create(['user_id' => $userId]);
+      }
+    });
 
-        return back();
-    }
+    return back();
+  }
 }

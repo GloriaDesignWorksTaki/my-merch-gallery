@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 新規ユーザー登録
+ * @package App\Http\Controllers\Auth
+ */
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -21,24 +24,24 @@ class RegisteredUserController extends Controller
    */
   public function store(Request $request): RedirectResponse
   {
-    $request->validate([
-      'name' => 'required|string|max:255',
-      'username' => 'required|string|max:255|regex:/^[a-zA-Z0-9_]+$/|unique:'.User::class,
-      'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-      'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    ]);
+  $request->validate([
+  'name' => 'required|string|max:255',
+  'username' => 'required|string|max:255|regex:/^[a-zA-Z0-9_]+$/|unique:'.User::class,
+  'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+  'password' => ['required', 'confirmed', Rules\Password::defaults()],
+  ]);
 
-    $user = User::create([
-      'name' => $request->name,
-      'username' => $request->username,
-      'email' => $request->email,
-      'password' => Hash::make($request->password),
-    ]);
+  $user = User::create([
+  'name' => $request->name,
+  'username' => $request->username,
+  'email' => $request->email,
+  'password' => Hash::make($request->password),
+  ]);
 
-    event(new Registered($user));
+  event(new Registered($user));
 
-    Auth::login($user);
+  Auth::login($user);
 
-    return redirect(route('dashboard', absolute: false));
+  return redirect(route('dashboard', absolute: false));
   }
 }

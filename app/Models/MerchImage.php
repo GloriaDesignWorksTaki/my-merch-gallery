@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * マーチ画像のモデル定義
+ * @package App\Models
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +16,6 @@ class MerchImage extends Model
     'alt_text',
     'sort_order',
   ];
-
   public function merchItem(): BelongsTo
   {
     return $this->belongsTo(MerchItem::class);

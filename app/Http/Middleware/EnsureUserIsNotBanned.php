@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * BAN ユーザーをログアウトしてホームへ
+ * @package App\Http\Middleware
+ */
 namespace App\Http\Middleware;
 
 use Closure;
@@ -9,19 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsNotBanned
 {
-    public function handle(Request $request, Closure $next): Response
-    {
-        $user = $request->user();
+  public function handle(Request $request, Closure $next): Response
+  {
+    $user = $request->user();
 
-        if ($user !== null && $user->isBanned()) {
-            Auth::logout();
+    if ($user !== null && $user->isBanned()) {
+      Auth::logout();
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+      $request->session()->invalidate();
+      $request->session()->regenerateToken();
 
-            return redirect()->route('home', ['auth' => 'login'])->with('status', 'account-banned');
-        }
-
-        return $next($request);
+      return redirect()->route('home', ['auth' => 'login'])->with('status', 'account-banned');
     }
+
+    return $next($request);
+  }
 }

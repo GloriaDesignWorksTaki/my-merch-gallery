@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * モデル内で重複しない slug を生成
+ * @package App\Support
+ */
 namespace App\Support;
 
 use Illuminate\Database\Eloquent\Model;

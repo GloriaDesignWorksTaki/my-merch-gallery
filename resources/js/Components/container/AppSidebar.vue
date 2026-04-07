@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import AppButton from '@/Components/parts/AppButton.vue';
 import ApplicationLogo from '@/Components/parts/ApplicationLogo.vue';
+import { footerMenuIcons, sidebarCtaIcons, sidebarNavIcons } from '@/constants/sidebarIcons';
 import type {
   FooterMenuItem,
   FooterMenuPlacement,
   SidebarCtaAction,
+  SidebarCtaIcon,
   SidebarNavSection,
 } from '@/types/sidebar';
+import { IconChevronDown } from '@tabler/icons-vue';
 import { fallbackVisitAuthLoginModal, fallbackVisitAuthRegisterModal } from '@/utils/authModalFallback';
 import { Link } from '@inertiajs/vue3';
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -27,6 +30,8 @@ const props = withDefaults(defineProps<{
   ctaLabel: string;
   ctaHref?: string | null;
   ctaAuthModal?: boolean;
+  /** 未指定時はログインモーダル→login、リンクCTA→bandRegister */
+  ctaIcon?: SidebarCtaIcon;
   ctaActions?: SidebarCtaAction[];
   footerTitle: string;
   footerSubtitle?: string;
@@ -45,6 +50,7 @@ const props = withDefaults(defineProps<{
   mobileAuthModal: false,
   ctaHref: null,
   ctaAuthModal: false,
+  ctaIcon: undefined,
   footerAvatarUrl: null,
   footerAvatarFocusX: 50,
   footerAvatarFocusY: 50,
@@ -183,6 +189,26 @@ watch(
     updateDropdownPosition();
   },
 );
+
+const resolvedPrimaryCtaIcon = computed((): SidebarCtaIcon => {
+  if (props.ctaIcon) {
+    return props.ctaIcon;
+  }
+  if (props.ctaAuthModal) {
+    return 'login';
+  }
+  return 'bandRegister';
+});
+
+function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
+  if (action.icon) {
+    return action.icon;
+  }
+  if (action.useRegisterModal) {
+    return 'signup';
+  }
+  return 'merchRegister';
+}
 </script>
 
 <template>
@@ -232,13 +258,19 @@ watch(
                 :href="item.href"
                 :method="item.method"
                 :as="item.as"
-                class="flex items-center rounded-2xl px-4 py-3 font-medium transition"
+                class="flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition"
                 :class="[
                   section.compact ? 'py-2.5 text-base' : 'py-2.5 text-base',
                   item.active ? 'bg-white/70 text-slate-900 shadow-sm' : 'text-slate-700 hover:bg-white/45',
                 ]"
               >
-                {{ item.label }}
+                <component
+                  v-if="item.icon"
+                  :is="sidebarNavIcons[item.icon]"
+                  class="h-5 w-5 shrink-0 text-current"
+                  aria-hidden="true"
+                />
+                <span class="min-w-0 flex-1 leading-snug">{{ item.label }}</span>
               </Link>
             </nav>
           </section>
@@ -249,10 +281,11 @@ watch(
               variant="white"
               size="lg"
               radius="md"
-              extra-class="w-full"
+              extra-class="w-full gap-2"
               native-type="button"
               @click="openAuthLogin"
             >
+              <component :is="sidebarCtaIcons[resolvedPrimaryCtaIcon]" class="h-5 w-5 shrink-0" aria-hidden="true" />
               {{ ctaLabel }}
             </AppButton>
             <AppButton
@@ -261,8 +294,9 @@ watch(
               variant="white"
               size="lg"
               radius="md"
-              extra-class="w-full"
+              extra-class="w-full gap-2"
             >
+              <component :is="sidebarCtaIcons[resolvedPrimaryCtaIcon]" class="h-5 w-5 shrink-0" aria-hidden="true" />
               {{ ctaLabel }}
             </AppButton>
             <template v-for="action in ctaActions ?? []" :key="action.label">
@@ -271,10 +305,11 @@ watch(
                 variant="signup"
                 size="lg"
                 radius="md"
-                extra-class="w-full"
+                extra-class="w-full gap-2"
                 native-type="button"
                 @click="openAuthRegister"
               >
+                <component :is="sidebarCtaIcons[resolvedActionIcon(action)]" class="h-5 w-5 shrink-0" aria-hidden="true" />
                 {{ action.label }}
               </AppButton>
               <AppButton
@@ -283,8 +318,9 @@ watch(
                 variant="signup"
                 size="lg"
                 radius="md"
-                extra-class="w-full"
+                extra-class="w-full gap-2"
               >
+                <component :is="sidebarCtaIcons[resolvedActionIcon(action)]" class="h-5 w-5 shrink-0" aria-hidden="true" />
                 {{ action.label }}
               </AppButton>
             </template>
@@ -313,10 +349,16 @@ watch(
             />
             <span v-else>{{ footerTitle.slice(0, 1) }}</span>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-semibold text-slate-800">{{ footerTitle }}</p>
             <p v-if="footerSubtitle" class="truncate text-sm text-slate-500">{{ footerSubtitle }}</p>
           </div>
+          <IconChevronDown
+            :size="20"
+            class="shrink-0 text-slate-400 transition-transform duration-200"
+            :class="menuOpen ? 'rotate-180' : ''"
+            aria-hidden="true"
+          />
         </div>
         <p v-if="footerMeta" class="mt-3 text-sm text-slate-500">{{ footerMeta }}</p>
       </button>
@@ -357,7 +399,7 @@ watch(
           :method="item.method"
           :as="item.as"
           role="menuitem"
-          class="flex min-h-[2.75rem] w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium leading-snug transition"
+          class="flex min-h-[2.75rem] w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium leading-snug transition"
           :class="
             item.danger
               ? 'text-rose-700 hover:bg-rose-50 focus-visible:bg-rose-50 focus-visible:outline-none'
@@ -365,7 +407,14 @@ watch(
           "
           @click="closeMenu"
         >
-          {{ item.label }}
+          <component
+            v-if="item.icon"
+            :is="footerMenuIcons[item.icon]"
+            class="h-5 w-5 shrink-0"
+            :class="item.danger ? 'text-rose-600' : 'text-slate-500'"
+            aria-hidden="true"
+          />
+          <span class="min-w-0 flex-1">{{ item.label }}</span>
         </Link>
       </div>
     </Teleport>

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 国マスタのモデル定義
+ * @package App\Models
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +14,6 @@ class Country extends Model
     'name',
     'iso_code',
   ];
-
   public function bands(): HasMany
   {
     return $this->hasMany(Band::class);

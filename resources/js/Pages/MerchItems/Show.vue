@@ -11,6 +11,7 @@ import SeoHead from '@/Components/seo/SeoHead.vue';
 import type { AuthUser } from '@/types';
 import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { IconUser } from '@tabler/icons-vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
@@ -27,7 +28,15 @@ type MerchShow = {
   band: { id: number; name: string; slug: string };
   category: { name: string; slug: string };
   images: { image_path: string; alt_text: string | null }[];
-  creator?: { name: string; username: string } | null;
+  creator?: {
+    id: number;
+    name: string;
+    username: string;
+    avatar_path?: string | null;
+    avatar_focus_x?: number | null;
+    avatar_focus_y?: number | null;
+    avatar_zoom?: number | null;
+  } | null;
   likes_count?: number;
   liked?: boolean;
 };
@@ -78,6 +87,13 @@ function isOwnComment(userId: number): boolean {
   const u = authUser.value;
   return u !== null && u.id === userId;
 }
+
+function creatorAvatarStyle(c: NonNullable<MerchShow['creator']>) {
+  return {
+    objectPosition: `${c.avatar_focus_x ?? 50}% ${c.avatar_focus_y ?? 50}%`,
+    transform: `scale(${c.avatar_zoom ?? 1})`,
+  };
+}
 </script>
 
 <template>
@@ -104,9 +120,32 @@ function isOwnComment(userId: number): boolean {
             <span v-if="merchItem.is_official"> · {{ t('search.official') }}</span>
             <span v-if="merchItem.size_note"> · {{ t('pages.merch.sizeNoteShort', { note: merchItem.size_note }) }}</span>
           </p>
-          <p v-if="merchItem.creator" class="mt-2 text-sm text-slate-500">
-            {{ t('pages.merch.registeredBy', { username: `@${merchItem.creator.username}` }) }}
-          </p>
+          <div v-if="merchItem.creator" class="mt-4">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-700/80">
+              {{ t('pages.merch.registeredByTitle') }}
+            </p>
+            <Link
+              :href="route('users.show', merchItem.creator.id)"
+              class="mt-2 flex max-w-md items-center gap-3 rounded-2xl border border-white/35 bg-white/30 p-3 pr-4 transition hover:border-white/50 hover:bg-white/45"
+            >
+              <div
+                class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/45 bg-white/55 text-slate-400"
+              >
+                <img
+                  v-if="merchItem.creator.avatar_path"
+                  :src="`/storage/${merchItem.creator.avatar_path}`"
+                  :alt="merchItem.creator.name"
+                  class="h-full w-full object-cover"
+                  :style="creatorAvatarStyle(merchItem.creator)"
+                />
+                <IconUser v-else :size="26" stroke="1.75" aria-hidden="true" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-base font-semibold text-slate-800">{{ merchItem.creator.name }}</p>
+                <p class="truncate text-sm text-slate-500">@{{ merchItem.creator.username }}</p>
+              </div>
+            </Link>
+          </div>
         </div>
         <div class="flex flex-wrap items-center justify-end gap-3">
           <LikeToggleInline
