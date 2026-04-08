@@ -32,6 +32,15 @@ class Band extends Model
     'is_active',
     'image_path',
   ];
+
+  protected static function booted(): void
+  {
+    static::creating(function (Band $band): void {
+      if (blank($band->uuid)) {
+        $band->uuid = (string) Str::uuid();
+      }
+    });
+  }
   protected function casts(): array
   {
     return [

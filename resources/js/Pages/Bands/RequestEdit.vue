@@ -82,7 +82,7 @@ const submit = () => form.post(route('bands.edit-request.store', props.band.slug
           <div>
             <InputLabel for="country_id" :value="t('forms.band.country')" />
             <FormSelect id="country_id" v-model="form.country_id" class="mt-1 block w-full">
-              <option value="">{{ t('forms.post.unselected') }}</option>
+              <option value="">{{ t('common.noneSelected') }}</option>
               <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
             </FormSelect>
             <InputError class="mt-2" :message="form.errors.country_id" />
