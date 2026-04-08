@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
+import UpdateThemeForm from './Partials/UpdateThemeForm.vue';
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import { useI18n } from 'vue-i18n';
 
@@ -36,6 +37,10 @@ defineProps<{
           :email-verified-at="emailVerifiedAt"
           class="max-w-xl"
         />
+      </div>
+
+      <div class="glass-surface p-6 sm:p-8">
+        <UpdateThemeForm />
       </div>
 
       <div class="glass-surface p-6 sm:p-8">

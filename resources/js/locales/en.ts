@@ -391,6 +391,11 @@ export default {
     catalogEyebrow: 'Catalog',
     communityEyebrow: 'Community',
     accountEyebrow: 'Account',
+    themeEyebrow: 'Appearance',
+    themeTitle: 'Theme',
+    themeLight: 'Light (default)',
+    themeDark: 'Dark',
+    themePrimary: 'Primary',
   },
   pages: {
     merch: {

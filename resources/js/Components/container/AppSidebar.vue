@@ -212,16 +212,16 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
 </script>
 
 <template>
-  <header v-if="showMobile" class="sticky top-0 z-30 border-b border-white/30 bg-white/25 backdrop-blur-2xl md:hidden">
+  <header v-if="showMobile" class="app-mobile-header">
     <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3">
-      <Link :href="homeHref" class="flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/40 p-1.5">
+      <Link :href="homeHref" class="app-mobile-header-logo">
         <ApplicationLogo class="h-full w-full object-contain" />
       </Link>
       <div class="text-base font-semibold tracking-[0.18em] text-slate-800">{{ mobileTitle }}</div>
       <button
         v-if="mobileAuthModal"
         type="button"
-        class="rounded-full border border-white/50 bg-white/40 px-4 py-1.5 text-sm font-semibold text-slate-700"
+        class="app-mobile-header-cta"
         @click="openAuthLogin"
       >
         {{ mobileActionLabel }}
@@ -229,7 +229,7 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
       <Link
         v-else-if="mobileActionHref"
         :href="mobileActionHref"
-        class="rounded-full border border-white/50 bg-white/40 px-4 py-1.5 text-sm font-semibold text-slate-700"
+        class="app-mobile-header-cta"
       >
         {{ mobileActionLabel }}
       </Link>
@@ -240,17 +240,20 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
   <aside v-if="showDesktop" class="sticky top-0 hidden h-screen w-[290px] shrink-0 px-4 py-5 lg:block">
     <div class="flex h-full flex-col justify-between">
       <div>
-        <Link :href="homeHref" class="flex h-14 w-14 items-center justify-center rounded-full p-2 transition hover:bg-white/35">
+        <Link
+          :href="homeHref"
+          class="flex h-14 w-14 items-center justify-center rounded-full p-2 transition hover:bg-white/35 theme-light:hover:bg-slate-200/90 theme-primary:hover:bg-white/35 dark:hover:bg-slate-800/50"
+        >
           <ApplicationLogo class="h-full w-full object-contain" />
         </Link>
 
-        <div class="mt-4 rounded-[2rem] border border-white/40 bg-white/32 p-4 shadow-[0_20px_60px_rgba(148,163,184,0.12)] backdrop-blur-xl">
+        <div class="app-sidebar-nav-card mt-4">
           <section
             v-for="section in primarySections"
             :key="section.title"
-            :class="section === primarySections[0] ? '' : 'mt-6 rounded-3xl border border-white/35 bg-white/35 p-3'"
+            :class="section === primarySections[0] ? '' : 'app-sidebar-inner-section'"
           >
-            <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700/70">{{ section.title }}</p>
+            <p class="app-sidebar-section-title px-3 text-[11px] font-semibold uppercase tracking-[0.28em]">{{ section.title }}</p>
             <nav class="mt-3 space-y-1.5" :class="section.scrollable ? 'max-h-56 overflow-y-auto pr-1' : ''">
               <Link
                 v-for="item in section.items"
@@ -261,7 +264,7 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
                 class="flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition"
                 :class="[
                   section.compact ? 'py-2.5 text-base' : 'py-2.5 text-base',
-                  item.active ? 'bg-white/70 text-slate-900 shadow-sm' : 'text-slate-700 hover:bg-white/45',
+                  item.active ? 'app-sidebar-nav-link-active' : 'app-sidebar-nav-link-idle',
                 ]"
               >
                 <component
@@ -332,14 +335,14 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
         v-if="showFooter && footerMenuItems?.length"
         ref="footerRoot"
         type="button"
-        class="rounded-[2rem] border border-white/40 bg-white/35 p-5 text-left backdrop-blur-xl transition hover:bg-white/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/50"
+        class="app-sidebar-footer-btn"
         :aria-expanded="menuOpen"
         :aria-label="t('layout.sidebar.footerMenuAria')"
         aria-haspopup="menu"
         @click.stop="toggleMenu"
       >
         <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/50 bg-white/55 text-sm font-semibold text-slate-500">
+          <div class="app-sidebar-avatar-ring flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl text-sm font-semibold">
             <img
               v-if="footerAvatarUrl"
               :src="footerAvatarUrl"
@@ -363,9 +366,9 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
         <p v-if="footerMeta" class="mt-3 text-sm text-slate-500">{{ footerMeta }}</p>
       </button>
 
-      <div v-else-if="showFooter" class="rounded-[2rem] border border-white/40 bg-white/35 p-5 backdrop-blur-xl">
+      <div v-else-if="showFooter" class="app-sidebar-footer-static">
         <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/50 bg-white/55 text-sm font-semibold text-slate-500">
+          <div class="app-sidebar-avatar-ring flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl text-sm font-semibold">
             <img
               v-if="footerAvatarUrl"
               :src="footerAvatarUrl"
@@ -388,7 +391,7 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
       <div
         v-if="menuOpen && footerMenuItems?.length"
         ref="panelRef"
-        class="z-[200] flex flex-col gap-0.5 rounded-2xl border border-white/40 bg-white/95 p-1.5 text-sm shadow-xl backdrop-blur-md"
+        class="app-sidebar-dropdown"
         :style="dropdownStyle"
         role="menu"
       >
@@ -402,8 +405,8 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
           class="flex min-h-[2.75rem] w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium leading-snug transition"
           :class="
             item.danger
-              ? 'text-rose-700 hover:bg-rose-50 focus-visible:bg-rose-50 focus-visible:outline-none'
-              : 'text-slate-700 hover:bg-slate-100/90 focus-visible:bg-slate-100/90 focus-visible:outline-none'
+              ? 'text-rose-700 hover:bg-rose-50 focus-visible:bg-rose-50 focus-visible:outline-none dark:text-rose-300 dark:hover:bg-rose-950/60 dark:focus-visible:bg-rose-950/60'
+              : 'app-sidebar-dropdown-link'
           "
           @click="closeMenu"
         >

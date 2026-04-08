@@ -1,3 +1,5 @@
+export type AppTheme = 'light' | 'dark' | 'primary';
+
 export interface AuthUser {
   id: number;
   name: string;
@@ -8,6 +10,7 @@ export interface AuthUser {
   avatar_focus_y?: number;
   avatar_zoom?: number;
   role?: string;
+  theme?: AppTheme;
 }
 
 export type PageProps<

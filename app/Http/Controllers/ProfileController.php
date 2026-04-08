@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -64,6 +65,17 @@ class ProfileController extends Controller
     }
 
     $user->save();
+
+    return Redirect::route('profile.edit');
+  }
+
+  public function updateTheme(Request $request): RedirectResponse
+  {
+    $validated = $request->validate([
+      'theme' => ['required', 'string', Rule::in(['light', 'dark', 'primary'])],
+    ]);
+
+    $request->user()->update(['theme' => $validated['theme']]);
 
     return Redirect::route('profile.edit');
   }

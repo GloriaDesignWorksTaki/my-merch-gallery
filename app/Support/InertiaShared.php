@@ -48,6 +48,7 @@ final class InertiaShared
       'avatar_focus_y' => $user->avatar_focus_y,
       'avatar_zoom' => $user->avatar_zoom,
       'role' => $user->role,
+      'theme' => $user->theme ?? 'light',
     ];
   }
 }

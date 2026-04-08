@@ -30,8 +30,8 @@ function setLocale(code: string) {
       class="rounded-full px-2.5 py-1 text-xs font-semibold transition"
       :class="
         current === item.code
-          ? 'bg-white/70 text-slate-900 shadow-sm'
-          : 'text-slate-600 hover:bg-white/40'
+          ? 'bg-white/70 text-slate-900 shadow-sm theme-light:border theme-light:border-slate-300 theme-light:bg-white theme-light:shadow-md dark:bg-slate-700 dark:text-slate-100 dark:shadow-none'
+          : 'text-slate-600 hover:bg-white/40 theme-light:text-slate-700 theme-light:hover:bg-slate-200 theme-light:hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/80'
       "
       @click="setLocale(item.code)"
     >

@@ -185,10 +185,10 @@ const sidebarProps = computed(() => ({
 </script>
 
 <template>
-  <div class="min-h-screen text-slate-700">
+  <div class="app-chrome min-h-screen text-slate-700">
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
-      <div class="absolute left-[-12rem] top-[-6rem] h-80 w-80 rounded-full bg-sky-500/12 blur-3xl" />
-      <div class="absolute bottom-[-8rem] right-[-10rem] h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div class="app-shell-blob-p1" />
+      <div class="app-shell-blob-p2" />
     </div>
 
     <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
@@ -206,7 +206,7 @@ const sidebarProps = computed(() => ({
     <div class="mx-auto flex min-h-screen max-w-[1440px] justify-center gap-4 px-0 md:px-5 xl:gap-6">
       <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
-      <main class="min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x border-white/30 pb-24 md:pb-10">
+      <main class="app-main-column-border min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x pb-24 md:pb-10">
         <div class="px-4 py-5 sm:px-6 sm:py-7">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
@@ -222,7 +222,7 @@ const sidebarProps = computed(() => ({
           </div>
           <RightPaneSearch variant="panel" />
           </div>
-          <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500">
+          <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500 theme-light:text-slate-600 dark:text-slate-300">
             {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
           </p>
         </div>
@@ -231,21 +231,27 @@ const sidebarProps = computed(() => ({
 
     <nav class="fixed inset-x-0 bottom-0 z-30 px-3 pb-3 md:hidden">
       <div
-        class="mx-auto grid rounded-[1.75rem] border border-white/40 bg-white/55 shadow-[0_10px_35px_rgba(148,163,184,0.18)] backdrop-blur-2xl"
+        class="app-mobile-nav mx-auto grid rounded-[1.75rem]"
         :class="user ? 'max-w-lg grid-cols-4' : 'max-w-md grid-cols-3'"
       >
         <Link
           v-for="item in mobileBottomNavItems"
           :key="item.label"
           :href="item.href"
-          class="flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 text-[11px] font-semibold transition"
-          :class="item.active ? 'text-slate-900' : 'text-slate-500'"
+          class="flex flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2.5 text-[11px] font-semibold transition"
+          :class="
+            item.active
+              ? 'text-slate-900 theme-light:bg-slate-200/70'
+              : 'text-slate-500 theme-light:hover:bg-slate-200/60 theme-light:hover:text-slate-800 theme-light:active:bg-slate-300/50 theme-primary:hover:bg-white/25 dark:hover:bg-slate-800/35'
+          "
         >
           <component
             v-if="item.icon"
             :is="sidebarNavIcons[item.icon]"
             class="h-6 w-6"
-            :class="item.active ? 'text-sky-800' : 'text-slate-400'"
+            :class="
+              item.active ? 'text-sky-800 theme-light:text-sky-900' : 'text-slate-400 theme-light:text-slate-600'
+            "
             aria-hidden="true"
           />
           <span class="max-w-[4.5rem] truncate text-center leading-tight">{{ item.label }}</span>

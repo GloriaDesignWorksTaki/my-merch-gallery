@@ -8,6 +8,7 @@ import type { DefineComponent, Plugin } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import LoadingLogoOverlay from '@/Components/container/LoadingLogoOverlay.vue';
 import { createAppI18n, isAppLocale, type AppLocale } from '@/i18n';
+import { syncAppTheme } from '@/composables/useAppTheme';
 
 let documentTitleAppName = 'My Merch Gallery';
 
@@ -45,6 +46,7 @@ createInertiaApp({
     plugin: Plugin;
   }) {
     syncDocumentTitleAppName(props.initialPage.props);
+    syncAppTheme(props.initialPage.props);
 
     const initialLocale = props.initialPage.props.locale;
     const i18n = createAppI18n(typeof initialLocale === 'string' ? initialLocale : undefined);
@@ -54,6 +56,7 @@ createInertiaApp({
       'success',
       (event: { detail: { page: { props: Record<string, unknown> } } }) => {
         syncDocumentTitleAppName(event.detail.page.props);
+        syncAppTheme(event.detail.page.props);
         const loc = event.detail.page.props.locale;
         if (isAppLocale(loc)) {
           i18n.global.locale.value = loc;
