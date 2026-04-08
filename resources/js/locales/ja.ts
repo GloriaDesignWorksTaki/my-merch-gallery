@@ -391,6 +391,11 @@ export default {
     catalogEyebrow: 'カタログ',
     communityEyebrow: 'コミュニティ',
     accountEyebrow: 'アカウント',
+    themeEyebrow: '表示',
+    themeTitle: 'テーマ',
+    themeLight: 'ライト（デフォルト）',
+    themeDark: 'ダーク',
+    themePrimary: 'プライマリー',
   },
   pages: {
     merch: {

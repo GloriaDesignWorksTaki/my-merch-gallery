@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
   <div
-    class="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0"
+    class="app-chrome flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0"
   >
     <div class="flex w-full max-w-md flex-col items-stretch gap-4 px-4 sm:px-0">
       <div class="flex items-center justify-between gap-3">
