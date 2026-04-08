@@ -37,13 +37,21 @@ const combinedClass = computed(() =>
 
 const mergedClass = computed(() => [combinedClass.value, attrs.class].filter(Boolean));
 
+const shouldAutofocus = computed(() => {
+  if (!('autofocus' in attrs)) {
+    return false;
+  }
+  const v = attrs.autofocus;
+  return v !== false && v !== 'false' && v !== 0 && v !== '0';
+});
+
 const controlAttrs = computed(() => {
-  const { class: _, ...rest } = attrs as Record<string, unknown>;
+  const { class: _, autofocus: _a, ...rest } = attrs as Record<string, unknown>;
   return rest;
 });
 
 onMounted(() => {
-  if (selectRef.value?.hasAttribute('autofocus')) {
+  if (shouldAutofocus.value) {
     selectRef.value?.focus();
   }
 });

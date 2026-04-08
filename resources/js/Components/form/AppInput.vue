@@ -37,13 +37,22 @@ const combinedClass = computed(() =>
 
 const mergedClass = computed(() => [combinedClass.value, attrs.class].filter(Boolean));
 
+/** ネイティブ `autofocus` と onMounted の focus を両方付けるとブラウザ警告になるため、属性は DOM に渡さない */
+const shouldAutofocus = computed(() => {
+  if (!('autofocus' in attrs)) {
+    return false;
+  }
+  const v = attrs.autofocus;
+  return v !== false && v !== 'false' && v !== 0 && v !== '0';
+});
+
 const inputAttrs = computed(() => {
-  const { class: _, ...rest } = attrs as Record<string, unknown>;
+  const { class: _, autofocus: _a, ...rest } = attrs as Record<string, unknown>;
   return rest;
 });
 
 onMounted(() => {
-  if (inputRef.value?.hasAttribute('autofocus')) {
+  if (shouldAutofocus.value) {
     inputRef.value?.focus();
   }
 });
