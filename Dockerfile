@@ -20,6 +20,16 @@ RUN { \
     echo 'max_file_uploads = 20'; \
     } > /usr/local/etc/php/conf.d/uploads.ini
 
+# 本番レスポンス向上のための OPcache
+RUN { \
+    echo 'opcache.enable=1'; \
+    echo 'opcache.enable_cli=1'; \
+    echo 'opcache.memory_consumption=192'; \
+    echo 'opcache.interned_strings_buffer=16'; \
+    echo 'opcache.max_accelerated_files=20000'; \
+    echo 'opcache.validate_timestamps=0'; \
+    } > /usr/local/etc/php/conf.d/opcache-prod.ini
+
 # Install Node.js 22 + npm
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \
@@ -41,5 +51,5 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 
 EXPOSE 10000
 
-# 起動前にマイグレーション・storage:link を実行
-CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+# 起動前にマイグレーション・storage:link・キャッシュ最適化を実行
+CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan config:cache && php artisan view:cache && PHP_CLI_SERVER_WORKERS=${PHP_CLI_SERVER_WORKERS:-4} php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
