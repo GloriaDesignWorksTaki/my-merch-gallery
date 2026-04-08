@@ -6,7 +6,9 @@ use App\Http\Controllers\Band\BandLikeController;
 use App\Http\Controllers\Collection\CollectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardLikesController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegacyWelcomeController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MerchItem\MerchItemCommentController;
 use App\Http\Controllers\MerchItem\MerchItemCommentLikeController;
@@ -17,9 +19,7 @@ use App\Http\Controllers\NotificationDropdownController;
 use App\Http\Controllers\Profile\PublicProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -33,14 +33,7 @@ Route::get('/search', SearchController::class)->name('search');
 
 Route::get('/users/{user}', [PublicProfileController::class, 'show'])->whereNumber('user')->name('users.show');
 
-Route::get('/welcome-legacy', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('welcome.legacy');
+Route::get('/welcome-legacy', LegacyWelcomeController::class)->name('welcome.legacy');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -87,8 +80,6 @@ Route::get('/bands/{band:slug}', [BandController::class, 'show'])->name('bands.s
 
 Route::get('/merch-items/{merchItem:slug}', [MerchItemController::class, 'show'])->name('merch-items.show');
 
-Route::get('/health', function () {
-  return response()->json(['status' => 'ok']);
-});
+Route::get('/health', HealthController::class);
 
 require __DIR__.'/auth.php';

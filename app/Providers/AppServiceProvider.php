@@ -21,8 +21,10 @@ class AppServiceProvider extends ServiceProvider
   }
   public function boot(): void
   {
-    // 表示を速くする
-    Vite::prefetch(concurrency: 3);
+    // 開発時のみ prefetch を有効化（本番では初期遷移の帯域圧迫を避ける）
+    if ($this->app->environment('local')) {
+      Vite::prefetch(concurrency: 3);
+    }
     // 管理画面はスタッフのみ
     Gate::define('access-admin', fn (User $user): bool => $user->isStaff());
     // 件数表示を最新に保つ
