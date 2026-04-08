@@ -87,4 +87,8 @@ Route::get('/bands/{band:slug}', [BandController::class, 'show'])->name('bands.s
 
 Route::get('/merch-items/{merchItem:slug}', [MerchItemController::class, 'show'])->name('merch-items.show');
 
+Route::get('/health', function () {
+  return response()->json(['status' => 'ok']);
+});
+
 require __DIR__.'/auth.php';
