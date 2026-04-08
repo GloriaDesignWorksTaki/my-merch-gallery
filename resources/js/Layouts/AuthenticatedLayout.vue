@@ -84,7 +84,7 @@ const sidebarProps = computed(() => ({
   ctaActions: [{ label: t('layout.nav.merchRegister'), href: route('merch-items.create'), icon: 'merchRegister' as const }],
   footerTitle: authUser.name,
   footerSubtitle: `@${authUser.username}`,
-  footerAvatarUrl: authUser.avatar_path ? `/storage/${authUser.avatar_path}` : null,
+  footerAvatarUrl: authUser.avatar_url ?? null,
   footerAvatarFocusX: authUser.avatar_focus_x ?? 50,
   footerAvatarFocusY: authUser.avatar_focus_y ?? 50,
   footerAvatarZoom: authUser.avatar_zoom ?? 1,

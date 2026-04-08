@@ -47,6 +47,35 @@ return [
             'report' => false,
         ],
 
+        /*
+        | アバター・バンド画像・マーチ画像など「公開アップロード」一式。
+        | ローカルは storage/app/public（従来どおり）、本番は Cloudflare R2 等 S3 互換を想定。
+        | FILESYSTEM_UPLOAD_DRIVER=s3 と AWS_* / R2 のエンドポイントを設定。
+        */
+        'uploads' => match (env('FILESYSTEM_UPLOAD_DRIVER', 'local')) {
+            's3' => [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION', 'auto'),
+                'bucket' => env('AWS_BUCKET'),
+                'url' => env('AWS_URL'),
+                'endpoint' => env('AWS_ENDPOINT'),
+                'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', 'true') !== 'false',
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ],
+            default => [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ],
+        },
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

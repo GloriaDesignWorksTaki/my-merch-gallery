@@ -69,8 +69,8 @@ function confirmDelete() {
         :title="comment.user.name"
       >
         <img
-          v-if="comment.user.avatar_path"
-          :src="`/storage/${comment.user.avatar_path}`"
+          v-if="comment.user.avatar_url"
+          :src="comment.user.avatar_url"
           :alt="comment.user.name"
           class="h-full w-full object-cover"
           :style="{

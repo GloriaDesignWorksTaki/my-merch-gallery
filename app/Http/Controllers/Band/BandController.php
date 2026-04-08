@@ -96,7 +96,7 @@ class BandController extends Controller
   BandUpdater::syncLinks($band, $payload['links'] ?? []);
 
   if ($request->hasFile('image')) {
-    $path = $request->file('image')->store('bands', 'public');
+    $path = $request->file('image')->store('bands', 'uploads');
     $band->update(['image_path' => $path]);
   }
 

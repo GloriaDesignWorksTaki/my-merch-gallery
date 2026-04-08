@@ -77,7 +77,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_avatar_can_be_uploaded_and_adjusted(): void
     {
-        Storage::fake('public');
+        Storage::fake('uploads');
 
         $user = User::factory()->create();
 
@@ -104,7 +104,7 @@ class ProfileTest extends TestCase
         $this->assertSame(25, $user->avatar_focus_x);
         $this->assertSame(70, $user->avatar_focus_y);
         $this->assertSame(1.45, $user->avatar_zoom);
-        $this->assertTrue(Storage::disk('public')->exists($user->avatar_path));
+        $this->assertTrue(Storage::disk('uploads')->exists($user->avatar_path));
     }
 
     public function test_user_can_delete_their_account(): void

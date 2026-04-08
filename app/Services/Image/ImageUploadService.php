@@ -11,6 +11,6 @@ class ImageUploadService
 {
   public function storeMerchImage(UploadedFile $file): string
   {
-    return $file->store('merch', ['disk' => 'public']);
+    return $file->store('merch', ['disk' => 'uploads']);
   }
 }

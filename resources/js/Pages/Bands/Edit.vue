@@ -27,6 +27,7 @@ const props = defineProps<{
     is_active: boolean;
     slug?: string;
     image_path?: string | null;
+    image_url?: string | null;
   };
   countries: { id: number; name: string }[];
   genres: { id: number; name: string }[];
@@ -132,9 +133,9 @@ const submit = () =>
 
         <div>
           <InputLabel for="band-image" :value="t('forms.band.bandImage')" />
-          <div v-if="band.image_path && !form.remove_image && !newImagePreviewUrl" class="mt-2 flex items-center gap-3">
+          <div v-if="band.image_url && !form.remove_image && !newImagePreviewUrl" class="mt-2 flex items-center gap-3">
             <img
-              :src="`/storage/${band.image_path}`"
+              :src="band.image_url"
               alt=""
               class="h-24 w-24 rounded-2xl border border-white/50 object-cover"
             />
@@ -155,7 +156,7 @@ const submit = () =>
               {{ t('forms.band.removeBandImage') }}
             </button>
           </div>
-          <label v-if="band.image_path" class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+          <label v-if="band.image_url" class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-slate-600">
             <input v-model="form.remove_image" type="checkbox" class="rounded border-white/40 text-sky-600 shadow-sm focus:ring-sky-200/60" />
             {{ t('forms.band.removeBandImage') }}
           </label>

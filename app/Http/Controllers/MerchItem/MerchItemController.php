@@ -255,7 +255,7 @@ class MerchItemController extends Controller
   ->when($existingImageIds !== [], fn ($collection) => $collection->whereNotIn('id', $existingImageIds), fn ($collection) => $collection);
 
   foreach ($imagesToDelete as $image) {
-  Storage::disk('public')->delete($image->image_path);
+  Storage::disk('uploads')->delete($image->image_path);
   }
 
   if ($imagesToDelete->isNotEmpty()) {
@@ -266,7 +266,7 @@ class MerchItemController extends Controller
   ->max('sort_order');
 
   foreach ($images as $index => $image) {
-  $path = $image->store('merch-items', 'public');
+  $path = $image->store('merch-items', 'uploads');
 
   $merchItem->images()->create([
     'image_path' => $path,

@@ -5,6 +5,7 @@ import LikeToggleInline from '@/Components/parts/LikeToggleInline.vue';
 import GuestGateLink from '@/Components/parts/GuestGateLink.vue';
 import PageContextBar from '@/Components/container/PageContextBar.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { CoverImageJson, MerchImageJson } from '@/types/uploadAssets';
 import type { MerchCommentNode } from '@/types/merchComment';
 import type { PaginatedList } from '@/types/inertia';
 import SeoHead from '@/Components/seo/SeoHead.vue';
@@ -27,12 +28,13 @@ type MerchShow = {
   is_official: boolean;
   band: { id: number; name: string; slug: string };
   category: { name: string; slug: string };
-  images: { image_path: string; alt_text: string | null }[];
+  images: MerchImageJson[];
   creator?: {
     id: number;
     name: string;
     username: string;
     avatar_path?: string | null;
+    avatar_url?: string | null;
     avatar_focus_x?: number | null;
     avatar_focus_y?: number | null;
     avatar_zoom?: number | null;
@@ -51,7 +53,7 @@ const props = defineProps<{
     slug: string;
     release_year?: number | null;
     is_official: boolean;
-    cover_image?: { image_path: string; alt_text?: string | null } | null;
+    cover_image?: CoverImageJson | null;
     likes_count?: number;
     liked?: boolean;
   }[];
@@ -132,8 +134,8 @@ function creatorAvatarStyle(c: NonNullable<MerchShow['creator']>) {
                 class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/45 bg-white/55 text-slate-400"
               >
                 <img
-                  v-if="merchItem.creator.avatar_path"
-                  :src="`/storage/${merchItem.creator.avatar_path}`"
+                  v-if="merchItem.creator.avatar_url"
+                  :src="merchItem.creator.avatar_url"
                   :alt="merchItem.creator.name"
                   class="h-full w-full object-cover"
                   :style="creatorAvatarStyle(merchItem.creator)"
@@ -165,7 +167,7 @@ function creatorAvatarStyle(c: NonNullable<MerchShow['creator']>) {
 
       <div v-if="merchItem.images.length" class="mt-6 grid gap-4 sm:grid-cols-2">
         <div v-for="(img, i) in merchItem.images" :key="i" class="overflow-hidden rounded-2xl border border-white/40 bg-white/45">
-          <img :src="`/storage/${img.image_path}`" :alt="img.alt_text || merchItem.name" class="w-full object-cover" />
+          <img :src="img.image_url" :alt="img.alt_text || merchItem.name" class="w-full object-cover" />
         </div>
       </div>
       <p v-if="merchItem.description" class="mt-6 text-slate-600">{{ merchItem.description }}</p>
@@ -181,7 +183,7 @@ function creatorAvatarStyle(c: NonNullable<MerchShow['creator']>) {
           <div class="flex items-start justify-between gap-3">
             <Link :href="route('merch-items.show', item.slug)" class="flex min-w-0 flex-1 items-center gap-4 hover:opacity-90">
               <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
-                <img v-if="item.cover_image" :src="`/storage/${item.cover_image.image_path}`" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
+                <img v-if="item.cover_image" :src="item.cover_image.image_url" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
               </div>
               <div class="min-w-0">
                 <p class="font-medium text-slate-800">{{ item.name }}</p>

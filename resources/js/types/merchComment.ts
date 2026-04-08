@@ -3,6 +3,7 @@ export type MerchCommentUser = {
   name: string;
   username: string;
   avatar_path?: string | null;
+  avatar_url?: string | null;
   avatar_focus_x?: number | null;
   avatar_focus_y?: number | null;
   avatar_zoom?: number | null;

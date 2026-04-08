@@ -15,6 +15,7 @@ type BandRow = {
   name: string;
   slug: string;
   image_path?: string | null;
+  image_url?: string | null;
   country?: { name: string } | null;
   merch_items_count?: number;
   likes_count?: number;
@@ -108,7 +109,7 @@ const letterLinks = computed(() => {
                   v-if="b.image_path"
                   class="relative shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/40"
                 >
-                  <img :src="`/storage/${b.image_path}`" alt="" class="h-12 w-12 object-cover sm:h-14 sm:w-14" />
+                  <img v-if="b.image_url" :src="b.image_url" alt="" class="h-12 w-12 object-cover sm:h-14 sm:w-14" />
                 </span>
                 <p class="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 sm:text-base">
                   {{ b.name }}<template v-if="b.country"><span class="font-normal text-slate-500"> · {{ b.country.name }}</span></template>

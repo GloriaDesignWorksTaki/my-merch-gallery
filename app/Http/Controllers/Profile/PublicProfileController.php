@@ -34,6 +34,7 @@ class PublicProfileController extends Controller
     'username' => $user->username,
     'bio' => $user->bio,
     'avatar_path' => $user->avatar_path,
+    'avatar_url' => $user->avatar_url,
     'avatar_focus_x' => $user->avatar_focus_x,
     'avatar_focus_y' => $user->avatar_focus_y,
     'avatar_zoom' => $user->avatar_zoom,

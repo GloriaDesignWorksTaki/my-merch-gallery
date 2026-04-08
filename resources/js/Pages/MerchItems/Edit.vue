@@ -9,6 +9,7 @@ import InputLabel from '@/Components/form/InputLabel.vue';
 import PrimaryButton from '@/Components/parts/PrimaryButton.vue';
 import TextInput from '@/Components/form/TextInput.vue';
 import SeoHead from '@/Components/seo/SeoHead.vue';
+import type { MerchImageJson } from '@/types/uploadAssets';
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -27,7 +28,7 @@ const props = defineProps<{
     size_note?: string | null;
     is_official: boolean;
     source_type: string;
-    images: { id: number; image_path: string; alt_text: string | null }[];
+    images: MerchImageJson[];
   };
   bands: { id: number; name: string }[];
   categories: { id: number; name: string }[];
@@ -38,6 +39,7 @@ const existingImages = ref(
   props.merchItem.images.map((image) => ({
     id: image.id,
     image_path: image.image_path,
+    image_url: image.image_url,
     alt_text: image.alt_text,
   })),
 );
@@ -205,7 +207,7 @@ const submit = () =>
                 class="relative overflow-hidden rounded-2xl border border-white/40 bg-white/30"
               >
                 <img
-                  :src="`/storage/${image.image_path}`"
+                  :src="image.image_url"
                   :alt="image.alt_text || merchItem.name"
                   class="w-full object-cover"
                 />
