@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
           <p class="text-sm text-slate-600">{{ t('profile.avatarDragHint') }}</p>
           <label class="block">
             <span class="text-sm font-medium text-slate-700">{{ t('profile.zoom') }}</span>
-            <input v-model.number="form.avatar_zoom" type="range" min="1" max="2.5" step="0.05" class="mt-2 w-full" autofocus />
+            <input v-model.number="form.avatar_zoom" type="range" min="1" max="2.5" step="0.05" class="mt-2 w-full" />
           </label>
         </div>
 
