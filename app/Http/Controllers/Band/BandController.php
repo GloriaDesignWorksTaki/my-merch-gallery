@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,8 +32,13 @@ class BandController extends Controller
   ? $selectedLetter
   : '';
 
+  $bandSelectColumns = ['id', 'name', 'slug', 'country_id', 'image_path'];
+  if (Schema::hasColumn('bands', 'uuid')) {
+  $bandSelectColumns[] = 'uuid';
+  }
+
   $query = Band::query()
-  ->select(['id', 'uuid', 'name', 'slug', 'country_id', 'image_path'])
+  ->select($bandSelectColumns)
   ->with('country:id,name')
   ->withCount(['merchItems', 'likes']);
 

@@ -69,6 +69,7 @@ createInertiaApp({
     let showTimer: ReturnType<typeof setTimeout> | null = null;
     let shownAt: number | null = null;
     let hideTimer: ReturnType<typeof setTimeout> | null = null;
+    const SHOW_DELAY_MS = 300;
     const MIN_VISIBLE_MS = 220;
 
     const onStart = () => {
@@ -83,7 +84,7 @@ createInertiaApp({
       showTimer = setTimeout(() => {
         isLoading.value = true;
         shownAt = Date.now();
-      }, 0);
+      }, SHOW_DELAY_MS);
     };
     const onFinish = () => {
       if (showTimer) {
