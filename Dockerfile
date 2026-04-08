@@ -52,4 +52,4 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 EXPOSE 10000
 
 # 起動前にマイグレーション・storage:link・キャッシュ最適化を実行
-CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan config:cache && php artisan view:cache && PHP_CLI_SERVER_WORKERS=${PHP_CLI_SERVER_WORKERS:-4} php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan config:cache && php artisan view:cache && PHP_CLI_SERVER_WORKERS=${PHP_CLI_SERVER_WORKERS:-4} php artisan serve --host=0.0.0.0 --port=${PORT:-10000} --no-reload"]
