@@ -108,13 +108,14 @@ const stop = () => {
 };
 
 const start = async () => {
+  await nextTick();
+
   elements = {};
   for (const part of parts) {
     elements[part.id] = document.getElementById(part.id) as SVGElement | null;
   }
 
   startTime = null;
-  await nextTick();
   resetVisual();
 
   const tick = (ts: number) => {
