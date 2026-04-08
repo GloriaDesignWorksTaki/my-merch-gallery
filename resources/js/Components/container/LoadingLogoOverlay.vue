@@ -218,14 +218,26 @@ onBeforeUnmount(() => stop());
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: #fff;
-  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(125, 166, 214, 0.18), transparent 42%),
+    radial-gradient(circle at 86% 84%, rgba(165, 147, 224, 0.16), transparent 46%),
+    rgba(244, 249, 255, 0.92);
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2rem;
   z-index: 9999;
+  transition: opacity 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+:global(.dark) .loading-overlay {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(80, 120, 190, 0.26), transparent 42%),
+    radial-gradient(circle at 86% 84%, rgba(120, 110, 190, 0.22), transparent 46%),
+    rgba(15, 23, 42, 0.86);
 }
 
 .logo-svg {
