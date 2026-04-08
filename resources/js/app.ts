@@ -67,22 +67,44 @@ createInertiaApp({
 
     const isLoading = ref(false);
     let showTimer: ReturnType<typeof setTimeout> | null = null;
+    let shownAt: number | null = null;
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+    const MIN_VISIBLE_MS = 220;
 
     const onStart = () => {
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
       if (showTimer) {
         clearTimeout(showTimer);
       }
 
       showTimer = setTimeout(() => {
         isLoading.value = true;
-      }, 150);
+        shownAt = Date.now();
+      }, 0);
     };
     const onFinish = () => {
       if (showTimer) {
         clearTimeout(showTimer);
         showTimer = null;
       }
-      isLoading.value = false;
+      if (!isLoading.value) {
+        return;
+      }
+      const elapsed = shownAt ? Date.now() - shownAt : MIN_VISIBLE_MS;
+      const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
+      if (wait === 0) {
+        isLoading.value = false;
+        shownAt = null;
+        return;
+      }
+      hideTimer = setTimeout(() => {
+        isLoading.value = false;
+        shownAt = null;
+        hideTimer = null;
+      }, wait);
     };
 
     const offStart = router.on('start', onStart);
@@ -100,6 +122,9 @@ createInertiaApp({
           offError();
           if (showTimer) {
             clearTimeout(showTimer);
+          }
+          if (hideTimer) {
+            clearTimeout(hideTimer);
           }
         });
         return {};
