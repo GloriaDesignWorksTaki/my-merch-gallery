@@ -3,6 +3,7 @@ import SeoHead from '@/Components/seo/SeoHead.vue';
 import LikeToggleInline from '@/Components/parts/LikeToggleInline.vue';
 import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import type { PaginatedList } from '@/types/inertia';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -16,6 +17,7 @@ type PublicUser = {
   username: string;
   bio?: string | null;
   avatar_path?: string | null;
+  avatar_url?: string | null;
   avatar_focus_x?: number;
   avatar_focus_y?: number;
   avatar_zoom?: number;
@@ -32,7 +34,7 @@ type MerchRow = {
   is_official: boolean;
   band: { name: string; slug: string };
   category?: { name: string } | null;
-  cover_image?: { image_path: string; alt_text?: string | null } | null;
+  cover_image?: CoverImageJson | null;
   likes_count?: number;
   liked?: boolean;
 };
@@ -42,6 +44,7 @@ type BandRow = {
   name: string;
   slug: string;
   image_path?: string | null;
+  image_url?: string | null;
   country?: { name: string } | null;
   merch_items_count?: number;
   likes_count?: number;
@@ -83,8 +86,8 @@ const tabItems = computed(() => [
       <div class="flex items-start gap-4">
         <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/40 bg-white/55 text-2xl font-semibold text-slate-500">
           <img
-            v-if="profileUser.avatar_path"
-            :src="`/storage/${profileUser.avatar_path}`"
+            v-if="profileUser.avatar_url"
+            :src="profileUser.avatar_url"
             alt=""
             class="h-full w-full object-cover"
             :style="{
@@ -128,7 +131,7 @@ const tabItems = computed(() => [
                 <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
                   <img
                     v-if="item.cover_image"
-                    :src="`/storage/${item.cover_image.image_path}`"
+                    :src="item.cover_image.image_url"
                     :alt="item.cover_image.alt_text || item.name"
                     class="h-full w-full object-cover"
                   />
@@ -161,8 +164,8 @@ const tabItems = computed(() => [
             <li v-for="b in likedBands.data" :key="b.id">
               <div class="flex items-center gap-2 px-4 py-5 sm:gap-4">
                 <Link :href="route('bands.show', b.slug)" class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4 hover:opacity-90">
-                  <span v-if="b.image_path" class="relative shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/40">
-                    <img :src="`/storage/${b.image_path}`" alt="" class="h-12 w-12 object-cover sm:h-14 sm:w-14" />
+                  <span v-if="b.image_url" class="relative shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/40">
+                    <img :src="b.image_url" alt="" class="h-12 w-12 object-cover sm:h-14 sm:w-14" />
                   </span>
                   <p class="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 sm:text-base">
                     {{ b.name }}<template v-if="b.country"><span class="font-normal text-slate-500"> · {{ b.country.name }}</span></template>
@@ -193,7 +196,7 @@ const tabItems = computed(() => [
                 <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
                   <img
                     v-if="item.cover_image"
-                    :src="`/storage/${item.cover_image.image_path}`"
+                    :src="item.cover_image.image_url"
                     :alt="item.cover_image.alt_text || item.name"
                     class="h-full w-full object-cover"
                   />

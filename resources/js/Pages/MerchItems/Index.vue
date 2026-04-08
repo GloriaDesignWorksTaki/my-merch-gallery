@@ -7,6 +7,7 @@ import TextInput from '@/Components/form/TextInput.vue';
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import { IconSearch } from '@tabler/icons-vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import type { PaginatedList } from '@/types/inertia';
 import { Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
@@ -22,7 +23,7 @@ type MerchRow = {
   is_official: boolean;
   band: { name: string; slug: string };
   category?: { name: string } | null;
-  cover_image?: { image_path: string; alt_text?: string | null } | null;
+  cover_image?: CoverImageJson | null;
   likes_count?: number;
   liked?: boolean;
 };
@@ -162,7 +163,7 @@ function onBandFilterApply(value: number | null | number[]) {
                 <div class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/50 bg-white/50 shadow-sm">
                   <img
                     v-if="item.cover_image"
-                    :src="`/storage/${item.cover_image.image_path}`"
+                    :src="item.cover_image.image_url"
                     :alt="item.cover_image.alt_text || item.name"
                     class="h-full w-full object-cover"
                   />

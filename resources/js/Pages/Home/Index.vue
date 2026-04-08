@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
@@ -9,7 +10,7 @@ const { t } = useI18n();
 defineProps<{
   featured: {
     bands: { id: number; name: string; slug: string }[];
-    merchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: { image_path: string; alt_text?: string | null } | null }[];
+    merchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: CoverImageJson | null }[];
   };
 }>();
 </script>
@@ -64,7 +65,7 @@ defineProps<{
               <div
                 class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45 theme-light:border-slate-300 theme-light:bg-slate-50 dark:border-slate-600/60 dark:bg-slate-900/60"
               >
-                <img v-if="item.cover_image" :src="`/storage/${item.cover_image.image_path}`" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
+                <img v-if="item.cover_image" :src="item.cover_image.image_url" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
               </div>
               <div>
                 <p class="font-medium text-slate-800">{{ item.name }}</p>

@@ -47,7 +47,7 @@ final class BandUpdater
   {
     if ($request->boolean('remove_image')) {
       if ($band->image_path !== null) {
-        Storage::disk('public')->delete($band->image_path);
+        Storage::disk('uploads')->delete($band->image_path);
       }
       $band->forceFill(['image_path' => null])->save();
 
@@ -56,9 +56,9 @@ final class BandUpdater
 
     if ($request->hasFile('image')) {
       if ($band->image_path !== null) {
-        Storage::disk('public')->delete($band->image_path);
+        Storage::disk('uploads')->delete($band->image_path);
       }
-      $path = $request->file('image')->store('bands', 'public');
+      $path = $request->file('image')->store('bands', 'uploads');
       $band->forceFill(['image_path' => $path])->save();
     }
   }

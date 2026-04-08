@@ -2,6 +2,7 @@
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import CompactPagination from '@/Components/parts/CompactPagination.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import type { PaginatedList } from '@/types/inertia';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -26,7 +27,7 @@ type MerchRow = {
   is_official: boolean;
   band: { name: string; slug: string };
   category?: { name: string } | null;
-  cover_image?: { image_path: string; alt_text?: string | null } | null;
+  cover_image?: CoverImageJson | null;
 };
 
 const props = defineProps<{
@@ -115,7 +116,7 @@ const seoParams = computed(() => ({ q: props.q }));
                   <div class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
                     <img
                       v-if="item.cover_image"
-                      :src="`/storage/${item.cover_image.image_path}`"
+                      :src="item.cover_image.image_url"
                       :alt="item.cover_image.alt_text || item.name"
                       class="h-full w-full object-cover"
                     />

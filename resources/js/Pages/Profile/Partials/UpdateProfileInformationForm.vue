@@ -28,7 +28,7 @@ if (!user) {
 
 const avatarInput = ref<HTMLInputElement | null>(null);
 const avatarEditorOpen = ref(false);
-const avatarPreviewUrl = ref<string | null>(user.avatar_path ? `/storage/${user.avatar_path}` : null);
+const avatarPreviewUrl = ref<string | null>(user.avatar_url ?? null);
 const avatarDragArea = ref<HTMLElement | null>(null);
 const isDraggingAvatar = ref(false);
 let objectUrl: string | null = null;

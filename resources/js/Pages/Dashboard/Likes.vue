@@ -2,6 +2,7 @@
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CompactPagination from '@/Components/parts/CompactPagination.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import type { PaginatedList } from '@/types/inertia';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -18,7 +19,7 @@ type MerchNested = {
   name: string;
   slug: string;
   band: { name: string; slug: string };
-  cover_image?: { image_path: string; alt_text?: string | null } | null;
+  cover_image?: CoverImageJson | null;
 };
 
 type MerchLikeRow = {
@@ -135,7 +136,7 @@ const merchTabRows = computed(() => {
                   <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
                     <img
                       v-if="merch.cover_image"
-                      :src="`/storage/${merch.cover_image.image_path}`"
+                      :src="merch.cover_image.image_url"
                       :alt="merch.cover_image.alt_text || merch.name"
                       class="h-full w-full object-cover"
                     />

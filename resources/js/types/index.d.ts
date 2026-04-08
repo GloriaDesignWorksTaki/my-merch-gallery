@@ -6,6 +6,7 @@ export interface AuthUser {
   username: string;
   bio?: string | null;
   avatar_path?: string | null;
+  avatar_url?: string | null;
   avatar_focus_x?: number;
   avatar_focus_y?: number;
   avatar_zoom?: number;

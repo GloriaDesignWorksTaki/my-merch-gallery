@@ -13,6 +13,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_pgsql zip \
     && rm -rf /var/lib/apt/lists/*
 
+# 画像アップロード（複数枚・multipart）で 8MB 既定を超えると 413 / post size 警告になるため
+RUN { \
+    echo 'upload_max_filesize = 32M'; \
+    echo 'post_max_size = 48M'; \
+    echo 'max_file_uploads = 20'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 # Install Node.js 22 + npm
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \
@@ -34,5 +41,5 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 
 EXPOSE 10000
 
-# 起動前にマイグレーションを実行
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+# 起動前にマイグレーション・storage:link を実行
+CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]

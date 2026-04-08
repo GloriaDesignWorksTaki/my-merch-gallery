@@ -5,14 +5,21 @@
  */
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Band extends Model
 {
+  protected $appends = [
+    'image_url',
+  ];
+
   protected $fillable = [
     'created_by',
     'musicbrainz_id',
@@ -85,5 +92,19 @@ class Band extends Model
       ->replaceMatches('/\s+/', ' ')
       ->trim()
       ->toString();
+  }
+
+  protected function imageUrl(): Attribute
+  {
+    return Attribute::get(function (): ?string {
+      if ($this->image_path === null || $this->image_path === '') {
+        return null;
+      }
+
+      /** @var FilesystemAdapter $disk */
+      $disk = Storage::disk('uploads');
+
+      return $disk->url($this->image_path);
+    });
   }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SeoHead from '@/Components/seo/SeoHead.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import type { CoverImageJson } from '@/types/uploadAssets';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
@@ -12,7 +13,7 @@ defineProps<{
     merchItems: number;
   };
   recentBands: { id: number; name: string; slug: string }[];
-  recentMerchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: { image_path: string; alt_text?: string | null } | null }[];
+  recentMerchItems: { id: number; name: string; slug: string; band?: { name: string; slug: string } | null; cover_image?: CoverImageJson | null }[];
   profileHints: {
     bioMissing: boolean;
     avatarMissing: boolean;
@@ -68,7 +69,7 @@ defineProps<{
           <div class="mt-4 space-y-3">
             <Link v-for="item in recentMerchItems" :key="item.id" :href="route('merch-items.show', item.slug)" class="glass-panel flex items-center gap-4 rounded-2xl px-4 py-4 hover:bg-white/55">
               <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-white/40 bg-white/45">
-                <img v-if="item.cover_image" :src="`/storage/${item.cover_image.image_path}`" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
+                <img v-if="item.cover_image" :src="item.cover_image.image_url" :alt="item.cover_image.alt_text || item.name" class="h-full w-full object-cover" />
               </div>
               <div class="min-w-0">
                 <p class="font-medium text-slate-800">{{ item.name }}</p>

@@ -18,7 +18,7 @@ class MerchImageUploadTest extends TestCase
 
     public function test_user_can_create_a_merch_item_with_images(): void
     {
-        Storage::fake('public');
+        Storage::fake('uploads');
 
         $user = User::factory()->create();
         $band = $this->createBand($user);
@@ -53,13 +53,13 @@ class MerchImageUploadTest extends TestCase
         $this->assertCount(2, $merchItem->images);
 
         foreach ($merchItem->images as $image) {
-            $this->assertTrue(Storage::disk('public')->exists($image->image_path));
+            $this->assertTrue(Storage::disk('uploads')->exists($image->image_path));
         }
     }
 
     public function test_user_can_replace_merch_item_images_on_update(): void
     {
-        Storage::fake('public');
+        Storage::fake('uploads');
 
         $user = User::factory()->create();
         $band = $this->createBand($user);
@@ -76,7 +76,7 @@ class MerchImageUploadTest extends TestCase
             'source_type' => 'user_created',
         ]);
 
-        $oldPath = UploadedFile::fake()->image('old-merch.jpg')->store('merch-items', 'public');
+        $oldPath = UploadedFile::fake()->image('old-merch.jpg')->store('merch-items', 'uploads');
 
         MerchImage::query()->create([
             'merch_item_id' => $merchItem->id,
@@ -105,8 +105,8 @@ class MerchImageUploadTest extends TestCase
 
         $this->assertSame('New image', $merchItem->description);
         $this->assertCount(1, $merchItem->images);
-        $this->assertFalse(Storage::disk('public')->exists($oldPath));
-        $this->assertTrue(Storage::disk('public')->exists($merchItem->images->first()->image_path));
+        $this->assertFalse(Storage::disk('uploads')->exists($oldPath));
+        $this->assertTrue(Storage::disk('uploads')->exists($merchItem->images->first()->image_path));
     }
 
     protected function createBand(User $user): Band

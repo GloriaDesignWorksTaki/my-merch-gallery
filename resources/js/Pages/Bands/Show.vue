@@ -29,6 +29,7 @@ type BandShow = {
   slug: string;
   description: string | null;
   image_path?: string | null;
+  image_url?: string | null;
   country?: { name: string } | null;
   genres: { id: number; name: string }[];
   links: { id: number; url: string; sort_order: number }[];
@@ -103,11 +104,11 @@ function formatHistoryAt(iso: string) {
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="flex min-w-0 flex-1 flex-wrap items-start gap-4 sm:gap-5">
           <div
-            v-if="band.image_path"
+            v-if="band.image_url"
             class="shrink-0 overflow-hidden rounded-3xl border border-white/45 bg-white/30 shadow-sm"
           >
             <img
-              :src="`/storage/${band.image_path}`"
+              :src="band.image_url"
               :alt="band.name"
               class="h-28 w-28 object-cover sm:h-32 sm:w-32"
             />

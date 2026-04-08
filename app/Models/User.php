@@ -9,9 +9,12 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
   'name',
@@ -31,6 +34,10 @@ class User extends Authenticatable
 {
   /** @use HasFactory<UserFactory> */
   use HasFactory, Notifiable;
+
+  protected $appends = [
+    'avatar_url',
+  ];
 
   protected function casts(): array
   {
@@ -78,5 +85,19 @@ class User extends Authenticatable
   public function bandLikes()
   {
     return $this->hasMany(BandLike::class);
+  }
+
+  protected function avatarUrl(): Attribute
+  {
+    return Attribute::get(function (): ?string {
+      if ($this->avatar_path === null || $this->avatar_path === '') {
+        return null;
+      }
+
+      /** @var FilesystemAdapter $disk */
+      $disk = Storage::disk('uploads');
+
+      return $disk->url($this->avatar_path);
+    });
   }
 }

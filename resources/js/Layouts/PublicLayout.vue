@@ -155,7 +155,7 @@ const sidebarProps = computed(() => ({
     : [{ label: t('layout.mobile.signup'), useRegisterModal: true, icon: 'signup' as const }],
   footerTitle: user?.name ?? 'Gloria Design Works',
   footerSubtitle: user ? `@${user.username}` : '@GloriaDesignWKS',
-  footerAvatarUrl: user?.avatar_path ? `/storage/${user.avatar_path}` : null,
+  footerAvatarUrl: user?.avatar_url ?? null,
   footerAvatarFocusX: user?.avatar_focus_x ?? 50,
   footerAvatarFocusY: user?.avatar_focus_y ?? 50,
   footerAvatarZoom: user?.avatar_zoom ?? 1,

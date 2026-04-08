@@ -45,7 +45,7 @@ class ProfileController extends Controller
     ]);
 
     if (! empty($validated['remove_avatar']) && $user->avatar_path) {
-      Storage::disk('public')->delete($user->avatar_path);
+      Storage::disk('uploads')->delete($user->avatar_path);
       $user->avatar_path = null;
       $user->avatar_focus_x = 50;
       $user->avatar_focus_y = 50;
@@ -54,10 +54,10 @@ class ProfileController extends Controller
 
     if ($request->hasFile('avatar')) {
       if ($user->avatar_path) {
-        Storage::disk('public')->delete($user->avatar_path);
+        Storage::disk('uploads')->delete($user->avatar_path);
       }
 
-      $user->avatar_path = $request->file('avatar')->store('avatars', 'public');
+      $user->avatar_path = $request->file('avatar')->store('avatars', 'uploads');
     }
 
     if ($user->isDirty('email')) {
@@ -91,7 +91,7 @@ class ProfileController extends Controller
     Auth::logout();
 
     if ($user->avatar_path) {
-      Storage::disk('public')->delete($user->avatar_path);
+      Storage::disk('uploads')->delete($user->avatar_path);
     }
 
     $user->delete();
