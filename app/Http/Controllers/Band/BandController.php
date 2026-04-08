@@ -32,7 +32,7 @@ class BandController extends Controller
   : '';
 
   $query = Band::query()
-  ->select(['id', 'name', 'slug', 'country_id', 'image_path'])
+  ->select(['id', 'uuid', 'name', 'slug', 'country_id', 'image_path'])
   ->with('country:id,name')
   ->withCount(['merchItems', 'likes']);
 

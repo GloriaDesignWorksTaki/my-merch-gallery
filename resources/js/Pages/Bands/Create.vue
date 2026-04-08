@@ -68,6 +68,7 @@ const linkError = (index: number) => form.errors[`links.${index}` as keyof typeo
 const selectedGenres = computed(() =>
   props.genres.filter((genre) => form.genre_ids.includes(genre.id)),
 );
+const isUploadingImage = computed(() => form.processing && form.image !== null);
 
 const submit = () => form.post(route('bands.store'), { forceFormData: true });
 </script>
@@ -88,7 +89,7 @@ const submit = () => form.post(route('bands.store'), { forceFormData: true });
         <FormErrorSummary :errors="form.errors" />
         <div class="flex flex-wrap items-center justify-between gap-3">
           <Link :href="route('bands.index')" class="glass-link text-sm font-medium">{{ t('forms.band.backToBandsList') }}</Link>
-          <Link :href="route('dashboard')" class="glass-link text-sm font-medium">{{ t('forms.post.toDashboard') }}</Link>
+          <Link :href="route('dashboard')" class="glass-link text-sm font-medium">{{ t('forms.merch.toDashboard') }}</Link>
         </div>
 
         <div>
@@ -107,6 +108,7 @@ const submit = () => form.post(route('bands.store'), { forceFormData: true });
             @change="onBandImageSelected"
           />
           <p class="mt-1 text-xs text-slate-500">{{ t('forms.band.bandImageHint') }}</p>
+          <p v-if="isUploadingImage" class="mt-2 text-xs font-medium text-sky-700">{{ t('common.loading') }}</p>
           <InputError class="mt-2" :message="form.errors.image" />
           <div v-if="imagePreviewUrl" class="mt-3 flex items-start gap-3">
             <img :src="imagePreviewUrl" alt="" class="h-24 w-24 rounded-2xl border border-white/50 object-cover" />
@@ -120,7 +122,7 @@ const submit = () => form.post(route('bands.store'), { forceFormData: true });
           <div>
             <InputLabel for="country_id" :value="t('forms.band.country')" />
             <FormSelect id="country_id" v-model="form.country_id" class="mt-1 block w-full">
-              <option value="">{{ t('forms.post.unselected') }}</option>
+              <option value="">{{ t('common.noneSelected') }}</option>
               <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
             </FormSelect>
             <InputError class="mt-2" :message="form.errors.country_id" />
@@ -177,7 +179,9 @@ const submit = () => form.post(route('bands.store'), { forceFormData: true });
 
         <div class="flex items-center justify-end gap-3">
           <Link :href="route('bands.index')" class="glass-panel inline-flex min-h-11 items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50/60 hover:text-rose-700">{{ t('forms.band.cancel') }}</Link>
-          <PrimaryButton type="submit" :disabled="form.processing">{{ t('forms.band.submitCreate') }}</PrimaryButton>
+          <PrimaryButton type="submit" :disabled="form.processing">
+            {{ form.processing ? t('common.loading') : t('forms.band.submitCreate') }}
+          </PrimaryButton>
         </div>
       </form>
     </div>

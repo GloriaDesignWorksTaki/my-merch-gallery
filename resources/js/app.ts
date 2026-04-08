@@ -75,7 +75,7 @@ createInertiaApp({
 
       showTimer = setTimeout(() => {
         isLoading.value = true;
-      }, 1000);
+      }, 150);
     };
     const onFinish = () => {
       if (showTimer) {
