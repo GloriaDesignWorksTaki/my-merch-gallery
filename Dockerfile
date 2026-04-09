@@ -52,6 +52,7 @@ COPY --from=frontend /app/public/build ./public/build
 RUN composer dump-autoload --optimize --no-interaction \
   && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
   && chmod -R ug+rwx /app/storage /app/bootstrap/cache \
+  && mkdir -p /etc/nginx/templates \
   && cp /app/docker/nginx/site.conf.envsubst /etc/nginx/templates/site.conf.envsubst \
   && cp /app/docker/supervisor/laravel.conf /etc/supervisor/conf.d/laravel.conf \
   && cp /app/docker/entrypoint.sh /entrypoint.sh \
