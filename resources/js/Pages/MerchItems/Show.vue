@@ -15,7 +15,7 @@ import { computed } from 'vue';
 import { IconUser } from '@tabler/icons-vue';
 import { useI18n } from 'vue-i18n';
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
 const page = usePage<{ auth: { user: AuthUser | null } }>();
 
 type MerchShow = {
@@ -224,7 +224,7 @@ function creatorAvatarStyle(c: NonNullable<MerchShow['creator']>) {
               rows="4"
               required
               maxlength="5000"
-              class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400"
+              class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 px-4 py-3 text-base text-slate-800 placeholder:text-slate-400 md:text-sm"
               :placeholder="t('pages.merch.commentPlaceholder')"
             />
           </label>

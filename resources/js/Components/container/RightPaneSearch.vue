@@ -49,8 +49,8 @@ function submitSearch() {
 
 <template>
   <div :class="variant === 'panel' ? 'space-y-3' : 'space-y-2'">
-    <div class="flex justify-end">
-      <LocaleSwitcher :class="variant === 'compact' ? 'max-w-[min(100%,14rem)]' : ''" />
+    <div v-if="variant === 'panel'" class="flex justify-end">
+      <LocaleSwitcher />
     </div>
     <section
       class="rounded-[2rem] border border-white/40 bg-white/35 backdrop-blur-xl theme-light:border-slate-300 theme-light:bg-white/95 theme-light:shadow-sm dark:border-slate-600/55 dark:bg-slate-900/55"
@@ -78,7 +78,7 @@ function submitSearch() {
             autocomplete="off"
             :placeholder="t('rightPane.placeholder')"
             class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 text-slate-800 placeholder:text-slate-500 shadow-[0_10px_30px_rgba(125,166,214,0.12)] focus:border-sky-300/70 focus:ring-sky-200/60 theme-light:border-slate-300 theme-light:bg-white theme-light:shadow-sm theme-light:focus:border-sky-500 theme-light:focus:ring-2 theme-light:focus:ring-sky-500/25 dark:border-slate-500/70 dark:bg-slate-800/90 dark:text-slate-100 dark:placeholder:text-slate-400 dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] dark:focus:border-sky-500/60 dark:focus:ring-sky-500/25"
-            :class="variant === 'panel' ? 'py-3 pl-11 pr-4' : 'py-2 pl-10 pr-3 text-sm'"
+            :class="variant === 'panel' ? 'py-3 pl-11 pr-4' : 'py-2 pl-10 pr-3 text-base md:text-sm'"
           />
         </div>
         <div class="flex justify-end">

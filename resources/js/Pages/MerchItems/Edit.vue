@@ -182,7 +182,7 @@ const submit = () =>
               type="file"
               accept="image/png,image/jpeg,image/webp"
               multiple
-              class="glass-panel mt-1 block w-full min-h-11 rounded-2xl px-4 py-2.5 text-sm text-slate-600 transition focus:border-sky-300/70 focus:outline-none focus:ring-2 focus:ring-sky-200/60 file:mr-4 file:rounded-2xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700"
+              class="glass-panel mt-1 block w-full min-h-11 rounded-2xl px-4 py-2.5 text-base text-slate-600 transition focus:border-sky-300/70 focus:outline-none focus:ring-2 focus:ring-sky-200/60 file:mr-4 file:rounded-2xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-base file:font-medium file:text-slate-700 md:text-sm md:file:text-sm"
               @change="onImagesSelected"
             />
             <p class="mt-2 text-sm text-slate-500">{{ t('forms.merch.imagesNote') }}</p>

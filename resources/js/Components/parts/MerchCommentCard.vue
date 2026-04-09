@@ -176,7 +176,7 @@ function confirmDelete() {
             rows="3"
             required
             maxlength="5000"
-            class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400"
+            class="glass-panel block w-full rounded-2xl border-white/50 bg-white/45 px-3 py-2 text-base text-slate-800 placeholder:text-slate-400 md:text-sm"
             :placeholder="t('pages.merch.replyPlaceholder')"
           />
           <p v-if="replyForm.errors.body" class="text-xs text-rose-600">{{ replyForm.errors.body }}</p>

@@ -146,7 +146,7 @@ const submit = () =>
             id="band-image"
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            class="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-white"
+            class="mt-2 block w-full text-base text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-white/70 file:px-4 file:py-2 file:text-base file:font-medium file:text-slate-700 hover:file:bg-white md:text-sm md:file:text-sm"
             @change="onBandImageSelected"
           />
           <p class="mt-1 text-xs text-slate-500">{{ t('forms.band.bandImageHint') }}</p>

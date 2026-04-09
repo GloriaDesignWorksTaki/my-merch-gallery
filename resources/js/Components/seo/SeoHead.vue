@@ -10,10 +10,10 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const page = usePage<PageProps<{ appName?: string }>>();
+const inertiaPage = usePage<PageProps<{ appName?: string }>>();
 
 const mergedParams = computed(() => ({
-  siteName: page.props.appName ?? 'My Merch Gallery',
+  siteName: inertiaPage.props.appName ?? 'My Merch Gallery',
   ...(props.params ?? {}),
 }));
 

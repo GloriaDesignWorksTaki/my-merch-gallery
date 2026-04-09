@@ -442,6 +442,18 @@
   html[data-theme='primary'] .app-mobile-header-cta {
     @apply rounded-full border border-white/50 bg-white/40 px-4 py-1.5 text-sm font-semibold text-slate-700;
   }
+
+  html[data-theme='light'] .app-mobile-header-account {
+    @apply flex items-center gap-0.5 rounded-full border border-slate-300 bg-white py-1 pl-1 pr-1.5 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100;
+  }
+
+  html[data-theme='dark'] .app-mobile-header-account {
+    @apply flex items-center gap-0.5 rounded-full border border-slate-600/55 bg-slate-900/65 py-1 pl-1 pr-1.5 transition hover:border-slate-500 hover:bg-slate-800/80;
+  }
+
+  html[data-theme='primary'] .app-mobile-header-account {
+    @apply flex items-center gap-0.5 rounded-full border border-white/50 bg-white/40 py-1 pl-1 pr-1.5 transition hover:border-white/60 hover:bg-white/55;
+  }
 }
 
 /* Dark theme: lift common slate/sky text utilities inside app shell */
@@ -471,5 +483,31 @@
   html[data-theme='dark'] .app-chrome .text-sky-700,
   html[data-theme='dark'] .app-chrome .text-sky-800 {
     color: rgb(125 211 252);
+  }
+}
+
+/*
+ * iOS Safari はフォームの計算フォントサイズが約 16px 未満だと、フォーカス時にビューポートをズームする。
+ */
+@media (max-width: 1023px) {
+  .app-chrome input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='button']):not([type='submit']):not([type='reset']):not([type='hidden']):not([type='color']):not([type='image']),
+  .app-chrome textarea,
+  .app-chrome select {
+    font-size: 16px;
+  }
+
+  .app-chrome input.text-lg,
+  .app-chrome textarea.text-lg {
+    font-size: 1.125rem;
+  }
+
+  .app-chrome input.text-xl,
+  .app-chrome textarea.text-xl {
+    font-size: 1.25rem;
+  }
+
+  .app-chrome input.text-2xl,
+  .app-chrome textarea.text-2xl {
+    font-size: 1.5rem;
   }
 }

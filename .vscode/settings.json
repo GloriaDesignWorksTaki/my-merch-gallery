@@ -1,4 +1,5 @@
 {
+  "css.lint.unknownAtRules": "ignore",
   "intelephense.environment.includePaths": [
     "${workspaceFolder}/vendor",
     "${workspaceFolder}/app",

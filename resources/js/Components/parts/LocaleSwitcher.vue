@@ -6,6 +6,14 @@ import { useI18n } from 'vue-i18n';
 const page = usePage();
 const { t } = useI18n();
 
+withDefaults(
+  defineProps<{
+    /** ボタン群の横方向の寄せ（ヘッダー中央置きなど） */
+    justify?: 'end' | 'center' | 'start';
+  }>(),
+  { justify: 'end' },
+);
+
 const locales = computed(() => page.props.locales ?? []);
 const current = computed(() => page.props.locale ?? 'en');
 
@@ -22,7 +30,16 @@ function setLocale(code: string) {
 </script>
 
 <template>
-  <div class="flex flex-wrap justify-end gap-1" role="group" :aria-label="t('locale.switch')">
+  <div
+    class="flex flex-wrap gap-1"
+    :class="{
+      'justify-end': justify === 'end',
+      'justify-center': justify === 'center',
+      'justify-start': justify === 'start',
+    }"
+    role="group"
+    :aria-label="t('locale.switch')"
+  >
     <button
       v-for="item in locales"
       :key="item.code"

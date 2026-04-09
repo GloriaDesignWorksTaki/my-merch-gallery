@@ -4,7 +4,7 @@ import { fallbackVisitAuthLoginModal } from '@/utils/authModalFallback';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, inject } from 'vue';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     href: string;
     feature?: string;

@@ -21,6 +21,8 @@ export const sidebarNavIcons: Record<SidebarNavIcon, Component> = {
 };
 
 export const footerMenuIcons: Record<FooterMenuIcon, Component> = {
+  bandRegister: IconPlus,
+  merchRegister: IconShirt,
   profile: IconUserCircle,
   admin: IconShieldCheck,
   logout: IconLogout,

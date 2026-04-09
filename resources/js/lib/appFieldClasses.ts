@@ -3,7 +3,8 @@ export type FieldRadius = 'sm' | 'md' | 'full';
 export type FieldVariant = 'default' | 'error';
 
 const sizeClasses: Record<FieldSize, string> = {
-  sm: 'min-h-9 px-3 py-2 text-sm',
+  /* md 未満で text-sm だと iOS Safari がフォーカス時にページをズームするため、小画面は 16px 相当を維持 */
+  sm: 'min-h-9 px-3 py-2 text-base md:text-sm',
   md: 'min-h-11 px-4 py-3 text-base',
   lg: 'min-h-12 px-4 py-3.5 text-lg',
 };

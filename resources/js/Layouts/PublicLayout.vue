@@ -94,6 +94,7 @@ function parseAuthQuery(url: string): 'login' | 'register' | null {
       return a;
     }
   } catch {
+    /* ignore invalid URL */
   }
   return null;
 }
@@ -141,9 +142,29 @@ provide('openAuthRegister', openAuthRegister);
 
 const sidebarProps = computed(() => ({
   homeHref: route('home'),
-  mobileTitle: user ? t('layout.mobile.myPage') : t('layout.mobile.gloria'),
   mobileActionLabel: user ? t('layout.mobile.manage') : t('layout.mobile.login'),
-  mobileActionHref: user ? route('merch-items.create') : null,
+  mobileActionHref: null,
+  mobileHeaderMenuItems: user
+    ? (() => {
+        const items: FooterMenuItem[] = [
+          { label: t('layout.nav.bandRegister'), href: route('bands.create'), icon: 'bandRegister' },
+          { label: t('layout.nav.merchRegister'), href: route('merch-items.create'), icon: 'merchRegister' },
+          { label: t('layout.nav.profile'), href: route('profile.edit'), icon: 'profile' },
+        ];
+        if (user.role === 'admin' || user.role === 'owner') {
+          items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard'), icon: 'admin' });
+        }
+        items.push({
+          label: t('layout.nav.logout'),
+          href: route('logout'),
+          method: 'post',
+          as: 'button',
+          danger: true,
+          icon: 'logout',
+        });
+        return items;
+      })()
+    : undefined,
   mobileAuthModal: !user,
   primarySections: sidebarSections.value,
   ctaLabel: user ? t('layout.nav.bandRegister') : t('layout.mobile.login'),
@@ -193,7 +214,7 @@ const sidebarProps = computed(() => ({
 
     <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
-    <div class="mx-auto flex max-w-[1440px] items-center gap-2 px-4 pb-3 pt-2 md:px-5 xl:hidden">
+    <div class="mx-auto flex w-full max-w-[680px] items-center gap-2 px-4 py-3 sm:px-6 xl:hidden">
       <div v-if="user" class="flex shrink-0 items-center gap-2">
         <LikesHistoryShortcut />
         <NotificationBell />
@@ -207,7 +228,7 @@ const sidebarProps = computed(() => ({
       <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
       <main class="app-main-column-border min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x pb-24 md:pb-10">
-        <div class="px-4 py-5 sm:px-6 sm:py-7">
+        <div class="px-4 pb-5 pt-3 sm:px-6 sm:pb-7 sm:pt-7">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
         </div>
@@ -216,11 +237,11 @@ const sidebarProps = computed(() => ({
       <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
         <div class="flex h-full min-h-0 flex-col gap-5">
           <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
-          <div v-if="user" class="flex items-center justify-end gap-2">
-            <LikesHistoryShortcut />
-            <NotificationBell />
-          </div>
-          <RightPaneSearch variant="panel" />
+            <div v-if="user" class="flex items-center justify-end gap-2">
+              <LikesHistoryShortcut />
+              <NotificationBell />
+            </div>
+            <RightPaneSearch variant="panel" />
           </div>
           <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500 theme-light:text-slate-600 dark:text-slate-300">
             {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
