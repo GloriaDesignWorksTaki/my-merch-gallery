@@ -1,4 +1,10 @@
 {
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "files.associations": {
+    "**/docker/nginx/*.envsubst": "nginx"
+  },
   "css.lint.unknownAtRules": "ignore",
   "intelephense.environment.includePaths": [
     "${workspaceFolder}/vendor",

@@ -1,0 +1,43 @@
+# Render Blueprint — ダッシュボードでリポジトリと結合後、APP_KEY / APP_URL / 外部ストレージ等を設定してください。
+# https://render.com/docs/blueprint-spec
+#
+# 初回: Blueprint から作成すると Web + Postgres が同時に作られます。
+# 既存サービスがある場合は名前の衝突に注意してください。
+
+services:
+  - type: web
+    name: my-merch-gallery
+    runtime: docker
+    region: singapore
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /up
+    autoDeployTrigger: commit
+    preDeployCommand: php artisan migrate --force
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: merch-gallery-db
+          property: connectionString
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+
+databases:
+  - name: merch-gallery-db
+    databaseName: merch_gallery
+    user: merch_gallery
