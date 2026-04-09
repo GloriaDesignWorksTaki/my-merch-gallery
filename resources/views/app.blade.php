@@ -30,9 +30,7 @@
     <title inertia>{{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <script>
-      const Ziggy = {!! json_encode((new \Ziggy\Ziggy(null, url('/')))->toArray()) !!};
-    </script>
+    @routes
     @vite(['resources/js/app.ts'])
     @inertiaHead
   </head>
