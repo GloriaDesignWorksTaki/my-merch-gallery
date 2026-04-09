@@ -7,7 +7,7 @@
     <title>{{ __('auth.loggingOut', [], app()->getLocale()) }}</title>
   </head>
   <body>
-    <form id="logout-form" method="POST" action="{{ route('logout') }}">
+    <form id="logout-form" method="POST" action="/logout">
       @csrf
       <noscript>
         <p><button type="submit">{{ __('auth.logoutContinue', [], app()->getLocale()) }}</button></p>

@@ -38,7 +38,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('logout', function () {
   if (! Auth::check()) {
-    return redirect()->route('home');
+    return redirect('/');
   }
 
   return view('auth.logout-submit');
