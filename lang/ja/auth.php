@@ -16,4 +16,8 @@ return [
 
     'banned' => 'このアカウントは利用停止されています。',
 
+    'loggingOut' => 'ログアウトしています…',
+
+    'logoutContinue' => 'ログアウトを続ける',
+
 ];
