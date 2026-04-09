@@ -16,4 +16,8 @@ return [
 
     'banned' => 'This account has been suspended.',
 
+    'loggingOut' => 'Signing out…',
+
+    'logoutContinue' => 'Continue sign out',
+
 ];
