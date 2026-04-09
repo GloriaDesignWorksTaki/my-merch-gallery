@@ -95,7 +95,7 @@ function onBandFilterApply(value: number | null | number[]) {
 
     <section class="glass-surface mt-7 p-5">
       <div class="space-y-4">
-        <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
+        <div class="flex w-full items-center gap-2">
           <div class="relative min-w-0 w-full flex-1">
             <IconSearch
               class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-400"
@@ -112,7 +112,7 @@ function onBandFilterApply(value: number | null | number[]) {
           </div>
           <button
             type="button"
-            class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 px-5 py-3 text-sm font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 sm:w-auto sm:px-6"
+            class="ml-auto inline-flex w-auto shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 px-5 py-3 text-sm font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 theme-light:border-slate-300 theme-light:bg-white theme-light:text-sky-800 theme-light:shadow-sm theme-light:hover:border-sky-500 theme-light:hover:bg-sky-50 theme-light:active:bg-sky-100/90 dark:border-slate-500 dark:bg-slate-800 dark:text-sky-300 dark:hover:bg-slate-700 sm:px-6"
             @click="applyFilters"
           >
             <IconSearch :size="18" class="shrink-0" aria-hidden="true" />

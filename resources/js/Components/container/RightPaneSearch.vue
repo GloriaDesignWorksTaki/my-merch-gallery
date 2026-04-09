@@ -84,8 +84,8 @@ function submitSearch() {
         <div class="flex justify-end">
           <button
             type="submit"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 theme-light:border-slate-300 theme-light:bg-white theme-light:text-sky-800 theme-light:shadow-sm theme-light:hover:border-sky-500 theme-light:hover:bg-sky-50 theme-light:active:bg-sky-100/90 dark:border-slate-500 dark:bg-slate-800 dark:text-sky-300 dark:hover:bg-slate-700 sm:w-auto"
-            :class="variant === 'panel' ? 'px-6 py-3 text-sm' : 'px-4 py-2 text-xs'"
+            class="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/70 font-bold text-sky-700 backdrop-blur-xl transition hover:bg-white/80 theme-light:border-slate-300 theme-light:bg-white theme-light:text-sky-800 theme-light:shadow-sm theme-light:hover:border-sky-500 theme-light:hover:bg-sky-50 theme-light:active:bg-sky-100/90 dark:border-slate-500 dark:bg-slate-800 dark:text-sky-300 dark:hover:bg-slate-700"
+            :class="variant === 'panel' ? 'ml-auto w-auto px-6 py-3 text-sm' : 'w-full px-4 py-2 text-xs sm:w-auto'"
           >
             <IconSearch :size="variant === 'panel' ? 18 : 16" class="shrink-0" aria-hidden="true" />
             {{ t('rightPane.submit') }}
