@@ -109,7 +109,7 @@ const statusTabs = [
               <textarea
                 v-model="rejectNotes[req.id]"
                 rows="2"
-                class="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2 text-sm text-slate-800 shadow-sm"
+                class="mt-1 w-full rounded-2xl border border-white/40 bg-white/50 px-3 py-2 text-base text-slate-800 shadow-sm md:text-sm"
               />
             </div>
             <div class="flex flex-wrap gap-2">

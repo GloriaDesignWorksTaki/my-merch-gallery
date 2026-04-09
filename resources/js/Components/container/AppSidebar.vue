@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppButton from '@/Components/parts/AppButton.vue';
 import ApplicationLogo from '@/Components/parts/ApplicationLogo.vue';
+import LocaleSwitcher from '@/Components/parts/LocaleSwitcher.vue';
 import { footerMenuIcons, sidebarCtaIcons, sidebarNavIcons } from '@/constants/sidebarIcons';
 import type {
   FooterMenuItem,
@@ -22,9 +23,10 @@ const openAuthRegister = inject('openAuthRegister', fallbackVisitAuthRegisterMod
 
 const props = withDefaults(defineProps<{
   homeHref: string;
-  mobileTitle: string;
   mobileActionLabel: string;
   mobileActionHref?: string | null;
+  /** ログイン後の Manage など：ヘッダーをリンクではなくアカウント系ドロップダウンにする */
+  mobileHeaderMenuItems?: FooterMenuItem[];
   mobileAuthModal?: boolean;
   primarySections: SidebarNavSection[];
   ctaLabel: string;
@@ -47,6 +49,7 @@ const props = withDefaults(defineProps<{
   showDesktop?: boolean;
 }>(), {
   mobileActionHref: null,
+  mobileHeaderMenuItems: undefined,
   mobileAuthModal: false,
   ctaHref: null,
   ctaAuthModal: false,
@@ -67,9 +70,13 @@ const footerAvatarStyle = computed(() => ({
 }));
 
 const menuOpen = ref(false);
+const mobileMenuOpen = ref(false);
 const footerRoot = ref<HTMLButtonElement | null>(null);
+const mobileHeaderRoot = ref<HTMLButtonElement | null>(null);
 const panelRef = ref<HTMLElement | null>(null);
+const mobilePanelRef = ref<HTMLElement | null>(null);
 const dropdownStyle = ref<Record<string, string>>({});
+const mobileDropdownStyle = ref<Record<string, string>>({});
 
 const PANEL_MAX_WIDTH_PX = 16 * 16;
 const PANEL_MARGIN_PX = 8;
@@ -85,17 +92,13 @@ function clampPanelLeft(leftPx: number, panelWidth: number): number {
   return left;
 }
 
-function updateDropdownPosition() {
-  const el = footerRoot.value;
-  if (!el) {
-    return;
-  }
+function computeDropdownStyle(el: HTMLElement, placement: FooterMenuPlacement): Record<string, string> {
   const r = el.getBoundingClientRect();
   const innerH = window.innerHeight;
   const maxW = Math.min(window.innerWidth - 2 * PANEL_MARGIN_PX, PANEL_MAX_WIDTH_PX);
 
-  const vertical = props.footerMenuPlacement.startsWith('bottom') ? 'bottom' : 'top';
-  const horizontal = props.footerMenuPlacement.endsWith('end') ? 'end' : 'start';
+  const vertical = placement.startsWith('bottom') ? 'bottom' : 'top';
+  const horizontal = placement.endsWith('end') ? 'end' : 'start';
 
   let leftPx: number;
   if (horizontal === 'start') {
@@ -115,50 +118,90 @@ function updateDropdownPosition() {
   if (vertical === 'bottom') {
     const spaceBelow = Math.max(0, innerH - r.bottom - PANEL_MARGIN_PX * 2);
     const maxH = Math.min(320, spaceBelow);
-    dropdownStyle.value = {
+    return {
       ...base,
       top: `${r.bottom + PANEL_MARGIN_PX}px`,
       bottom: 'auto',
       maxHeight: `${Math.max(1, maxH)}px`,
     };
-  } else {
-    const spaceAbove = Math.max(0, r.top - PANEL_MARGIN_PX);
-    const maxH = Math.min(320, spaceAbove);
-    dropdownStyle.value = {
-      ...base,
-      top: 'auto',
-      bottom: `${innerH - r.top + PANEL_MARGIN_PX}px`,
-      maxHeight: `${Math.max(1, maxH)}px`,
-    };
   }
+  const spaceAbove = Math.max(0, r.top - PANEL_MARGIN_PX);
+  const maxH = Math.min(320, spaceAbove);
+  return {
+    ...base,
+    top: 'auto',
+    bottom: `${innerH - r.top + PANEL_MARGIN_PX}px`,
+    maxHeight: `${Math.max(1, maxH)}px`,
+  };
+}
+
+function updateDropdownPosition() {
+  const el = footerRoot.value;
+  if (!el) {
+    return;
+  }
+  dropdownStyle.value = computeDropdownStyle(el, props.footerMenuPlacement);
+}
+
+function updateMobileDropdownPosition() {
+  const el = mobileHeaderRoot.value;
+  if (!el) {
+    return;
+  }
+  mobileDropdownStyle.value = computeDropdownStyle(el, 'bottom-end');
 }
 
 function onViewportChange() {
   if (menuOpen.value) {
     updateDropdownPosition();
   }
+  if (mobileMenuOpen.value) {
+    updateMobileDropdownPosition();
+  }
 }
 
 function toggleMenu() {
   menuOpen.value = !menuOpen.value;
+  if (menuOpen.value) {
+    mobileMenuOpen.value = false;
+  }
 }
 
 function closeMenu() {
   menuOpen.value = false;
 }
 
+function toggleMobileMenu() {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
+  if (mobileMenuOpen.value) {
+    menuOpen.value = false;
+  }
+}
+
+function closeMobileMenu() {
+  mobileMenuOpen.value = false;
+}
+
 function onDocClick(e: MouseEvent) {
-  if (!menuOpen.value) {
+  if (!menuOpen.value && !mobileMenuOpen.value) {
     return;
   }
   const t = e.target;
   if (!(t instanceof Node)) {
     return;
   }
-  if (footerRoot.value?.contains(t) || panelRef.value?.contains(t)) {
-    return;
+  if (menuOpen.value) {
+    if (footerRoot.value?.contains(t) || panelRef.value?.contains(t)) {
+      return;
+    }
+    menuOpen.value = false;
   }
-  menuOpen.value = false;
+  if (mobileMenuOpen.value) {
+    if (mobileHeaderRoot.value?.contains(t) || mobilePanelRef.value?.contains(t)) {
+      return;
+    }
+    mobileMenuOpen.value = false;
+  }
 }
 
 onMounted(() => {
@@ -176,6 +219,13 @@ watch(menuOpen, async (v) => {
   if (v) {
     await nextTick();
     updateDropdownPosition();
+  }
+});
+
+watch(mobileMenuOpen, async (v) => {
+  if (v) {
+    await nextTick();
+    updateMobileDropdownPosition();
   }
 });
 
@@ -213,29 +263,94 @@ function resolvedActionIcon(action: SidebarCtaAction): SidebarCtaIcon {
 
 <template>
   <header v-if="showMobile" class="app-mobile-header">
-    <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3">
-      <Link :href="homeHref" class="app-mobile-header-logo">
+    <div class="mx-auto flex w-full max-w-[680px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <Link :href="homeHref" class="app-mobile-header-logo shrink-0">
         <ApplicationLogo class="h-full w-full object-contain" />
       </Link>
-      <div class="text-base font-semibold tracking-[0.18em] text-slate-800">{{ mobileTitle }}</div>
-      <button
-        v-if="mobileAuthModal"
-        type="button"
-        class="app-mobile-header-cta"
-        @click="openAuthLogin"
-      >
-        {{ mobileActionLabel }}
-      </button>
-      <Link
-        v-else-if="mobileActionHref"
-        :href="mobileActionHref"
-        class="app-mobile-header-cta"
-      >
-        {{ mobileActionLabel }}
-      </Link>
-      <div v-else class="h-10 min-w-[5.5rem] shrink-0" aria-hidden="true" />
+      <div class="flex min-w-0 shrink items-center gap-2">
+        <LocaleSwitcher justify="end" class="max-w-[min(100%,14rem)]" />
+        <button
+          v-if="mobileAuthModal"
+          type="button"
+          class="app-mobile-header-cta shrink-0"
+          @click="openAuthLogin"
+        >
+          {{ mobileActionLabel }}
+        </button>
+        <button
+          v-else-if="mobileHeaderMenuItems?.length"
+          ref="mobileHeaderRoot"
+          type="button"
+          class="app-mobile-header-account shrink-0"
+          :aria-expanded="mobileMenuOpen"
+          :aria-label="t('layout.sidebar.footerMenuAria')"
+          aria-haspopup="menu"
+          @click.stop="toggleMobileMenu"
+        >
+          <div
+            class="app-sidebar-avatar-ring flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-2xl text-xs font-semibold"
+          >
+            <img
+              v-if="footerAvatarUrl"
+              :src="footerAvatarUrl"
+              alt=""
+              class="h-full w-full object-cover"
+              :style="footerAvatarStyle"
+            />
+            <span v-else>{{ footerTitle.slice(0, 1) }}</span>
+          </div>
+          <IconChevronDown
+            :size="18"
+            class="shrink-0 text-slate-400 transition-transform duration-200"
+            :class="mobileMenuOpen ? 'rotate-180' : ''"
+            aria-hidden="true"
+          />
+        </button>
+        <Link
+          v-else-if="mobileActionHref"
+          :href="mobileActionHref"
+          class="app-mobile-header-cta shrink-0"
+        >
+          {{ mobileActionLabel }}
+        </Link>
+      </div>
     </div>
   </header>
+
+  <Teleport v-if="showMobile" to="body">
+    <div
+      v-if="mobileMenuOpen && mobileHeaderMenuItems?.length"
+      ref="mobilePanelRef"
+      class="app-sidebar-dropdown"
+      :style="mobileDropdownStyle"
+      role="menu"
+    >
+      <Link
+        v-for="item in mobileHeaderMenuItems"
+        :key="item.label"
+        :href="item.href"
+        :method="item.method"
+        :as="item.as"
+        role="menuitem"
+        class="flex min-h-[2.75rem] w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium leading-snug transition"
+        :class="
+          item.danger
+            ? 'text-rose-700 hover:bg-rose-50 focus-visible:bg-rose-50 focus-visible:outline-none dark:text-rose-300 dark:hover:bg-rose-950/60 dark:focus-visible:bg-rose-950/60'
+            : 'app-sidebar-dropdown-link'
+        "
+        @click="closeMobileMenu"
+      >
+        <component
+          v-if="item.icon"
+          :is="footerMenuIcons[item.icon]"
+          class="h-5 w-5 shrink-0"
+          :class="item.danger ? 'text-rose-600' : 'text-slate-500'"
+          aria-hidden="true"
+        />
+        <span class="min-w-0 flex-1">{{ item.label }}</span>
+      </Link>
+    </div>
+  </Teleport>
 
   <aside v-if="showDesktop" class="sticky top-0 hidden h-screen w-[290px] shrink-0 px-4 py-5 lg:block">
     <div class="flex h-full flex-col justify-between">

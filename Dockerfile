@@ -41,15 +41,20 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy source first (Laravel composer scripts need app files)
+# 依存解決レイヤーを先に分離して、Render のビルドキャッシュを効かせる
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# アプリ本体を最後にコピー（コード変更時も依存レイヤーを再利用）
 COPY . .
 
-# Install PHP and frontend dependencies, then build assets
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
-    && npm ci \
-    && npm run build
+# フロントを本番ビルド
+RUN npm run build
 
 EXPOSE 10000
 
-# 起動前にマイグレーション・storage:link・キャッシュ最適化を実行
-CMD ["sh", "-c", "php artisan migrate --force && (php artisan storage:link || true) && php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && PHP_CLI_SERVER_WORKERS=${PHP_CLI_SERVER_WORKERS:-4} php artisan serve --host=0.0.0.0 --port=${PORT:-10000} --no-reload"]
+# 起動時は軽く保つ（migrate は Render Shell か Release Command で実行）
+CMD ["sh", "-c", "(php artisan storage:link || true) && php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && PHP_CLI_SERVER_WORKERS=${PHP_CLI_SERVER_WORKERS:-4} php artisan serve --host=0.0.0.0 --port=${PORT:-10000} --no-reload"]

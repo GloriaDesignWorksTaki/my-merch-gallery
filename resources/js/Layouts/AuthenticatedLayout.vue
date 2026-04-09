@@ -72,11 +72,31 @@ const footerMenuItems = computed((): FooterMenuItem[] => {
   return items;
 });
 
+const mobileHeaderMenuItems = computed((): FooterMenuItem[] => {
+  const items: FooterMenuItem[] = [
+    { label: t('layout.nav.bandRegister'), href: route('bands.create'), icon: 'bandRegister' },
+    { label: t('layout.nav.merchRegister'), href: route('merch-items.create'), icon: 'merchRegister' },
+    { label: t('layout.nav.profile'), href: route('profile.edit'), icon: 'profile' },
+  ];
+  if (authUser.role === 'admin' || authUser.role === 'owner') {
+    items.push({ label: t('layout.nav.adminDashboard'), href: route('admin.dashboard'), icon: 'admin' });
+  }
+  items.push({
+    label: t('layout.nav.logout'),
+    href: route('logout'),
+    method: 'post',
+    as: 'button',
+    danger: true,
+    icon: 'logout',
+  });
+  return items;
+});
+
 const sidebarProps = computed(() => ({
   homeHref: route('home'),
-  mobileTitle: t('layout.mobile.myPage'),
   mobileActionLabel: t('layout.mobile.manage'),
-  mobileActionHref: route('merch-items.create'),
+  mobileActionHref: null,
+  mobileHeaderMenuItems: mobileHeaderMenuItems.value,
   primarySections: sidebarSections.value,
   ctaLabel: t('layout.nav.bandRegister'),
   ctaHref: route('bands.create'),
@@ -103,7 +123,7 @@ const sidebarProps = computed(() => ({
 
     <AppSidebar v-bind="sidebarProps" :show-desktop="false" />
 
-    <div class="mx-auto flex max-w-[1440px] items-center gap-2 px-4 pb-3 pt-2 md:px-5 xl:hidden">
+    <div class="mx-auto flex w-full max-w-[680px] items-center gap-2 px-4 py-3 sm:px-6 xl:hidden">
       <div class="flex shrink-0 items-center gap-2">
         <LikesHistoryShortcut />
         <NotificationBell />
@@ -117,12 +137,12 @@ const sidebarProps = computed(() => ({
       <AppSidebar v-bind="sidebarProps" :show-mobile="false" />
 
       <main class="app-main-column-border min-h-screen w-full min-w-0 max-w-[680px] overflow-x-hidden border-x pb-24 md:pb-10">
-        <div v-if="$slots.header" class="px-4 pt-4 sm:px-6 sm:pt-5">
+        <div v-if="$slots.header" class="px-4 pt-3 sm:px-6 sm:pt-5">
           <div class="glass-panel rounded-2xl px-4 py-3.5 sm:px-5 sm:py-4">
             <slot name="header" />
           </div>
         </div>
-        <div class="px-4 py-4 sm:px-6 sm:py-5">
+        <div class="px-4 pb-4 pt-3 sm:px-6 sm:pb-5 sm:pt-5">
           <StatusBanner v-if="status" :status="status" class="mb-4" />
           <slot />
         </div>
@@ -131,11 +151,11 @@ const sidebarProps = computed(() => ({
       <aside class="sticky top-0 hidden h-screen w-[340px] shrink-0 px-2 py-5 xl:flex xl:flex-col">
         <div class="flex h-full min-h-0 flex-col gap-5">
           <div class="min-h-0 flex-1 space-y-5 overflow-y-auto">
-          <div class="flex items-center justify-end gap-2">
-            <LikesHistoryShortcut />
-            <NotificationBell />
-          </div>
-          <RightPaneSearch variant="panel" />
+            <div class="flex items-center justify-end gap-2">
+              <LikesHistoryShortcut />
+              <NotificationBell />
+            </div>
+            <RightPaneSearch variant="panel" />
           </div>
           <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500 theme-light:text-slate-600 dark:text-slate-300">
             {{ t('layout.copyright', { year: new Date().getFullYear() }) }}

@@ -29,7 +29,7 @@ export type SidebarCtaAction = {
 };
 
 /** フッターメニュー1行のアイコン */
-export type FooterMenuIcon = 'profile' | 'admin' | 'logout';
+export type FooterMenuIcon = 'bandRegister' | 'merchRegister' | 'profile' | 'admin' | 'logout';
 
 export type FooterMenuItem = {
   label: string;

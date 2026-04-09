@@ -16,7 +16,7 @@ type Row = {
   data: Record<string, unknown>;
 };
 
-const props = defineProps<{
+defineProps<{
   notifications: PaginatedList<Row>;
 }>();
 
