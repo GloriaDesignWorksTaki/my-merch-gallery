@@ -139,12 +139,10 @@ createInertiaApp({
 
     const ziggyConfig = (() => {
       const z = (window as unknown as { Ziggy?: ZiggyConfig }).Ziggy;
-      if (!z) {
-        return null;
-      }
+      if (!z) return null;
       return {
         ...z,
-        url: typeof window !== 'undefined' ? window.location.origin : z.url,
+        url: window.location.origin,
       } satisfies ZiggyConfig;
     })();
 
