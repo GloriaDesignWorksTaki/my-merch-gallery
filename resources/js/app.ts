@@ -5,7 +5,7 @@ import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h, onUnmounted, ref } from 'vue';
 import type { DefineComponent, Plugin } from 'vue';
-import { ZiggyVue } from 'ziggy-js';
+import { ZiggyVue, type Config as ZiggyConfig } from 'ziggy-js';
 import LoadingLogoOverlay from '@/Components/container/LoadingLogoOverlay.vue';
 import { createAppI18n, isAppLocale, type AppLocale } from '@/i18n';
 import { syncAppTheme } from '@/composables/useAppTheme';
@@ -137,11 +137,24 @@ createInertiaApp({
         ]),
     };
 
-    createApp(Root)
-      .use(plugin)
-      .use(i18n)
-      .use(ZiggyVue)
-      .mount(el);
+    const ziggyConfig = (() => {
+      const z = (window as unknown as { Ziggy?: ZiggyConfig }).Ziggy;
+      if (!z) {
+        return null;
+      }
+      return {
+        ...z,
+        url: typeof window !== 'undefined' ? window.location.origin : z.url,
+      } satisfies ZiggyConfig;
+    })();
+
+    const app = createApp(Root).use(plugin).use(i18n);
+    if (ziggyConfig) {
+      app.use(ZiggyVue, ziggyConfig);
+    } else {
+      app.use(ZiggyVue);
+    }
+    app.mount(el);
   },
   progress: {
     color: '#4B5563',

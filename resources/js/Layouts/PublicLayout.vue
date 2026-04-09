@@ -156,7 +156,7 @@ const sidebarProps = computed(() => ({
         }
         items.push({
           label: t('layout.nav.logout'),
-          href: route('logout'),
+          href: route('logout', undefined, false),
           method: 'post',
           as: 'button',
           danger: true,
@@ -191,7 +191,7 @@ const sidebarProps = computed(() => ({
         }
         items.push({
           label: t('layout.nav.logout'),
-          href: route('logout'),
+          href: route('logout', undefined, false),
           method: 'post',
           as: 'button',
           danger: true,
