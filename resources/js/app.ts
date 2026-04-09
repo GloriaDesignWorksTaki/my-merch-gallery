@@ -5,7 +5,7 @@ import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h, onUnmounted, ref } from 'vue';
 import type { DefineComponent, Plugin } from 'vue';
-import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { ZiggyVue } from 'ziggy-js';
 import LoadingLogoOverlay from '@/Components/container/LoadingLogoOverlay.vue';
 import { createAppI18n, isAppLocale, type AppLocale } from '@/i18n';
 import { syncAppTheme } from '@/composables/useAppTheme';
