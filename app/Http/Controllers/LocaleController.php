@@ -12,13 +12,21 @@ class LocaleController extends Controller
 {
   public function __invoke(Request $request): RedirectResponse
   {
-    $supported = implode(',', config('i18n.supported', ['en']));
+    $supportedList = config('i18n.supported', ['ja', 'en']);
+    $supported = implode(',', $supportedList);
 
     $validated = $request->validate([
       'locale' => 'required|string|in:'.$supported,
     ]);
 
-    $request->session()->put('locale', $validated['locale']);
+    $locale = $validated['locale'];
+
+    $request->session()->put('locale', $locale);
+
+    $user = $request->user();
+    if ($user !== null && in_array($locale, $supportedList, true)) {
+      $user->forceFill(['preferred_locale' => $locale])->save();
+    }
 
     return back();
   }

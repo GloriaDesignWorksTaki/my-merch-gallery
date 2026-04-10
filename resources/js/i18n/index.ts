@@ -5,11 +5,11 @@ import ja from '@/locales/ja';
 export type AppLocale = 'en' | 'ja';
 
 export function createAppI18n(initialLocale: string | undefined) {
-  const locale: AppLocale = initialLocale === 'ja' ? 'ja' : 'en';
+  const locale: AppLocale = initialLocale === 'en' ? 'en' : 'ja';
   return createI18n({
     legacy: false,
     locale,
-    fallbackLocale: 'en',
+    fallbackLocale: 'ja',
     messages: { en, ja },
   });
 }
