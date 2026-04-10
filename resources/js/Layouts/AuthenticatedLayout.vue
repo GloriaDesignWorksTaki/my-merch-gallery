@@ -5,7 +5,7 @@ import LikesHistoryShortcut from '@/Components/parts/LikesHistoryShortcut.vue';
 import NotificationBell from '@/Components/parts/NotificationBell.vue';
 import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
 import StatusBanner from '@/Components/container/StatusBanner.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import type { AuthUser } from '@/types';
 import { sidebarNavIcons } from '@/constants/sidebarIcons';
 import type { FooterMenuItem } from '@/types/sidebar';
@@ -114,6 +114,9 @@ const sidebarProps = computed(() => ({
 </script>
 
 <template>
+  <Head>
+    <meta head-key="meta-robots" name="robots" content="noindex, nofollow" />
+  </Head>
   <div class="app-chrome min-h-screen text-slate-700">
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div class="app-shell-blob-a" />
