@@ -24,6 +24,9 @@ class SitemapTest extends TestCase
     $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
     $this->assertStringContainsString(route('home', [], true), $content);
     $this->assertStringContainsString(route('bands.index', [], true), $content);
+    $this->assertStringNotContainsString(route('dashboard', [], true), $content);
+    $this->assertStringNotContainsString(route('profile.edit', [], true), $content);
+    $this->assertStringNotContainsString(route('notifications.index', [], true), $content);
   }
 
   public function test_sitemap_includes_band_merch_and_public_user_urls(): void
