@@ -13,3 +13,7 @@ trim_trailing_whitespace = false
 
 [*.{yml,yaml}]
 indent_size = 2
+
+# Laravel Pint（laravel プリセット）は PHP を 4 スペースに整形する
+[*.php]
+indent_size = 4

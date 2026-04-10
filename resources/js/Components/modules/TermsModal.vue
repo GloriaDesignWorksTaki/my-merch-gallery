@@ -64,6 +64,15 @@ watch(
       </section>
 
       <section class="mt-6 space-y-2">
+        <h3 class="text-base font-semibold text-slate-800">{{ t('terms.sections.images.title') }}</h3>
+        <ul class="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-700">
+          <li>{{ t('terms.sections.images.items.0') }}</li>
+          <li>{{ t('terms.sections.images.items.1') }}</li>
+          <li>{{ t('terms.sections.images.items.2') }}</li>
+        </ul>
+      </section>
+
+      <section class="mt-6 space-y-2">
         <h3 class="text-base font-semibold text-slate-800">{{ t('terms.sections.prohibited.title') }}</h3>
         <ul class="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-700">
           <li>{{ t('terms.sections.prohibited.items.0') }}</li>

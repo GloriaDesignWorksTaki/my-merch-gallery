@@ -28,13 +28,13 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/', HomeController::class)->name('home');
 
-Route::post('/locale', LocaleController::class)->name('locale.update');
+Route::post('/locale', LocaleController::class)->middleware('throttle:30,1')->name('locale.update');
 
 Route::get('/bands', [BandController::class, 'index'])->name('bands.index');
 
 Route::get('/merch-items', [MerchItemController::class, 'index'])->name('merch-items.index');
 
-Route::get('/search', SearchController::class)->name('search');
+Route::get('/search', SearchController::class)->middleware('throttle:120,1')->name('search');
 
 Route::get('/users/{user}', [PublicProfileController::class, 'show'])->whereNumber('user')->name('users.show');
 
@@ -85,6 +85,6 @@ Route::get('/bands/{band:slug}', [BandController::class, 'show'])->name('bands.s
 
 Route::get('/merch-items/{merchItem:slug}', [MerchItemController::class, 'show'])->name('merch-items.show');
 
-Route::get('/health', HealthController::class);
+Route::get('/health', HealthController::class)->middleware('throttle:120,1');
 
 require __DIR__.'/auth.php';

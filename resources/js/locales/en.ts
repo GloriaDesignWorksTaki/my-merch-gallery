@@ -208,8 +208,16 @@ export default {
           'We may remove or hide content that violates laws or these Terms.',
         ],
       },
+      images: {
+        title: '4. Images',
+        items: [
+          'Uploaded images must comply with the formats, number of files, size limits, and any other requirements we specify.',
+          'You represent that your images do not infringe third-party rights (including copyright, publicity, and trademark rights) and that you have the rights needed to post them.',
+          'We may delete or restrict access to images that violate laws or these Terms.',
+        ],
+      },
       prohibited: {
-        title: '4. Prohibited Conduct',
+        title: '5. Prohibited Conduct',
         items: [
           'Violating laws or public order and morals',
           'Infringing third-party rights (copyright, trademark, privacy, etc.)',
@@ -218,19 +226,19 @@ export default {
         ],
       },
       ip: {
-        title: '5. Intellectual Property',
+        title: '6. Intellectual Property',
         body: 'All intellectual property related to the service, including system components, design, and logos, belongs to us or rightful owners. You may not use them beyond what is permitted by law.',
       },
       disclaimer: {
-        title: '6. Disclaimer',
+        title: '7. Disclaimer',
         body: 'We do not guarantee availability, accuracy, completeness, or fitness of the service. We are not liable for damages arising from use of the service except in cases of willful misconduct or gross negligence.',
       },
       changes: {
-        title: '7. Changes to Terms',
+        title: '8. Changes to Terms',
         body: 'We may update these Terms when necessary. Updated Terms become effective when posted on the service.',
       },
       contact: {
-        title: '8. Contact',
+        title: '9. Contact',
         body: 'For questions regarding these Terms, please contact us through the designated support channel.',
       },
     },
