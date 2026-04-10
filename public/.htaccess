@@ -1,39 +1,39 @@
 # 静的アセットの Cache-Control（Apache 2.4+ / mod_headers）
 # nginx 本番と同じ方針: /build/assets は長期、/images は30日、manifest は再検証
 <IfModule mod_headers.c>
-    <If "%{REQUEST_URI} =~ m#^/build/assets/#">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-    </If>
-    <If "%{REQUEST_URI} =~ m#^/images/#">
-        Header set Cache-Control "public, max-age=2592000"
-    </If>
-    <If "%{REQUEST_URI} =~ m#^/build/manifest\.json$#">
-        Header set Cache-Control "no-cache, must-revalidate"
-    </If>
+  <If "%{REQUEST_URI} =~ m#^/build/assets/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+  <If "%{REQUEST_URI} =~ m#^/images/#">
+    Header set Cache-Control "public, max-age=2592000"
+  </If>
+  <If "%{REQUEST_URI} =~ m#^/build/manifest\.json$#">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </If>
 </IfModule>
 
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+  <IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+  </IfModule>
 
-    RewriteEngine On
+  RewriteEngine On
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+  # Handle Authorization Header
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
-    RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+  # Handle X-XSRF-Token Header
+  RewriteCond %{HTTP:x-xsrf-token} .
+  RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+  # Redirect Trailing Slashes If Not A Folder...
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} (.+)/$
+  RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+  # Send Requests To Front Controller...
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L]
 </IfModule>

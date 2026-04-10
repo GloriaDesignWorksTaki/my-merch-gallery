@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Storage;
   'avatar_zoom',
   'role',
   'theme',
+  'preferred_locale',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable

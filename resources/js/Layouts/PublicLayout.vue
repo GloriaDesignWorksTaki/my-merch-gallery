@@ -2,6 +2,7 @@
 import AppSidebar from '@/Components/container/AppSidebar.vue';
 import AuthModals from '@/Components/modules/AuthModals.vue';
 import LoginRequiredModal from '@/Components/modules/LoginRequiredModal.vue';
+import TermsModal from '@/Components/modules/TermsModal.vue';
 import LikesHistoryShortcut from '@/Components/parts/LikesHistoryShortcut.vue';
 import NotificationBell from '@/Components/parts/NotificationBell.vue';
 import RightPaneSearch from '@/Components/container/RightPaneSearch.vue';
@@ -63,6 +64,7 @@ const loginRequiredOpen = ref(false);
 const loginRequiredFeature = ref('');
 const showAuthLogin = ref(false);
 const showAuthRegister = ref(false);
+const showTerms = ref(false);
 
 function openLoginRequired(feature?: string) {
   loginRequiredFeature.value = feature ?? t('layout.loginRequired.defaultFeature');
@@ -244,6 +246,14 @@ const sidebarProps = computed(() => ({
             <RightPaneSearch variant="panel" />
           </div>
           <p class="shrink-0 pt-1 text-center text-[11px] leading-relaxed text-slate-500 theme-light:text-slate-600 dark:text-slate-300">
+            <button
+              type="button"
+              class="mb-1 inline-flex text-[11px] text-slate-500 underline decoration-slate-400/80 underline-offset-2 transition hover:text-slate-700 theme-light:text-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
+              @click="showTerms = true"
+            >
+              {{ t('layout.termsLink') }}
+            </button>
+            <br>
             {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
           </p>
         </div>
@@ -287,5 +297,7 @@ const sidebarProps = computed(() => ({
       :feature="loginRequiredFeature"
       @close="closeLoginRequired"
     />
+
+    <TermsModal :show="showTerms" @close="showTerms = false" />
   </div>
 </template>

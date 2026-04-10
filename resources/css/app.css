@@ -487,7 +487,7 @@
 }
 
 /*
- * iOS Safari はフォームの計算フォントサイズが約 16px 未満だと、フォーカス時にビューポートをズームする。
+ * iOS Safari はフォームの計算フォントサイズが約 16px未満だとフォーカス時にビューポートをズームする。
  */
 @media (max-width: 1023px) {
   .app-chrome input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='button']):not([type='submit']):not([type='reset']):not([type='hidden']):not([type='color']):not([type='image']),

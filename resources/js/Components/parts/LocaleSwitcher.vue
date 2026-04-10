@@ -15,7 +15,7 @@ withDefaults(
 );
 
 const locales = computed(() => page.props.locales ?? []);
-const current = computed(() => page.props.locale ?? 'en');
+const current = computed(() => page.props.locale ?? 'ja');
 
 function setLocale(code: string) {
   if (code === current.value) {

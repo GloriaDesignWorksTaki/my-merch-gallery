@@ -181,7 +181,59 @@ export default {
       linkDashboard: 'Dashboard',
     },
     loginRequired: { defaultFeature: 'This feature' },
+    termsLink: 'Terms',
     copyright: '© {year} Gloria Design Works',
+  },
+  terms: {
+    title: 'Terms of Service',
+    lastUpdated: 'Last updated: 2026-04-10',
+    sections: {
+      scope: {
+        title: '1. Scope',
+        body: 'These Terms apply to all use of this service. By using the service, you agree to these Terms.',
+      },
+      account: {
+        title: '2. Account',
+        items: [
+          'You must keep your registration information accurate and up to date.',
+          'You are responsible for managing your account credentials securely.',
+          'We may suspend or restrict accounts in case of suspected abuse or violations.',
+        ],
+      },
+      content: {
+        title: '3. User Content',
+        items: [
+          'You represent that you have the necessary rights to submit your content.',
+          'You grant us a license to use submitted content as needed to operate, improve, and promote the service.',
+          'We may remove or hide content that violates laws or these Terms.',
+        ],
+      },
+      prohibited: {
+        title: '4. Prohibited Conduct',
+        items: [
+          'Violating laws or public order and morals',
+          'Infringing third-party rights (copyright, trademark, privacy, etc.)',
+          'Interfering with service operations or attempting unauthorized access',
+          'Submitting false information, impersonation, spam, or other inappropriate behavior',
+        ],
+      },
+      ip: {
+        title: '5. Intellectual Property',
+        body: 'All intellectual property related to the service, including system components, design, and logos, belongs to us or rightful owners. You may not use them beyond what is permitted by law.',
+      },
+      disclaimer: {
+        title: '6. Disclaimer',
+        body: 'We do not guarantee availability, accuracy, completeness, or fitness of the service. We are not liable for damages arising from use of the service except in cases of willful misconduct or gross negligence.',
+      },
+      changes: {
+        title: '7. Changes to Terms',
+        body: 'We may update these Terms when necessary. Updated Terms become effective when posted on the service.',
+      },
+      contact: {
+        title: '8. Contact',
+        body: 'For questions regarding these Terms, please contact us through the designated support channel.',
+      },
+    },
   },
   flash: {
     bandCreated: 'Band created.',
