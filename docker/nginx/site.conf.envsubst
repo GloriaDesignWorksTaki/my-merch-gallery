@@ -9,6 +9,25 @@ server {
   client_max_body_size 48M;
   server_tokens off;
 
+  # Vite ビルド（ファイル名にハッシュあり）→ 長期キャッシュで再訪問を高速化
+  location ^~ /build/assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+  }
+
+  # public/images 配下（ファイル名変更で更新想定）
+  location ^~ /images/ {
+    expires 30d;
+    add_header Cache-Control "public";
+    access_log off;
+  }
+
+  # ハッシュ解決用（デプロイ直後も常に最新のマニフェストを取得）
+  location = /build/manifest.json {
+    add_header Cache-Control "no-cache, must-revalidate";
+  }
+
   location / {
     try_files $uri $uri/ /index.php?$query_string;
   }
