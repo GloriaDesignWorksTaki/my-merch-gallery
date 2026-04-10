@@ -26,7 +26,15 @@ defineProps<{
       <div
         class="mt-6 overflow-hidden rounded-[2rem] border border-white/40 bg-white/35 shadow-[0_20px_60px_rgba(148,163,184,0.12)] theme-light:border-slate-300 theme-light:bg-white theme-light:shadow-md dark:border-slate-600/50 dark:bg-slate-900/40 dark:shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
       >
-        <img src="/images/main-visual.jpg" alt="My Merch Gallery main visual" class="h-[280px] w-full object-cover md:h-[360px]" />
+        <img
+          src="/images/main-visual.jpg"
+          alt="My Merch Gallery main visual"
+          width="748"
+          height="675"
+          decoding="async"
+          fetchpriority="high"
+          class="h-[280px] w-full object-cover md:h-[360px]"
+        />
       </div>
       <ul class="mt-8 flex flex-wrap gap-4 text-sm">
         <li>
